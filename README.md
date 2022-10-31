@@ -1,2 +1,76 @@
-home
-====
+nanomyth
+========
+
+Very minimal engine for very simple RPGs.
+
+TODO
+----
+
+1. [ ] Simple static map on single screen.
+	- [ ] Loading tilesets from file.
+	- [ ] Loading map layout from file.
+2. [ ] Main menu.
+	- [ ] MVC for all objects.
+	- [ ] Screens (contexts), stackable event loops: update()+draw().
+	- [ ] Simple menu with keyboard controls.
+	- [ ] Play/Continue/Exit.
+3. [ ] Player character.
+	- [ ] Movement on map.
+	- [ ] Facing directions.
+	- [ ] Obstacles.
+4. [ ] World of maps.
+	- [ ] Separate set of adjoined maps.
+	- [ ] Movement between maps (exits, entrances, portals; entering/starting points).
+5. [ ] Saving/loading.
+	- [ ] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
+	- [ ] Save/load in menu.
+	- [ ] Different slots for saving, separate dialog screen for choosing slot.
+	- [ ] Dialog for overwriting save files [Yes/No].
+6. [ ] Autosave.
+	- [ ] Terrain with trigger event.
+	- [ ] Autosaving on checkpoint tiles.
+	- [ ] Displaying message box [OK] on autosaving.
+7. [ ] NPC.
+	- [ ] Standalone objects like characters, info posts etc.
+	- [ ] Interactions with NPC.
+	- [ ] Separate screen dialog for large scrollable texts.
+8. [ ] Quests.
+	- [ ] Triggers to start/stop quests (checkpoint tiles, talking with NPCs).
+	- [ ] Quest steps, conditions on moving to the next step.
+	- [ ] Displaying current quest state on HUD.
+	- [ ] List of quests, quest book dialog.
+9. [ ] Items.
+	- [ ] Items laying on terrain.
+	- [ ] Slot for item, picking/dropping items.
+	- [ ] Character's inventory, inventory screen dialog.
+	- [ ] Displaying inventory status on HUD.
+	- [ ] Stackable items, non-stackable unique items.
+	- [ ] Usable items, using items on target (NPC, object).
+	- [ ] Triggers for items (for NPC/quests, opening terrain etc).
+	- [ ] One-time pickable item stashes (like piles, loot-drops or chests).
+	- [ ] External stashes (shelves). Exchanging items with stash.
+10. [ ] MOBs.
+	- [ ] Standing still, random shuffling, sentinel waypoints.
+	- [ ] Interaction with mobs: using items, talking.
+	- [ ] Hitting mobs, HP, damage.
+	- [ ] Displaying battle log, info about battle state, hp, hits etc.
+11. Battle.
+	- [ ] Player's HP. Mobs hitting back.
+	- [ ] Displaying player's stats on HUD.
+	- [ ] Items for battle: weapon/shield, armor/clothing.
+	- [ ] Mobs can have and use items too.
+	- [ ] Mobs can have inventory and drop loot.
+	- [ ] Trigger for quests on monster death.
+	- [ ] Projectiles, throwing.
+11. [ ] Animation based on sprite sheets.
+	- [ ] Animated static objects.
+	- [ ] Animated movements, hits, projectiles, particle events.
+	- [ ] Transition effects for screens/movements between maps.
+12. [ ] Extra.
+	- [ ] Doors (open/closed/locked/unlocked).
+	- [ ] Destructible terrain.
+	- [ ] Moveable/pullable objects (sokoban crates).
+	- [ ] Switches/levers with triggers.
+	- [ ] Press-plates (moving objects on them, dropping items) with triggers (doors, quests etc).
+	- [ ] Damaging terrain (beartraps, spikes etc).
+	- [ ] Explosions with damage range (bombs, DOOM barrels, throwable grenades etc).
