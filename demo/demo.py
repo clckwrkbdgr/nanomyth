@@ -8,17 +8,16 @@ import graphics
 
 tileset_root = Path(graphics.download_dawnlike_tileset())
 
-print('Press <ESC> to close.', file=sys.stdout)
+print('Demo app for the capabilities of the engine.')
+print('Press <ESC> to close.')
 sys.stdout.flush()
 
-class Map:
-	def __init__(self):
-		self.decor = nanomyth.view.sdl.image.Image(tileset_root/'Objects'/'Decor0.png')
-	def draw(self, window):
-		sprite = self.decor._data.subsurface(pygame.Rect(0, 0, 16*5, 16*5))
-		sprite = pygame.transform.scale(sprite, (16*5*4, 16*5*4))
-		window.blit(sprite, pygame.Rect(0, 0, 16*5*4, 16*5*4))
-
-engine = nanomyth.view.sdl.SDLEngine((640, 480), window_title='Nanomyth Demo')
-engine.widgets.append(Map())
+engine = nanomyth.view.sdl.SDLEngine((640, 480),
+		scale=4,
+		window_title='Nanomyth Demo',
+		)
+decor = nanomyth.view.sdl.image.TileSetImage(tileset_root/'Objects'/'Decor0.png', (8, 22))
+decor_tile = decor.get_tile((1, 4))
+image = nanomyth.view.sdl.widget.ImageWidget(decor_tile, (0, 0))
+engine.widgets.append(image)
 engine.run()

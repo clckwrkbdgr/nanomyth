@@ -1,2 +1,2 @@
 from ._base import *
-from . import image
+from . import image, widget

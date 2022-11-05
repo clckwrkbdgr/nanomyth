@@ -1,11 +1,14 @@
-import pygame
 from contextlib import contextmanager
+import pygame
+from ...math import Size
 
 class SDLEngine:
-	def __init__(self, size, window_title=None):
+	def __init__(self, size, scale=1, window_title=None):
+		self.scale = scale
 		pygame.init()
 		pygame.display.set_mode(tuple(size))
 		pygame.display.set_caption(window_title or '')
+		self.window = pygame.display.get_surface()
 		self.widgets = []
 		self.running = False
 	@contextmanager
@@ -16,6 +19,19 @@ class SDLEngine:
 			yield
 		finally:
 			pygame.display.flip()
+	def render_texture(self, texture, pos):
+		dest_size = Size(
+				texture.get_width() * self.scale,
+				texture.get_height() * self.scale,
+				)
+		dest = pygame.Rect(
+				pos.x * self.scale,
+				pos.y * self.scale,
+				dest_size.width,
+				dest_size.height,
+				)
+		texture = pygame.transform.scale(texture, tuple(dest_size))
+		self.window.blit(texture, dest)
 	def run(self):
 		self.running = True
 		while self.running:
@@ -26,7 +42,6 @@ class SDLEngine:
 						self.running = False
 				elif event.type == pygame.QUIT:
 					self.running = False
-			window = pygame.display.get_surface()
 			with self._enter_rendering_mode():
 				for widget in self.widgets:
-					widget.draw(window)
+					widget.draw(self)
