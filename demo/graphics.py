@@ -2,6 +2,7 @@ import os
 
 def download_dawnlike_tileset():
 	""" Downloads free tileset to use in demo.
+	Returns root directory of the unpacked tileset.
 
 	Original page: <https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181>
 	"""
@@ -21,3 +22,4 @@ def download_dawnlike_tileset():
 		import zipfile
 		with zipfile.ZipFile(zip_file) as archive:
 			archive.extractall(path=dawnlike_root)
+	return dawnlike_root
