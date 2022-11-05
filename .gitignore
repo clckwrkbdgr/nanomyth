@@ -1,6 +1,17 @@
+# Temp files.
 *.pyc
 __pycache__/
 
+# Build cache.
 /build/
 /dist/
 /nanomyth.egg-info/
+
+# Demo tileset
+/demo/DawnLike/DawnLike.zip
+/demo/DawnLike/README.txt
+/demo/DawnLike/*/*.png
+/demo/DawnLike/*/*.gif
+/demo/DawnLike/*/*.ttf
+/demo/DawnLike/*/*.tmx
+/demo/DawnLike/*/*.ase
