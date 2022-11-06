@@ -3,6 +3,34 @@ nanomyth
 
 Very minimal engine for very simple RPGs.
 
+Building and installing
+-----------------------
+
+To build package, run:
+
+```sh
+$ make build
+# OR directly:
+$ python setup.py build
+$ python -m pip wheel --disable-pip-version-check . --no-deps --wheel-dir=dist
+```
+
+Install created package directly via `pip`:
+
+```sh
+$ pip install -U dist/nanomyth-*.whl
+```
+
+Demo app
+--------
+
+There is a demo app that presents in form of a simple and small game.
+It's source demonstrates usage of engine API and various patterns.
+
+Demo app uses graphics tile set from <https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181>
+
+Just run `python demo/demo.py`.
+
 TODO
 ----
 

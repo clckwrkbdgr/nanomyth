@@ -1,3 +1,7 @@
+"""
+Utilities for unit testing.
+For internal use in this project.
+"""
 from __future__ import absolute_import
 from unittest import *
 defaultTestLoader.testMethodPrefix = 'should'

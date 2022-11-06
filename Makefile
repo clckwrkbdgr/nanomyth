@@ -1,6 +1,8 @@
 DIST_DIR = dist
 
-all: test
+all: build
+
+build: test
 	python setup.py build
 	python -m pip wheel --disable-pip-version-check . --no-deps --wheel-dir=$(DIST_DIR)
 

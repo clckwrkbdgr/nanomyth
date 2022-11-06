@@ -1,3 +1,7 @@
+"""
+Demonstration for nanomyth engine API and usage patterns.
+Presents in form of a simple and small game.
+"""
 import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from pathlib import Path

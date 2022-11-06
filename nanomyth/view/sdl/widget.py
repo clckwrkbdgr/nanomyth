@@ -1,8 +1,16 @@
+"""
+SDL-based engine organize display output as a set of separate widgets.
+"""
 import pygame
 from ...math import Point
 
 class ImageWidget:
+	""" Displays full image.
+	"""
 	def __init__(self, image, topleft):
+		""" Creates widget to display given image
+		starting from topleft position.
+		"""
 		self.topleft = Point(topleft)
 		self.image = image
 	def draw(self, engine):
@@ -12,7 +20,13 @@ class ImageWidget:
 		engine.render_texture(image.get_texture(), self.topleft)
 
 class TileMapWidget:
+	""" Displays a map of tiles
+	"""
 	def __init__(self, tilemap, topleft):
+		""" Creates widget to display given Matrix of tiles
+		starting from topleft position.
+		Tiles are either Images or image names in engine's image list.
+		"""
 		self.topleft = Point(topleft)
 		self.tilemap = tilemap
 	def draw(self, engine):
@@ -23,7 +37,12 @@ class TileMapWidget:
 			engine.render_texture(image.get_texture(), self.topleft + image_pos)
 
 class LevelMapWidget:
+	""" Displays a game.Map class.
+	"""
 	def __init__(self, level_map, topleft):
+		""" Creates widget to display given Map (of Tile objects)
+		starting from topleft position.
+		"""
 		self.topleft = Point(topleft)
 		self.level_map = level_map
 	def draw(self, engine):
