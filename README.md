@@ -34,8 +34,8 @@ Just run `python demo/demo.py`.
 TODO
 ----
 
-1. [ ] Simple static map on single screen.
-	- [ ] Loading tilesets from file.
+1. [X] Simple static map on single screen.
+	- [X] Loading tilesets from file.
 	- [ ] Loading map layout from file.
 2. [ ] Main menu.
 	- [ ] MVC for all objects.
