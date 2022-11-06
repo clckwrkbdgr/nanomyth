@@ -18,8 +18,19 @@ print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
 sys.stdout.flush()
 
+class MainMenu(nanomyth.view.sdl.context.Context):
+	def __init__(self, game_context):
+		super().__init__()
+		self.game_context = game_context
+	def update(self, control_name):
+		if control_name == 'escape':
+			raise self.Finished()
+		elif control_name == 'space':
+			return self.game_context
+
 main_game = nanomyth.view.sdl.context.Context()
-engine = nanomyth.view.sdl.SDLEngine((640, 480), main_game,
+main_menu = MainMenu(main_game)
+engine = nanomyth.view.sdl.SDLEngine((640, 480), main_menu,
 		scale=4,
 		window_title='Nanomyth Demo',
 		)
@@ -86,4 +97,9 @@ main_map.set_tile((3, 4), Terrain(['wall_bottom', 'door',]))
 main_map.set_tile((4, 4), Terrain(['wall_bottomright']))
 
 main_game.add_widget(nanomyth.view.sdl.widget.LevelMapWidget(main_map, (0, 0)))
+
+background = engine.add_image('background', nanomyth.view.sdl.image.Image(resources['background']/'5DragonsBkgds'/'room2.png'))
+main_menu_background = background.get_region((160, 40, 160, 120))
+main_menu.add_widget(nanomyth.view.sdl.widget.ImageWidget(main_menu_background, (0, 0)))
+
 engine.run()
