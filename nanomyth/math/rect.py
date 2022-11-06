@@ -2,12 +2,22 @@ from .vector import Point, Size
 
 class Rect(object):
 	""" Represents rectangle. """
-	def __init__(self, topleft, size):
+	def __init__(self, topleft, size=None):
 		""" Creates rectangle from topleft (Point or tuple of 2 elements)
 		and size (Size or tuple of 2 elements).
+		If single argument is found, it is treated as another Rect or a tuple of 4 elements (x, y, width, height).
 		"""
+		if size is None:
+			if isinstance(topleft, Rect):
+				topleft, size = topleft.topleft, topleft.size
+			else:
+				topleft, size = topleft[:2], topleft[2:]
 		self._topleft = Point(topleft)
 		self._size = Size(size)
+	def __str__(self):
+		return '{0}+{1}'.format(self._topleft, self._size)
+	def __repr__(self):
+		return '{0}({1}, {2})'.format(type(self), repr(self._topleft), repr(self._size))
 	def __setstate__(self, data): # pragma: no cover
 		self._topleft = data['topleft']
 		self._size = data['size']
