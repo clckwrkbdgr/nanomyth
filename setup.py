@@ -13,7 +13,12 @@ setup(
     license='LICENSE',
     description='Very minimal engine for very simple RPGs',
     long_description=readme,
-    packages=find_packages(exclude=('dist', 'test', 'nanomyth.math.test')),
+    packages=find_packages(exclude=(
+        'dist',
+        'test',
+        'nanomyth.math.test',
+        'nanomyth.game.test',
+        )),
     include_package_data=True,
     install_requires=[
     ],
