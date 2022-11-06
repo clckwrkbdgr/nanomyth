@@ -27,7 +27,10 @@ Demo app
 There is a demo app that presents in form of a simple and small game.
 It's source demonstrates usage of engine API and various patterns.
 
-Demo app uses graphics tile set from <https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181>
+Demo app uses free graphics from OpenGameArt:
+- Tile set: <https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181>
+- Font: <https://opengameart.org/content/8x8-font>
+- Set of backgrounds: <https://opengameart.org/content/6-adventure-game-backgrounds>
 
 Just run `python demo/demo.py`.
 

@@ -15,3 +15,7 @@ __pycache__/
 /demo/DawnLike/*/*.ttf
 /demo/DawnLike/*/*.tmx
 /demo/DawnLike/*/*.ase
+/demo/5DragonsBkgds/5DragonsBkgds/*.png
+/demo/5DragonsBkgds/5DragonsBkgds.zip
+/demo/8x8Text/8x8Text.zip
+/demo/8x8Text/*.png
