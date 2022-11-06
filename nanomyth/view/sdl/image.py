@@ -4,12 +4,17 @@ from ...math import Point, Size
 class Image:
 	def __init__(self, filename):
 		self._texture = pygame.image.load(str(filename))
+	def get_size(self):
+		return Size(
+				self._texture.get_width(),
+				self._texture.get_height(),
+				)
 	def get_texture(self):
 		return self._texture
 
-class TileSetImage:
+class TileSetImage(Image):
 	def __init__(self, filename, size):
-		self._texture = pygame.image.load(str(filename))
+		super().__init__(filename)
 		self.size = Size(size)
 		self.tile_size = Size(
 				self._texture.get_width() / self.size.width,
@@ -25,6 +30,8 @@ class TileImage:
 	def __init__(self, tileset, pos):
 		self.tileset = tileset
 		self.pos = Point(pos)
+	def get_size(self):
+		return self.tileset.tile_size
 	def get_texture(self):
 		return self.tileset.get_texture().subsurface(pygame.Rect(
 			self.pos.x * self.tileset.tile_size.width,

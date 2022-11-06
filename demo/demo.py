@@ -37,7 +37,5 @@ tilemap = Matrix.from_iterable([
 	['wall', 'bed',    'carpet_bottomleft',   'carpet_bottomright',    'wall'],
 	['wall', 'wall',   'wall',  'wall',   'wall'],
 	])
-for pos in tilemap:
-	tile = nanomyth.view.sdl.widget.ImageWidget(engine.get_image(tilemap.cell(pos)), pos * 16)
-	engine.widgets.append(tile)
+engine.widgets.append(nanomyth.view.sdl.widget.TileMapWidget(tilemap, (0, 0)))
 engine.run()
