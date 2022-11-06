@@ -21,3 +21,15 @@ class TileMapWidget:
 			tile_size = image.get_size()
 			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 			engine.render_texture(image.get_texture(), self.topleft + image_pos)
+
+class LevelMapWidget:
+	def __init__(self, level_map, topleft):
+		self.topleft = Point(topleft)
+		self.level_map = level_map
+	def draw(self, engine):
+		for pos, tile in self.level_map.iter_tiles():
+			for image_name in tile.get_images():
+				image = engine.get_image(image_name)
+				tile_size = image.get_size()
+				image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
+				engine.render_texture(image.get_texture(), self.topleft + image_pos)
