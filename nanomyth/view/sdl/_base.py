@@ -11,6 +11,12 @@ class SDLEngine:
 		self.window = pygame.display.get_surface()
 		self.widgets = []
 		self.running = False
+		self.images = {}
+	def add_image(self, name, image):
+		self.images[name] = image
+		return image
+	def get_image(self, name):
+		return self.images[name]
 	@contextmanager
 	def _enter_rendering_mode(self):
 		""" RAII that enters into SDL rendring mode till the end of scope. """

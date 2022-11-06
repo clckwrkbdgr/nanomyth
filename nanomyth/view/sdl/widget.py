@@ -6,4 +6,7 @@ class ImageWidget:
 		self.topleft = Point(topleft)
 		self.image = image
 	def draw(self, engine):
-		engine.render_texture(self.image.get_texture(), self.topleft)
+		image = self.image
+		if isinstance(self.image, str):
+			image = engine.get_image(self.image)
+		engine.render_texture(image.get_texture(), self.topleft)
