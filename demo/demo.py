@@ -18,7 +18,8 @@ print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
 sys.stdout.flush()
 
-engine = nanomyth.view.sdl.SDLEngine((640, 480),
+main_game = nanomyth.view.sdl.context.Context()
+engine = nanomyth.view.sdl.SDLEngine((640, 480), main_game,
 		scale=4,
 		window_title='Nanomyth Demo',
 		)
@@ -84,5 +85,5 @@ main_map.set_tile((2, 4), Terrain(['wall_bottom']))
 main_map.set_tile((3, 4), Terrain(['wall_bottom', 'door',]))
 main_map.set_tile((4, 4), Terrain(['wall_bottomright']))
 
-engine.widgets.append(nanomyth.view.sdl.widget.LevelMapWidget(main_map, (0, 0)))
+main_game.add_widget(nanomyth.view.sdl.widget.LevelMapWidget(main_map, (0, 0)))
 engine.run()
