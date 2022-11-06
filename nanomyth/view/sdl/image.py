@@ -2,7 +2,7 @@
 Various set of classes that represents images (tiles, sprites, UI etc).
 """
 import pygame
-from ...math import Point, Size
+from ...math import Point, Size, Rect
 
 class Image:
 	""" Basic image to be displayed in full size.
@@ -16,8 +16,30 @@ class Image:
 				self._texture.get_width(),
 				self._texture.get_height(),
 				)
+	def get_region(self, rect):
+		""" Returns sub-image of given region. """
+		return ImageRegion(self, Rect(rect))
 	def get_texture(self):
 		return self._texture
+
+class ImageRegion:
+	""" Part of the bigger image.
+	"""
+	def __init__(self, image, rect):
+		""" Creates image region.
+		"""
+		self.image = image
+		self.rect = rect
+	def get_size(self):
+		""" Size of the region. """
+		return rect.size
+	def get_texture(self):
+		return self.image.get_texture().subsurface(pygame.Rect(
+			self.rect.left,
+			self.rect.top,
+			self.rect.width,
+			self.rect.height,
+			))
 
 class TileSetImage(Image):
 	""" Image that contains a tile set (usually a table of smaller images of the same size).
