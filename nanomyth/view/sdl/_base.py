@@ -69,7 +69,9 @@ class SDLEngine:
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					try:
-						current_context.update(pygame.key.name(event.key))
+						new_context = current_context.update(pygame.key.name(event.key))
+						if new_context:
+							self.contexts.append(new_context)
 					except context.Context.Finished:
 						self.contexts.pop()
 						if not self.contexts:
