@@ -20,7 +20,6 @@ print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
 sys.stdout.flush()
 
-main_game = nanomyth.view.sdl.context.Context()
 main_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
 engine = nanomyth.view.sdl.SDLEngine((640, 480), main_menu,
 		scale=4,
@@ -92,7 +91,7 @@ main_map.set_tile((3, 4), Terrain(['wall_bottom', 'door',]))
 main_map.set_tile((4, 4), Terrain(['wall_bottomright']))
 main_map.add_actor((2, 2), Player('rogue'))
 
-main_game.add_widget(nanomyth.view.sdl.widget.LevelMapWidget(main_map, (0, 0)))
+main_game = nanomyth.view.sdl.context.Game(main_map)
 
 background = engine.add_image('background', nanomyth.view.sdl.image.Image(resources['background']/'5DragonsBkgds'/'room2.png'))
 

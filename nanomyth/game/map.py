@@ -1,4 +1,5 @@
 from ..math import Matrix, Point
+from . import actor
 
 class Terrain:
 	""" Represents single map tile of terrain.
@@ -29,7 +30,15 @@ class Map:
 	def get_tile(self, pos):
 		return self.tiles.cell(pos)
 	def add_actor(self, pos, actor):
+		""" Places actor on specified position. """
 		self.actors.append(ActorOnMap(pos, actor))
+	def shift_player(self, shift):
+		""" Moves player character by given shift. """
+		player = next(_ for _ in self.actors if isinstance(_.actor, actor.Player))
+		new_pos = player.pos + shift
+		if not self.tiles.valid(new_pos):
+			return
+		player.pos = new_pos
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).

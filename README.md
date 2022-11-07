@@ -46,7 +46,7 @@ TODO
 	- [X] Simple menu with keyboard controls.
 	- [X] Play/Continue/Exit.
 3. [ ] Player character.
-	- [ ] Movement on map.
+	- [X] Movement on map.
 	- [ ] Facing directions.
 	- [ ] Obstacles.
 4. [ ] World of maps.

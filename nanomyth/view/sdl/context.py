@@ -4,6 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
+from .widget import LevelMapWidget
 
 class Context:
 	""" Basic game context.
@@ -34,6 +35,34 @@ class Context:
 		for widget in self.widgets:
 			widget.draw(engine)
 
+class Game(Context):
+	""" Context for the main game screen: level map, player character etc.
+	Controls player character via keyboard.
+
+	Any other widgets (e.g. UI) can be added via usual .add_widget()
+	"""
+	def __init__(self, level_map):
+		""" Creates game with given level map.
+		"""
+		super().__init__([
+			LevelMapWidget(level_map, (0, 0)),
+			])
+		self.level_map = level_map
+	def update(self, control_name):
+		""" Controls player character: <Up>, <Down>, <Left>, <Right>
+		<ESC>: Exit to the previous context.
+		"""
+		if control_name == 'escape':
+			raise self.Finished()
+		elif control_name == 'up':
+			self.level_map.shift_player((0, -1))
+		elif control_name == 'down':
+			self.level_map.shift_player((0, +1))
+		elif control_name == 'left':
+			self.level_map.shift_player((-1, 0))
+		elif control_name == 'right':
+			self.level_map.shift_player((+1, 0))
+
 class Menu(Context):
 	""" Game context for menu screens.
 
@@ -49,12 +78,6 @@ class Menu(Context):
 	def __init__(self, on_escape=None):
 		""" Creates menu context.
 		Items can be added later via .add_menu_item().
-
-		Controls:
-		- <Up>: select previous item.
-		- <Down>: select next item.
-		- <Enter>: pick currently selected item.
-		- <ESC>: optional "escape" action, if specified (see on_escape).
 
 		If on_escape is specified, it should be an action-like object (see Menu docstring)
 		and it will performed when <ESC> is pressed.
@@ -87,6 +110,12 @@ class Menu(Context):
 			return action()
 		return action # Treat as a new context.
 	def update(self, control_name):
+		""" Controls:
+		- <Up>: select previous item.
+		- <Down>: select next item.
+		- <Enter>: pick currently selected item.
+		- <ESC>: optional "escape" action, if specified (see on_escape).
+		"""
 		if control_name == 'escape':
 			if self.on_escape:
 				return self.perform_action(self.on_escape)
