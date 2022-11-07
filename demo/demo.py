@@ -99,7 +99,12 @@ main_map.set_tile((4, 4), Terrain(['wall_bottomright']))
 main_game.add_widget(nanomyth.view.sdl.widget.LevelMapWidget(main_map, (0, 0)))
 
 background = engine.add_image('background', nanomyth.view.sdl.image.Image(resources['background']/'5DragonsBkgds'/'room2.png'))
+font_image = engine.add_image('font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_darkGrayShadow.png', (12, 14)))
+font = nanomyth.view.sdl.font.FixedWidthFont(font_image, '~1234567890-+!@#$%^&*()_={}[]|\\:;"\'<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' + '\x7f'*(3+5*12+7) + ' ')
 main_menu_background = background.get_region((160, 40, 160, 120))
 main_menu.add_widget(nanomyth.view.sdl.widget.ImageWidget(main_menu_background, (0, 0)))
+main_menu.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, (50, 0), 'Nanomyth Demo'))
+main_menu.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, (40, 10), '<SPACE> to play.'))
+main_menu.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, (0, 110), 'Press ESC to exit.'))
 
 engine.run()
