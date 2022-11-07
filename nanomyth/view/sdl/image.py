@@ -32,7 +32,7 @@ class ImageRegion:
 		self.rect = rect
 	def get_size(self):
 		""" Size of the region. """
-		return rect.size
+		return self.rect.size
 	def get_texture(self):
 		return self.image.get_texture().subsurface(pygame.Rect(
 			self.rect.left,
@@ -51,8 +51,8 @@ class TileSetImage(Image):
 		super().__init__(filename)
 		self.size = Size(size)
 		self.tile_size = Size(
-				self._texture.get_width() / self.size.width,
-				self._texture.get_height() / self.size.height,
+				self._texture.get_width() // self.size.width,
+				self._texture.get_height() // self.size.height,
 				)
 	def get_tile(self, pos):
 		""" Returns TileImage for specified position in tile table. """
@@ -70,10 +70,10 @@ class TileImage:
 	def get_size(self):
 		""" Returns size of a single tile. """
 		return self.tileset.tile_size
-	def get_texture(self):
-		return self.tileset.get_texture().subsurface(pygame.Rect(
+	def get_rect(self):
+		return Rect((
 			self.pos.x * self.tileset.tile_size.width,
 			self.pos.y * self.tileset.tile_size.height,
-			self.tileset.tile_size.width,
-			self.tileset.tile_size.height,
-			))
+			), self.tileset.tile_size)
+	def get_texture(self):
+		return self.tileset.get_texture().subsurface(pygame.Rect(*(self.get_rect())))
