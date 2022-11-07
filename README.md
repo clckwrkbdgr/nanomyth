@@ -40,11 +40,11 @@ TODO
 1. [X] Simple static map on single screen.
 	- [X] Loading tilesets from file.
 	- [ ] Loading map layout from file.
-2. [ ] Main menu.
-	- [ ] MVC for all objects.
-	- [ ] Screens (contexts), stackable event loops: update()+draw().
-	- [ ] Simple menu with keyboard controls.
-	- [ ] Play/Continue/Exit.
+2. [X] Main menu.
+	- [X] MVC for all objects.
+	- [X] Screens (contexts), stackable event loops: update()+draw().
+	- [X] Simple menu with keyboard controls.
+	- [X] Play/Continue/Exit.
 3. [ ] Player character.
 	- [ ] Movement on map.
 	- [ ] Facing directions.

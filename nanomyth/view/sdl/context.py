@@ -33,3 +33,68 @@ class Context:
 		""" Draws all widgets. """
 		for widget in self.widgets:
 			widget.draw(engine)
+
+class Menu(Context):
+	""" Game context for menu screens.
+
+	Operates on set of MenuItem widgets with option to pick one and perform its action.
+	Available action options:
+	- Exception object or type, e.g. Context.Finished - to close current context and go back.
+	- Context object - to switch to the new context.
+	- Callable - should take no argument and return action-like object.
+	- Default is None - no action should be taken.
+
+	As this class is a Context, any other widgets (e.g. background image or title text) can be added via usual .add_widget()
+	"""
+	def __init__(self, on_escape=None):
+		""" Creates menu context.
+		Items can be added later via .add_menu_item().
+
+		Controls:
+		- <Up>: select previous item.
+		- <Down>: select next item.
+		- <Enter>: pick currently selected item.
+		- <ESC>: optional "escape" action, if specified (see on_escape).
+
+		If on_escape is specified, it should be an action-like object (see Menu docstring)
+		and it will performed when <ESC> is pressed.
+		"""
+		super().__init__()
+		self.items = []
+		self.selected = None
+		self.on_escape = on_escape
+	def add_menu_item(self, new_menu_item, on_selection=None):
+		""" Adds new menu item (of MenuItem class) with optional action on selection.
+		If action is specified, it should be an action-like object (see Menu docstring).
+		"""
+		self.widgets.append(new_menu_item)
+		self.items.append((new_menu_item, on_selection))
+	def select_item(self, selected_index):
+		""" Selects item by index.
+		Highlights corresponding widget.
+		"""
+		self.selected = selected_index
+		for index, item in enumerate(self.items):
+			item[0].make_highlighted(index == selected_index)
+	def perform_action(self, action):
+		""" Programmatically perform action.
+		Action should be an action-like object (see Menu docstring).
+		"""
+		import types
+		if isinstance(action, Exception) or action is Exception or (isinstance(action, type) and issubclass(action, Exception)):
+			raise action()
+		elif callable(action):
+			return action()
+		return action # Treat as a new context.
+	def update(self, control_name):
+		if control_name == 'escape':
+			if self.on_escape:
+				return self.perform_action(self.on_escape)
+		elif control_name == 'up':
+			self.select_item(max(0, self.selected - 1))
+		elif control_name == 'down':
+			self.select_item(min(len(self.items) - 1, self.selected + 1))
+		elif control_name == 'return':
+			if self.selected is not None:
+				action = self.items[self.selected][1]
+				return self.perform_action(action)

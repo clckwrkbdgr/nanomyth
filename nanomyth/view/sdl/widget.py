@@ -71,3 +71,43 @@ class LevelMapWidget:
 				tile_size = image.get_size()
 				image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 				engine.render_texture(image.get_texture(), self.topleft + image_pos)
+
+class MenuItem:
+	""" Menu item with text caption and two modes (normal/highlighted). """
+	def __init__(self, topleft, button, caption, button_highlighted=None, caption_highlighted=None, caption_shift=None):
+		""" Creates selectable menu item widget.
+
+		Draws button using giving Widget (e.g. ImageWidget or TileMapWidget)
+		and overpaints with given caption widget (usually a TextLine).
+		Button and caption have additional "highlighted" variant which is used if menu item is highlighted via .make_highlighted(True)
+
+		Both captions and buttons can be None, missing widgets are simply skipped.
+
+		Buttons and captions are forced to the topleft position of the menu item.
+		If caption_shift (of Point or tuple type) is provided, caption in shifted relative to the topleft posision (and button widget).
+		"""
+		self.topleft = Point(topleft)
+		self.button = button
+		if self.button:
+			self.button.topleft = self.topleft
+		self.button_highlighted = button_highlighted or self.button
+		if self.button_highlighted:
+			self.button_highlighted.topleft = self.topleft
+		caption_shift = Point(caption_shift or (0, 0))
+		self.caption = caption
+		if self.caption:
+			self.caption.topleft = self.topleft + caption_shift
+		self.caption_highlighted = caption_highlighted or self.caption
+		if self.caption_highlighted:
+			self.caption_highlighted.topleft = self.topleft + caption_shift
+		self.highlighted = False
+	def make_highlighted(self, value):
+		""" Makes current item highlighted. """
+		self.highlighted = bool(value)
+	def draw(self, engine):
+		button = self.button_highlighted if self.highlighted else self.button
+		caption = self.caption_highlighted if self.highlighted else self.caption
+		if button:
+			button.draw(engine)
+		if caption:
+			caption.draw(engine)
