@@ -85,7 +85,7 @@ TODO
 	- [ ] Interaction with mobs: using items, talking.
 	- [ ] Hitting mobs, HP, damage.
 	- [ ] Displaying battle log, info about battle state, hp, hits etc.
-11. Battle.
+11. [ ] Battle.
 	- [ ] Player's HP. Mobs hitting back.
 	- [ ] Displaying player's stats on HUD.
 	- [ ] Items for battle: weapon/shield, armor/clothing.
