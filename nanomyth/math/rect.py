@@ -25,6 +25,8 @@ class Rect(object):
 		return {'topleft':self._topleft, 'size':self._size}
 	def __eq__(self, other):
 		return other is not None and self._topleft == other._topleft and self._size == other._size
+	def __iter__(self):
+		return iter(tuple(self._topleft) + tuple(self._size))
 	@property
 	def width(self): return self._size.width
 	@property

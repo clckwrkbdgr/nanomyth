@@ -38,6 +38,9 @@ class TestRect(unittest.TestCase):
 		rect = Rect((1, 2), (4, 5))
 		self.assertEqual(str(rect), '[1, 2]+[4, 5]')
 		self.assertEqual(repr(rect), "<class 'nanomyth.math.rect.Rect'>(<class 'nanomyth.math.vector.Point'>[1, 2], <class 'nanomyth.math.vector.Size'>[4, 5])")
+	def should_unpack_rect(self):
+		rect = Rect((1, 2), (4, 5))
+		self.assertEqual(list(rect), [1, 2, 4, 5])
 	@unittest.skipUnless(jsonpickle, "Jsonpickle is not detected.")
 	def should_serialize_rect(self):
 		rect = Rect((1, 2), (4, 5))
