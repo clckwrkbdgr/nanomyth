@@ -61,6 +61,15 @@ class Point(Vector):
 	""" Convenience type definition for 2D vector
 	with access to first two elements under aliases .x and .y
 	"""
+	def __init__(self, *values):
+		""" Creates point object from two numbers (x, y).
+		If arguments are not given, creates default point (0, 0).
+		"""
+		if len(values) == 0:
+			values = (0, 0)
+		elif len(values) > 2:
+			raise ValueError('2D point requires only two numbers, got {0}: {1}'.format(len(values), values))
+		super().__init__(*values)
 	@property
 	def x(self): return self.values[0]
 	@x.setter
@@ -81,6 +90,15 @@ class Size(Vector):
 	""" Convenience type definition for 2D vector
 	with access to first two elements under aliases .width and .height
 	"""
+	def __init__(self, *values):
+		""" Creates size object from two numbers (width, height).
+		If arguments are not given, creates default size (0, 0).
+		"""
+		if len(values) == 0:
+			values = (0, 0)
+		elif len(values) > 2:
+			raise ValueError('Size requires only two numbers, got {0}: {1}'.format(len(values), values))
+		super().__init__(*values)
 	@property
 	def width(self): return self.values[0]
 	@width.setter

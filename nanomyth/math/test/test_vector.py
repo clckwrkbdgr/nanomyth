@@ -75,6 +75,13 @@ class TestVector(unittest.TestCase):
 		self.assertEqual(list(MyVector(1, 2)), [1, 2])
 
 class TestPoint(unittest.TestCase):
+	def should_create_default_point(self):
+		self.assertEqual(Point(), Point(0, 0))
+		self.assertEqual(Point().x, 0)
+		self.assertEqual(Point().y, 0)
+	def should_expect_only_two_numbers_for_2d_point(self):
+		with self.assertRaises(ValueError):
+			Point(1, 2, 3)
 	@unittest.skipUnless(jsonpickle, "Jsonpickle is not detected.")
 	def should_serialize_point_to_json(self):
 		p = Point(1, 2)
@@ -98,6 +105,13 @@ class TestPoint(unittest.TestCase):
 		self.assertEqual(actual, expected)
 
 class TestSize(unittest.TestCase):
+	def should_create_default_size(self):
+		self.assertEqual(Size(), Size(0, 0))
+		self.assertEqual(Size().width, 0)
+		self.assertEqual(Size().height, 0)
+	def should_expect_only_two_numbers_for_size(self):
+		with self.assertRaises(ValueError):
+			Size(1, 2, 3)
 	@unittest.skipUnless(jsonpickle, "Jsonpickle is not detected.")
 	def should_serialize_size_to_json(self):
 		p = Size(1, 2)
