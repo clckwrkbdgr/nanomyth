@@ -3,13 +3,14 @@ Demonstration for nanomyth engine API and usage patterns.
 Presents in form of a simple and small game.
 """
 import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from pathlib import Path
 import pygame
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import nanomyth
 from nanomyth.math import Matrix
 from nanomyth.game.map import Map, Terrain
 import nanomyth.view.sdl
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 import graphics
 
 resources = graphics.download_resources()

@@ -11,7 +11,10 @@ test:
 	@python -m coverage report -m 
 
 demo:
-	python demo/demo.py
+	@python -m coverage run --source=. \
+		--omit=setup.py,nanomyth/math/**.py,nanomyth/game/**.py,nanomyth/utils/**.py \
+		demo/demo.py
+	@python -m coverage report -m || true
 
 clean:
 	rm -rf $(DIST_DIR) build/ nanomyth.egg-info
