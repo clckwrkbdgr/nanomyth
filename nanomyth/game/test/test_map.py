@@ -1,6 +1,8 @@
 import itertools
 from ...utils import unittest
 from ..map import Map, Terrain
+from ..actor import Player
+from ...math import Point
 
 class TestMap(unittest.TestCase):
 	def should_create_map_of_empty_tiles(self):
@@ -23,3 +25,7 @@ class TestMap(unittest.TestCase):
 		positions, actual_images = zip(*tiles)
 		self.assertEqual(list(actual_images), expected)
 		self.assertEqual(list(positions), expected)
+	def should_place_actors(self):
+		level_map = Map()
+		level_map.add_actor((2, 2), Player('rogue'))
+		self.assertEqual([(pos, player.sprite) for pos, player in level_map.iter_actors()], [(Point(2, 2), 'rogue')])

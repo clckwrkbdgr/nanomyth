@@ -71,6 +71,11 @@ class LevelMapWidget:
 				tile_size = image.get_size()
 				image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 				engine.render_texture(image.get_texture(), self.topleft + image_pos)
+		for pos, actor in self.level_map.iter_actors():
+			image = engine.get_image(actor.sprite)
+			tile_size = image.get_size()
+			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
+			engine.render_texture(image.get_texture(), self.topleft + image_pos)
 
 class MenuItem:
 	""" Menu item with text caption and two modes (normal/highlighted). """
