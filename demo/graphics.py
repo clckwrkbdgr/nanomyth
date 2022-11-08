@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-def download_resource(url, dest_dir_name, dest_filename):
+def download_resource(url, dest_dir_name, dest_filename): # pragma: no cover -- resources are downloaded and unpack any way at the first run.
 	""" Downloads free resource to use in demo.
 	Returns root directory of the unpacked resource.
 	"""

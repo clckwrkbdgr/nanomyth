@@ -76,6 +76,6 @@ class SDLEngine:
 						self.contexts.pop()
 						if not self.contexts:
 							self.running = False
-				elif event.type == pygame.QUIT:
+				elif event.type == pygame.QUIT: # pragma: no cover
 					self.running = False
 			custom_update()

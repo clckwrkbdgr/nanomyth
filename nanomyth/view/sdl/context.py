@@ -24,12 +24,12 @@ class Context:
 	def add_widget(self, widget):
 		""" Adds new widget. """
 		self.widgets.append(widget)
-	def update(self, control_name):
+	def update(self, control_name): # pragma: no cover
 		""" Processes control events.
 		`control_name` is the name of a pressed key.
+
+		Default implementation does nothing.
 		"""
-		if control_name == 'escape':
-			raise self.Finished()
 	def draw(self, engine):
 		""" Draws all widgets. """
 		for widget in self.widgets:

@@ -130,13 +130,15 @@ engine.add_image('button_on_right',  floors.get_tile((6, 4)))
 
 font_mapping = '~1234567890-+!@#$%^&*()_={}[]|\\:;"\'<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' + '\x7f'*(3+5*12+7) + ' '
 grey_font_image = engine.add_image('grey_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_darkGrayShadow.png', (12, 14)))
-fixed_font = nanomyth.view.sdl.font.FixedWidthFont(grey_font_image, font_mapping)
-grey_font = nanomyth.view.sdl.font.ProportionalFont(grey_font_image, font_mapping)
 white_font_image = engine.add_image('white_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_whiteShadow.png', (12, 14)))
+fixed_font = nanomyth.view.sdl.font.FixedWidthFont(white_font_image, font_mapping)
+grey_font = nanomyth.view.sdl.font.ProportionalFont(grey_font_image, font_mapping)
 font = nanomyth.view.sdl.font.ProportionalFont(white_font_image, font_mapping, space_width=3, transparent_color=255)
-main_menu_background = background.get_region((160, 40, 160, 120))
-main_menu.add_widget(nanomyth.view.sdl.widget.ImageWidget(main_menu_background, (0, 0)))
-main_menu.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, (80, 0), 'Nanomyth Demo'))
+main_menu_background = engine.add_image('main_menu_background', background.get_region((160, 40, 160, 120)))
+main_menu.add_widget(nanomyth.view.sdl.widget.ImageWidget('main_menu_background', (0, 0)))
+main_menu_caption = nanomyth.view.sdl.widget.TextLineWidget(fixed_font, (40, 0))
+main_menu_caption.set_text('Nanomyth Demo')
+main_menu.add_widget(main_menu_caption)
 button_off_tiles = Matrix.from_iterable([
 	['button_off_left', 'button_off_middle', 'button_off_right'],
 	])
@@ -163,9 +165,10 @@ main_menu.add_menu_item(
 			), nanomyth.view.sdl.context.Context.Finished)
 main_menu.select_item(0)
 
+auto_sequence = None
 if sys.argv[1:] == ['auto']:
 	import autodemo
-	sequence = autodemo.AutoSequence(0.3, [
+	auto_sequence = autodemo.AutoSequence(0.2, [
 		'up', # Test menu.
 		'down',
 		'down',
@@ -181,6 +184,4 @@ if sys.argv[1:] == ['auto']:
 		'escape', # To main menu.
 		'escape', # Exit game.
 		])
-	engine.run(custom_update=sequence)
-else:
-	engine.run()
+engine.run(custom_update=auto_sequence)
