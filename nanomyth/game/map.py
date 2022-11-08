@@ -46,10 +46,13 @@ class Portalling(Exception):
 		self.player = player
 
 class Map:
-	""" 5x5 level map.
+	""" Rectangle level map.
+	Supports terrain, actors (e.g. player) and other objects/events/triggers (e.g. portal tiles).
 	"""
-	def __init__(self):
-		self.tiles = Matrix((5, 5), Terrain([]))
+	def __init__(self, size):
+		""" Creates empty map of given size with default (empty) terrain.
+		"""
+		self.tiles = Matrix(size, Terrain([]))
 		self.actors = []
 		self.portals = []
 	def set_tile(self, pos, tile):

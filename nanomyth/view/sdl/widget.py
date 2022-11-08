@@ -56,7 +56,10 @@ class TextLineWidget:
 			image_pos.x += tile_size.width
 
 class LevelMapWidget:
-	""" Displays a game.Map class.
+	""" Displays level map using static camera (viewport is not moving).
+
+	WARNING: As camera is static, map should fit within the screen,
+	outside tiles are accessible but will not be displayed!
 	"""
 	def __init__(self, level_map, topleft):
 		""" Creates widget to display given Map (of Tile objects)

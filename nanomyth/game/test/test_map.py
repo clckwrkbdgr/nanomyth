@@ -6,16 +6,16 @@ from ...math import Point
 
 class TestMap(unittest.TestCase):
 	def should_create_map_of_empty_tiles(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		self.assertEqual(level_map.get_tile((0, 0)).get_images(), [])
 	def should_access_tiles(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		level_map.set_tile((1, 0), Terrain(['grass']))
 		self.assertEqual(level_map.get_tile((1, 0)).get_images(), ['grass'])
 		level_map.set_tile((1, 1), Terrain(['grass', 'tree']))
 		self.assertEqual(level_map.get_tile((1, 1)).get_images(), ['grass', 'tree'])
 	def should_iterate_over_tiles(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		expected = []
 		for y, x in itertools.product(range(5), range(5)):
 			image_name = '{0}x{1}'.format(x, y)
@@ -26,11 +26,11 @@ class TestMap(unittest.TestCase):
 		self.assertEqual(list(actual_images), expected)
 		self.assertEqual(list(positions), expected)
 	def should_place_actors(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		level_map.add_actor((2, 2), Player('rogue'))
 		self.assertEqual([(pos, player.get_sprite()) for pos, player in level_map.iter_actors()], [(Point(2, 2), 'rogue')])
 	def should_shift_player(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		level_map.add_actor((2, 2), Player('rogue'))
 
 		level_map.shift_player((0, -1))
@@ -53,7 +53,7 @@ class TestMap(unittest.TestCase):
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 0))
 		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.UP)
 	def should_move_only_on_passable_tiles(self):
-		level_map = Map()
+		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
 		level_map.add_actor((2, 2), Player('rogue'))

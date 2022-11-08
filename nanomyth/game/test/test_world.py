@@ -7,7 +7,7 @@ from ..actor import Player, Direction
 class TestWorld(unittest.TestCase):
 	def _create_world(self):
 		world = World()
-		home, desert = Map(), Map()
+		home, desert = Map((5, 5)), Map((5, 5))
 		home.set_tile((0, 0), Terrain(['floor']))
 		desert.set_tile((0, 0), Terrain(['desert']))
 		world.add_map('home', home)
