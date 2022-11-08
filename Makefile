@@ -16,7 +16,13 @@ demo:
 		demo/demo.py
 	@python -m coverage report -m || true
 
+autodemo:
+	@python -m coverage run --source=. \
+		--omit=setup.py,nanomyth/math/**.py,nanomyth/game/**.py,nanomyth/utils/**.py \
+		demo/demo.py auto
+	@python -m coverage report -m || true
+
 clean:
 	rm -rf $(DIST_DIR) build/ nanomyth.egg-info
 
-.PHONY: demo
+.PHONY: demo autodemo

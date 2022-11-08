@@ -54,7 +54,7 @@ class SDLEngine:
 				)
 		texture = pygame.transform.scale(texture, tuple(dest_size))
 		self.window.blit(texture, dest)
-	def run(self):
+	def run(self, custom_update=None):
 		""" Main event loop.
 		Processes events and controls for the current context and draws its widgets.
 		Also handles switching contexts.
@@ -78,3 +78,4 @@ class SDLEngine:
 							self.running = False
 				elif event.type == pygame.QUIT:
 					self.running = False
+			custom_update()

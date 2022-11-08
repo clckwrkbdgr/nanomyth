@@ -163,4 +163,24 @@ main_menu.add_menu_item(
 			), nanomyth.view.sdl.context.Context.Finished)
 main_menu.select_item(0)
 
-engine.run()
+if sys.argv[1:] == ['auto']:
+	import autodemo
+	sequence = autodemo.AutoSequence(0.3, [
+		'up', # Test menu.
+		'down',
+		'down',
+		'up', # Navigate back to the "Play"
+		'return', # Play.
+		'up', # Test obstacles.
+		'left', # Test movement and direction.
+		'left', # Obstacle.
+		'down', # Obstacle.
+		'right', 'right', 'right', 'right', # Right into the wall.
+		'down', 'down', # Exit home and into the desert.
+		'down', 'left', 'up', 'right', # Wander around.
+		'escape', # To main menu.
+		'escape', # Exit game.
+		])
+	engine.run(custom_update=sequence)
+else:
+	engine.run()
