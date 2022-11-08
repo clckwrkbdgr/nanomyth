@@ -17,10 +17,33 @@ class Terrain:
 		""" Returns list of images for the terrail tile. """
 		return self.images
 
+class Portal:
+	""" Marks level exit tile.
+	Once player steps on it, they are transferred to the new map
+	placed at specified entrance position.
+	"""
+	def __init__(self, dest_map, entrance_pos):
+		""" Creates portal to the entrance_pos on the dest_map.
+		"""
+		self.entrance_pos = Point(entrance_pos)
+		self.dest_map = dest_map
+
+class ObjectOnMap:
+	def __init__(self, pos, obj):
+		self.pos = Point(pos)
+		self.obj = obj
+
 class ActorOnMap:
 	def __init__(self, pos, actor):
 		self.pos = Point(pos)
 		self.actor = actor
+
+class Portalling(Exception):
+	""" Represents portalling event.
+	"""
+	def __init__(self, portal, player):
+		self.portal = portal
+		self.player = player
 
 class Map:
 	""" 5x5 level map.
@@ -28,6 +51,7 @@ class Map:
 	def __init__(self):
 		self.tiles = Matrix((5, 5), Terrain([]))
 		self.actors = []
+		self.portals = []
 	def set_tile(self, pos, tile):
 		self.tiles.set_cell(pos, tile)
 	def get_tile(self, pos):
@@ -35,10 +59,15 @@ class Map:
 	def add_actor(self, pos, actor):
 		""" Places actor on specified position. """
 		self.actors.append(ActorOnMap(pos, actor))
+	def add_portal(self, pos, portal):
+		""" Places a portal at the specified position. """
+		self.portals.append(ObjectOnMap(pos, portal))
 	def shift_player(self, shift):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),
 		or a Direction object (in this case will be performed as a single-tile step in given direction).
+
+		Performs all available triggers if any are set on destination tile (like portals).
 		"""
 		player = next(_ for _ in self.actors if isinstance(_.actor, actor.Player))
 		if isinstance(shift, actor.Direction):
@@ -52,6 +81,10 @@ class Map:
 			return
 		if not self.tiles.cell(new_pos).passable:
 			return
+		portal = next((portal.obj for portal in self.portals if portal.pos == new_pos), None)
+		if portal:
+			self.actors.remove(player)
+			raise Portalling(portal, player.actor)
 		player.pos = new_pos
 	def iter_tiles(self):
 		""" Iterates over tiles.

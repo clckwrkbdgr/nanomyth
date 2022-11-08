@@ -64,6 +64,9 @@ class LevelMapWidget:
 		"""
 		self.topleft = Point(topleft)
 		self.level_map = level_map
+	def set_map(self, new_level_map):
+		""" Switches displayed level map. """
+		self.level_map = new_level_map
 	def draw(self, engine):
 		for pos, tile in self.level_map.iter_tiles():
 			for image_name in tile.get_images():

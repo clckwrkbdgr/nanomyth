@@ -41,13 +41,20 @@ class Game(Context):
 
 	Any other widgets (e.g. UI) can be added via usual .add_widget()
 	"""
-	def __init__(self, level_map):
+	def __init__(self, world):
 		""" Creates game with given level map.
 		"""
+		self.map_widget = LevelMapWidget(None, (0, 0))
 		super().__init__([
-			LevelMapWidget(level_map, (0, 0)),
+			self.map_widget,
 			])
-		self.level_map = level_map
+		self.world = world
+		self.map_widget.set_map(self.world.get_current_map())
+	def get_current_map(self):
+		""" Returns current map of the world
+		(usually where player is).
+		"""
+		return self.world.get_current_map()
 	def update(self, control_name):
 		""" Controls player character: <Up>, <Down>, <Left>, <Right>
 		<ESC>: Exit to the previous context.
@@ -55,13 +62,14 @@ class Game(Context):
 		if control_name == 'escape':
 			raise self.Finished()
 		elif control_name == 'up':
-			self.level_map.shift_player((0, -1))
+			self.world.shift_player((0, -1))
 		elif control_name == 'down':
-			self.level_map.shift_player((0, +1))
+			self.world.shift_player((0, +1))
 		elif control_name == 'left':
-			self.level_map.shift_player((-1, 0))
+			self.world.shift_player((-1, 0))
 		elif control_name == 'right':
-			self.level_map.shift_player((+1, 0))
+			self.world.shift_player((+1, 0))
+		self.map_widget.set_map(self.world.get_current_map())
 
 class Menu(Context):
 	""" Game context for menu screens.

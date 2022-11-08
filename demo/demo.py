@@ -8,7 +8,8 @@ import pygame
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import nanomyth
 from nanomyth.math import Matrix
-from nanomyth.game.map import Map, Terrain
+from nanomyth.game.map import Map, Terrain, Portal
+from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction
 import nanomyth.view.sdl
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
@@ -39,6 +40,11 @@ engine.add_image('carpet_bottomleft', decor.get_tile((0, 16)))
 engine.add_image('carpet_bottomright', decor.get_tile((2, 16)))
 doors = engine.add_image('Door', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Door0.png', (8, 6)))
 engine.add_image('door', doors.get_tile((0, 0)))
+engine.add_image('doorway', doors.get_tile((6, 0)))
+doors_opened = engine.add_image('Door_Opened', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Door1.png', (8, 6)))
+engine.add_image('door_opened', doors_opened.get_tile((0, 0)))
+extra_tiles = engine.add_image('ExtraTile', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Tile.png', (8, 4)))
+engine.add_image('empty_way', extra_tiles.get_tile((0, 2)))
 floors = engine.add_image('Floor', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Floor.png', (21, 39)))
 engine.add_image('floor_topleft', floors.get_tile((0, 6)))
 engine.add_image('floor_top', floors.get_tile((1, 6)))
@@ -49,6 +55,7 @@ engine.add_image('floor_bottom', floors.get_tile((1, 8)))
 engine.add_image('floor_bottomleft', floors.get_tile((0, 8)))
 engine.add_image('floor_left', floors.get_tile((0, 7)))
 engine.add_image('floor_center', floors.get_tile((1, 7)))
+engine.add_image('desert', floors.get_tile((1, 22)))
 walls = engine.add_image('Wall', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Wall.png', (20, 51)))
 engine.add_image('wall_topleft', walls.get_tile((0, 6)))
 engine.add_image('wall_top', walls.get_tile((1, 6)))
@@ -91,8 +98,17 @@ main_map.set_tile((4, 3), Terrain(['wall_right'], passable=False))
 main_map.set_tile((0, 4), Terrain(['wall_bottomleft'], passable=False))
 main_map.set_tile((1, 4), Terrain(['wall_bottom'], passable=False))
 main_map.set_tile((2, 4), Terrain(['wall_bottom'], passable=False))
-main_map.set_tile((3, 4), Terrain(['wall_bottom', 'door',], passable=False))
+main_map.set_tile((3, 4), Terrain(['empty_way', 'doorway', 'door_opened',]))
 main_map.set_tile((4, 4), Terrain(['wall_bottomright'], passable=False))
+
+desert_map = Map()
+for key in desert_map.tiles.keys():
+	desert_map.set_tile(key, Terrain(['desert'], passable=True))
+main_map.add_portal((3, 4), Portal('desert', (3, 0)))
+
+world = World()
+world.add_map('main', main_map)
+world.add_map('desert', desert_map)
 main_map.add_actor((2, 2), Player('rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',
@@ -100,7 +116,7 @@ main_map.add_actor((2, 2), Player('rogue', directional_sprites={
 	Direction.RIGHT : 'rogue_right',
 	}))
 
-main_game = nanomyth.view.sdl.context.Game(main_map)
+main_game = nanomyth.view.sdl.context.Game(world)
 
 background = engine.add_image('background', nanomyth.view.sdl.image.Image(resources['background']/'5DragonsBkgds'/'room2.png'))
 
