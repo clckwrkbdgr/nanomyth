@@ -45,10 +45,10 @@ TODO
 	- [X] Screens (contexts), stackable event loops: update()+draw().
 	- [X] Simple menu with keyboard controls.
 	- [X] Play/Continue/Exit.
-3. [ ] Player character.
+3. [X] Player character.
 	- [X] Movement on map.
 	- [X] Facing directions.
-	- [ ] Obstacles.
+	- [X] Obstacles.
 4. [ ] World of maps.
 	- [ ] Separate set of adjoined maps.
 	- [ ] Movement between maps (exits, entrances, portals; entering/starting points).

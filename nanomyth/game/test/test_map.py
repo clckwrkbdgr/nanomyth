@@ -48,3 +48,20 @@ class TestMap(unittest.TestCase):
 		level_map.shift_player(Direction.LEFT)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 0))
 		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.LEFT)
+
+		level_map.shift_player(Direction.UP)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 0))
+		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.UP)
+	def should_move_only_on_passable_tiles(self):
+		level_map = Map()
+		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
+		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
+		level_map.add_actor((2, 2), Player('rogue'))
+
+		level_map.shift_player((0, -1))
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
+		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.UP)
+
+		level_map.shift_player((-1, 0))
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
+		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.LEFT)

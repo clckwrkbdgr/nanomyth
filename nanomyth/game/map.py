@@ -4,12 +4,15 @@ from . import actor
 class Terrain:
 	""" Represents single map tile of terrain.
 	"""
-	def __init__(self, images):
+	def __init__(self, images, passable=True):
 		""" Creates tile with specified images.
 		If there are more than one images, they are drawn in the given order.
 		E.g. ['basic grass', 'tree']
+
+		To make terrain tile impassable (an obstacle), set passable=False. By default is True.
 		"""
 		self.images = images
+		self.passable = passable
 	def get_images(self):
 		""" Returns list of images for the terrail tile. """
 		return self.images
@@ -44,10 +47,12 @@ class Map:
 		else:
 			direction = actor.Direction.from_shift(shift)
 		new_pos = player.pos + shift
+		player.actor.direction = direction
 		if not self.tiles.valid(new_pos):
 			return
+		if not self.tiles.cell(new_pos).passable:
+			return
 		player.pos = new_pos
-		player.actor.direction = direction
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).
