@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import nanomyth
 from nanomyth.math import Matrix
 from nanomyth.game.map import Map, Terrain
-from nanomyth.game.actor import Player
+from nanomyth.game.actor import Player, Direction
 import nanomyth.view.sdl
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 import graphics
@@ -62,6 +62,10 @@ engine.add_image('wall_center', walls.get_tile((1, 7)))
 
 rogue = engine.add_image('Rogue', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Commissions'/'Rogue.png', (4, 4)))
 engine.add_image('rogue', rogue.get_tile((0, 0)))
+engine.add_image('rogue_down', rogue.get_tile((0, 0)))
+engine.add_image('rogue_right', rogue.get_tile((0, 1)))
+engine.add_image('rogue_left', rogue.get_tile((0, 2)))
+engine.add_image('rogue_up', rogue.get_tile((0, 3)))
 
 main_map = Map()
 main_map.set_tile((0, 0), Terrain(['wall_topleft']))
@@ -89,7 +93,12 @@ main_map.set_tile((1, 4), Terrain(['wall_bottom']))
 main_map.set_tile((2, 4), Terrain(['wall_bottom']))
 main_map.set_tile((3, 4), Terrain(['wall_bottom', 'door',]))
 main_map.set_tile((4, 4), Terrain(['wall_bottomright']))
-main_map.add_actor((2, 2), Player('rogue'))
+main_map.add_actor((2, 2), Player('rogue', directional_sprites={
+	Direction.UP : 'rogue_up',
+	Direction.DOWN : 'rogue_down',
+	Direction.LEFT : 'rogue_left',
+	Direction.RIGHT : 'rogue_right',
+	}))
 
 main_game = nanomyth.view.sdl.context.Game(main_map)
 

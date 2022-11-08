@@ -47,7 +47,7 @@ TODO
 	- [X] Play/Continue/Exit.
 3. [ ] Player character.
 	- [X] Movement on map.
-	- [ ] Facing directions.
+	- [X] Facing directions.
 	- [ ] Obstacles.
 4. [ ] World of maps.
 	- [ ] Separate set of adjoined maps.

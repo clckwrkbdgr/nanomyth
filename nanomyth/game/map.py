@@ -33,12 +33,21 @@ class Map:
 		""" Places actor on specified position. """
 		self.actors.append(ActorOnMap(pos, actor))
 	def shift_player(self, shift):
-		""" Moves player character by given shift. """
+		""" Moves player character by given shift.
+		Shift could be either Point object (relative to the current position),
+		or a Direction object (in this case will be performed as a single-tile step in given direction).
+		"""
 		player = next(_ for _ in self.actors if isinstance(_.actor, actor.Player))
+		if isinstance(shift, actor.Direction):
+			direction = shift
+			shift = direction.get_shift()
+		else:
+			direction = actor.Direction.from_shift(shift)
 		new_pos = player.pos + shift
 		if not self.tiles.valid(new_pos):
 			return
 		player.pos = new_pos
+		player.actor.direction = direction
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).
