@@ -61,11 +61,10 @@ def save_game():
 	main_menu_info.set_text('Game saved.')
 
 def load_game():
-	if not SAVEFILE.exists():
-		return
-	savedata = SAVEFILE.read_text()
-	main_game.load_world(jsonpickle.decode(savedata, keys=True))
-	main_menu_info.set_text('Game loaded.')
+	if SAVEFILE.exists():
+		savedata = SAVEFILE.read_text()
+		main_game.load_world(jsonpickle.decode(savedata, keys=True))
+		main_menu_info.set_text('Game loaded.')
 
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game, save_game, load_game)
 
@@ -101,6 +100,11 @@ if sys.argv[1:] == ['auto']:
 		'escape', # To main menu.
 		'down', 'down', 'return', # Load game.
 		'.', '.', '.', # Just a pause.
+		'up', 'up', 'return', # Back to the game.
+		'.', '.', '.', # Just a pause.
+		'right', 'up', 'right', # Exit the basement again.
+		'.', '.', '.', # Just a pause.
+		'escape', # To main menu.
 		'escape', # Exit game.
 		])
 engine.run(custom_update=auto_sequence)
