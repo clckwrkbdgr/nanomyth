@@ -1,6 +1,7 @@
 """ Utilities for TMX (Tiled editor) maps.
 """
 import os
+from collections import defaultdict
 from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
@@ -33,7 +34,12 @@ def load_tmx_map(filename, engine):
 	""" Loads Map from given file.
 	Will load any image tileset required (if it is not loaded yet).
 
-	Terrain and object layers are both loaded into Map's terrain tiles as stack of images.
+	Tile layers are loaded in terrain tiles in given order.
+
+	Objects are recognized by properites:
+	- passable(bool): additional Terrain image, makes terrain passable/blocked.
+
+	Objects that are not recognized are loaded into terrain tiles as top images.
 	"""
 	tiled_map = pytmx.TiledMap(filename)
 	tileset_sizes = dict((
@@ -47,16 +53,22 @@ def load_tmx_map(filename, engine):
 		for x, y, image in layer.tiles():
 			tile_name = _load_tmx_image_tile(image, engine, tileset_sizes)
 			tiles.cell((x, y)).append(tile_name)
+	objects = defaultdict(list)
 	for layer in tiled_map.visible_object_groups:
 		layer = tiled_map.layers[layer]
 		for obj in layer:
-			tile_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
-			tiles.cell((
+			pos = Point(
 				int(obj.x // obj.width),
 				int(obj.y // obj.height),
-				)).append(tile_name)
+				)
+			objects[pos].append(obj)
+			tile_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
+			tiles.cell(pos).append(tile_name)
 
 	real_map = Map(tiles.size)
 	for pos in real_map.tiles.keys():
-		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=True))
+		passable = True
+		if pos in objects and any('passable' in obj.properties and not obj.passable for obj in objects[pos]):
+			passable = False
+		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=passable))
 	return real_map

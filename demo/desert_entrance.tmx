@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="16">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="22">
  <tileset firstgid="1" name="Floor" tilewidth="16" tileheight="16" tilecount="819" columns="21">
   <image source="DawnLike/Objects/Floor.png" width="336" height="624"/>
  </tileset>
@@ -20,7 +20,7 @@
  </tileset>
  <layer id="3" name="Terrain" width="7" height="7">
   <data encoding="csv">
-401,980,941,941,1856,982,401,
+401,401,401,401,1856,401,401,
 401,401,401,401,401,401,401,
 401,401,401,401,401,401,401,
 401,401,401,401,401,401,401,
@@ -29,14 +29,50 @@
 401,401,401,401,401,401,401
 </data>
  </layer>
+ <layer id="4" name="Decor" width="7" height="7">
+  <data encoding="csv">
+0,0,0,0,0,0,0,
+0,0,0,0,1924,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,1921,0,
+0,1928,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0
+</data>
+ </layer>
  <objectgroup id="2" name="Objects">
-  <object id="6" gid="1878" x="64" y="16" width="16" height="16"/>
-  <object id="7" gid="1872" x="64" y="16" width="16" height="16"/>
-  <object id="10" gid="1921" x="80" y="64" width="16" height="16"/>
-  <object id="11" gid="1924" x="64" y="32" width="16" height="16"/>
-  <object id="12" gid="1913" x="64" y="96" width="16" height="16"/>
-  <object id="13" gid="1928" x="16" y="80" width="16" height="16"/>
-  <object id="14" gid="2042" x="80" y="96" width="16" height="16"/>
-  <object id="15" gid="2040" x="48" y="96" width="16" height="16"/>
+  <object id="20" name="doorway" gid="1878" x="64" y="16" width="16" height="16"/>
+  <object id="12" name="portal" gid="1913" x="64" y="96" width="16" height="16"/>
+  <object id="14" gid="2042" x="80" y="96" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="15" gid="2040" x="48" y="96" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="16" gid="980" x="16" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="17" gid="941" x="32" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="18" gid="941" x="48" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="19" gid="982" x="80" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="21" name="door" gid="1872" x="64" y="16" width="16" height="16"/>
  </objectgroup>
 </map>
