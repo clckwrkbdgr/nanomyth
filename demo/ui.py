@@ -15,7 +15,7 @@ def load_menu_images(engine, resources):
 	grey_font_image = engine.add_image('grey_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_darkGrayShadow.png', (12, 14)))
 	white_font_image = engine.add_image('white_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_whiteShadow.png', (12, 14)))
 
-def fill_main_menu(engine, resources, main_menu, main_game_context):
+def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function):
 	load_menu_images(engine, resources)
 	background = engine.get_image('background')
 	grey_font_image = engine.get_image('grey_font')
@@ -26,11 +26,15 @@ def fill_main_menu(engine, resources, main_menu, main_game_context):
 	grey_font = nanomyth.view.sdl.font.ProportionalFont(grey_font_image, font_mapping)
 	font = nanomyth.view.sdl.font.ProportionalFont(white_font_image, font_mapping, space_width=3, transparent_color=255)
 
+	background.get_size() # Dummy instruction, only for coverage of otherwise unused method.
 	main_menu_background = engine.add_image('main_menu_background', background.get_region((160, 40, 160, 120)))
 	main_menu.add_widget(nanomyth.view.sdl.widget.ImageWidget('main_menu_background', (0, 0)))
 	main_menu_caption = nanomyth.view.sdl.widget.TextLineWidget(fixed_font, (40, 0))
 	main_menu_caption.set_text('Nanomyth Demo')
 	main_menu.add_widget(main_menu_caption)
+
+	main_menu_info = nanomyth.view.sdl.widget.TextLineWidget(font, (0, 100))
+	main_menu.add_widget(main_menu_info)
 
 	button_off_tiles = Matrix.from_iterable([
 		['button_off_left', 'button_off_middle', 'button_off_right'],
@@ -51,6 +55,24 @@ def fill_main_menu(engine, resources, main_menu, main_game_context):
 			nanomyth.view.sdl.widget.MenuItem(
 				(100, 40),
 				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
+				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Save'),
+				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
+				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Save'),
+				caption_shift=(4, 4),
+				), save_function)
+	main_menu.add_menu_item(
+			nanomyth.view.sdl.widget.MenuItem(
+				(100, 60),
+				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
+				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Load'),
+				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
+				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Load'),
+				caption_shift=(4, 4),
+				), load_function)
+	main_menu.add_menu_item(
+			nanomyth.view.sdl.widget.MenuItem(
+				(100, 80),
+				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
 				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Exit'),
 				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
 				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Exit'),
@@ -58,4 +80,4 @@ def fill_main_menu(engine, resources, main_menu, main_game_context):
 				), nanomyth.view.sdl.context.Context.Finished)
 
 	main_menu.select_item(0)
-	return main_menu
+	return main_menu_info

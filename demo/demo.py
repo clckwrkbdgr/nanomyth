@@ -37,12 +37,6 @@ engine.add_image('rogue_right', rogue.get_tile((0, 2)))
 engine.add_image('rogue_up', rogue.get_tile((0, 3)))
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
-main_map.add_actor((1+2, 1+2), Player('rogue', directional_sprites={
-	Direction.UP : 'rogue_up',
-	Direction.DOWN : 'rogue_down',
-	Direction.LEFT : 'rogue_left',
-	Direction.RIGHT : 'rogue_right',
-	}))
 basement_map = maps.create_basement_map(engine, resources)
 desert_map = load_tmx_map(DEMO_ROOTDIR/'desert_entrance.tmx', engine)
 
@@ -52,8 +46,20 @@ world.add_map('basement', basement_map)
 world.add_map('desert', desert_map)
 
 main_game = nanomyth.view.sdl.context.Game(world)
+main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sprites={
+	Direction.UP : 'rogue_up',
+	Direction.DOWN : 'rogue_down',
+	Direction.LEFT : 'rogue_left',
+	Direction.RIGHT : 'rogue_right',
+	}))
 
-ui.fill_main_menu(engine, resources, main_menu, main_game)
+def save_game():
+	main_menu_info.set_text('Game saved.')
+
+def load_game():
+	main_menu_info.set_text('Game loaded.')
+
+main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game, save_game, load_game)
 
 auto_sequence = None
 if sys.argv[1:] == ['auto']:
@@ -62,7 +68,9 @@ if sys.argv[1:] == ['auto']:
 		'up', # Test menu.
 		'down',
 		'down',
-		'up', # Navigate back to the "Play"
+		'down',
+		'down',
+		'up', 'up', 'up', # Navigate back to the "Play"
 		'return', # Play.
 		'up', 'up', # Test obstacles.
 		'left', # Test movement and direction.
@@ -70,6 +78,10 @@ if sys.argv[1:] == ['auto']:
 		'down', 'down', # To the basement.
 		'up', 'down', # Stuck on stairs.
 		'left', 'left', 'up', 'down', # Wandering around the basement.
+		'escape', # To main menu.
+		'down', 'return', # Save game.
+		'.', '.', '.', # Just a pause.
+		'up', 'return', # Back to playing.
 		'right', # Go up.
 		'right', 'right', 'right', 'right', # Right into the wall.
 		'down', # Exit home and into the desert.
@@ -79,6 +91,8 @@ if sys.argv[1:] == ['auto']:
 		'down', 'down', 'down', 'right', 'right', 'down', 'down', 'down', 'left', 'left', 'up', # Go to the portal.
 		'.', '.', '.', # Just a pause.
 		'escape', # To main menu.
+		'down', 'down', 'return', # Load game.
+		'.', '.', '.', # Just a pause.
 		'escape', # Exit game.
 		])
 engine.run(custom_update=auto_sequence)

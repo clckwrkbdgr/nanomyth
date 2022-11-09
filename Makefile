@@ -11,10 +11,7 @@ test:
 	@python -m coverage report -m 
 
 demo:
-	@python -m coverage run --source=. \
-		--omit=setup.py,nanomyth/math/**.py,nanomyth/game/**.py,nanomyth/utils/**.py \
-		demo/demo.py
-	@python -m coverage report -m || true
+	@python demo/demo.py
 
 autodemo:
 	@python -m coverage run --source=. \
