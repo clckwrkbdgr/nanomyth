@@ -78,4 +78,5 @@ class SDLEngine:
 							self.running = False
 				elif event.type == pygame.QUIT: # pragma: no cover
 					self.running = False
-			custom_update()
+			if custom_update:
+				custom_update()
