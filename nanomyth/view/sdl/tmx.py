@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
-from ...game.map import Map, Terrain
+from ...game.map import Map, Terrain, Portal
 from .image import TileSetImage
 
 def _load_tmx_image_tile(image, engine, tileset_sizes):
@@ -38,6 +38,10 @@ def load_tmx_map(filename, engine):
 
 	Objects are recognized by properites:
 	- passable(bool): additional Terrain image, makes terrain passable/blocked.
+	- portal_dest_*: Creates portal tile (all properties are required):
+	  - portal_dest_map: Name of the map to go to.
+	  - portal_dest_x,
+	    portal_dest_y: Destination tile on the target map.
 
 	Objects that are not recognized are loaded into terrain tiles as top images.
 	"""
@@ -68,7 +72,13 @@ def load_tmx_map(filename, engine):
 	real_map = Map(tiles.size)
 	for pos in real_map.tiles.keys():
 		passable = True
-		if pos in objects and any('passable' in obj.properties and not obj.passable for obj in objects[pos]):
-			passable = False
+		for obj in (objects[pos] if pos in objects else []):
+			if 'passable' in obj.properties and not obj.passable:
+				passable = False
+			if 'portal_dest_map' in obj.properties:
+				real_map.add_portal(pos, Portal(
+					obj.portal_dest_map,
+					(obj.portal_dest_x, obj.portal_dest_y),
+					))
 		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=passable))
 	return real_map

@@ -102,7 +102,7 @@ main_map.set_tile((1+1, 1+4), Terrain(['wall_bottom'], passable=False))
 main_map.set_tile((1+2, 1+4), Terrain(['wall_bottom'], passable=False))
 main_map.set_tile((1+3, 1+4), Terrain(['empty_way', 'doorway', 'door_opened',]))
 main_map.set_tile((1+4, 1+4), Terrain(['wall_bottomright'], passable=False))
-main_map.add_portal((1+3, 1+4), Portal('desert', (3, 0)))
+main_map.add_portal((1+3, 1+4), Portal('desert', (4, 0)))
 main_map.add_actor((1+2, 1+2), Player('rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',
@@ -180,7 +180,11 @@ if sys.argv[1:] == ['auto']:
 		'down', # Obstacle.
 		'right', 'right', 'right', 'right', # Right into the wall.
 		'down', 'down', # Exit home and into the desert.
-		'down', 'left', 'up', 'right', # Wander around.
+		'left', 'up', # Stuck in doorway.
+		'down', 'up', # Re-entering doorway...
+		'up', 'down', # and back to the desert.
+		'down', 'down', 'down', 'right', 'right', 'down', 'down', 'down', 'left', 'left', 'up', # Go to the portal.
+		'.', '.', '.', # Just a pause.
 		'escape', # To main menu.
 		'escape', # Exit game.
 		])
