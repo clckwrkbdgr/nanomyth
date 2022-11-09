@@ -9,6 +9,7 @@ import pygame
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import nanomyth
 from nanomyth.math import Matrix, Point
+from nanomyth.game.savegame import PickleSavefile, JsonpickleSavefile
 from nanomyth.game.map import Map, Terrain, Portal
 from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction
@@ -55,18 +56,18 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sp
 	Direction.RIGHT : 'rogue_right',
 	}))
 
+savefile = JsonpickleSavefile(SAVEFILE)
+
 def save_game():
-	savedata = jsonpickle.encode(main_game.get_world(), keys=True, make_refs=False)
-	SAVEFILE.write_text(json.dumps(json.loads(savedata), indent=1, sort_keys=True))
+	main_game.save_to_file(savefile)
 	main_menu_info.set_text('Game saved.')
 
 def load_game():
-	if SAVEFILE.exists():
-		savedata = SAVEFILE.read_text()
-		main_game.load_world(jsonpickle.decode(savedata, keys=True))
+	if main_game.load_from_file(savefile):
 		main_menu_info.set_text('Game loaded.')
 
-main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game, save_game, load_game)
+main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
+		save_game, load_game)
 
 auto_sequence = None
 if sys.argv[1:] == ['auto']:
@@ -84,7 +85,7 @@ if sys.argv[1:] == ['auto']:
 		'left', # Obstacle.
 		'down', 'down', # To the basement.
 		'up', 'down', # Stuck on stairs.
-		'left', 'left', 'up', 'down', # Wandering around the basement.
+		'left', 'left', 'up', 'down', 'left', # Wandering around the basement.
 		'escape', # To main menu.
 		'down', 'return', # Save game.
 		'.', '.', '.', # Just a pause.

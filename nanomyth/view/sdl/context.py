@@ -50,15 +50,24 @@ class Game(Context):
 			])
 		self.world = world
 		self.map_widget.set_map(self.world.get_current_map())
-	def get_world(self):
-		""" Returns World's data. """
-		return self.world
 	def load_world(self, new_world):
 		""" Replaces World object with a new one.
 		Used for loading savegames etc.
 		"""
 		self.world = new_world
 		self.map_widget.set_map(self.world.get_current_map())
+	def save_to_file(self, savefile):
+		""" Saves game state to the file using Savefile instance.
+		"""
+		savefile.save(self.world)
+	def load_from_file(self, savefile):
+		""" Loads game state from the file using Savefile instance.
+		"""
+		new_world = savefile.load()
+		if not new_world: # pragma: no cover -- should not reach here in properly developed game.
+			return False
+		self.load_world(new_world)
+		return True
 	def get_current_map(self):
 		""" Returns current map of the world
 		(usually where player is).

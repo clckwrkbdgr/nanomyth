@@ -53,8 +53,8 @@ TODO
 	- [X] Separate set of adjoined maps.
 	- [X] Movement between maps (exits, entrances, portals; entering/starting points).
 5. [ ] Saving/loading.
-	- [ ] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
-	- [ ] Save/load in menu.
+	- [X] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
+	- [X] Save/load in menu.
 	- [ ] Different slots for saving, separate dialog screen for choosing slot.
 	- [ ] Dialog for overwriting save files [Yes/No].
 6. [ ] Autosave.
