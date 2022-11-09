@@ -56,7 +56,7 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sp
 	}))
 
 def save_game():
-	savedata = jsonpickle.encode(main_game.get_world())
+	savedata = jsonpickle.encode(main_game.get_world(), keys=True, make_refs=False)
 	SAVEFILE.write_text(json.dumps(json.loads(savedata), indent=1, sort_keys=True))
 	main_menu_info.set_text('Game saved.')
 
@@ -64,7 +64,7 @@ def load_game():
 	if not SAVEFILE.exists():
 		return
 	savedata = SAVEFILE.read_text()
-	main_game.load_world(jsonpickle.decode(savedata))
+	main_game.load_world(jsonpickle.decode(savedata, keys=True))
 	main_menu_info.set_text('Game loaded.')
 
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game, save_game, load_game)
