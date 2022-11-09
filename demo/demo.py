@@ -4,6 +4,7 @@ Presents in form of a simple and small game.
 """
 import os, sys
 from pathlib import Path
+import json, jsonpickle
 import pygame
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import nanomyth
@@ -18,6 +19,7 @@ import graphics, maps, ui
 
 resources = graphics.download_resources()
 DEMO_ROOTDIR = Path(__file__).parent
+SAVEFILE = DEMO_ROOTDIR/'game.sav'
 
 print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
@@ -54,9 +56,15 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sp
 	}))
 
 def save_game():
+	savedata = jsonpickle.encode(main_game.get_world())
+	SAVEFILE.write_text(json.dumps(json.loads(savedata), indent=1, sort_keys=True))
 	main_menu_info.set_text('Game saved.')
 
 def load_game():
+	if not SAVEFILE.exists():
+		return
+	savedata = SAVEFILE.read_text()
+	main_game.load_world(jsonpickle.decode(savedata))
 	main_menu_info.set_text('Game loaded.')
 
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game, save_game, load_game)

@@ -7,6 +7,9 @@ __pycache__/
 /dist/
 /nanomyth.egg-info/
 
+# Game files.
+/demo/game.sav
+
 # Demo tileset
 /demo/DawnLike/DawnLike.zip
 /demo/DawnLike/README.txt

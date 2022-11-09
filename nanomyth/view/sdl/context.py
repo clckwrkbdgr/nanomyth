@@ -42,13 +42,22 @@ class Game(Context):
 	Any other widgets (e.g. UI) can be added via usual .add_widget()
 	"""
 	def __init__(self, world):
-		""" Creates game with given level map.
+		""" Creates game with given world.
 		"""
 		self.map_widget = LevelMapWidget(None, (0, 0))
 		super().__init__([
 			self.map_widget,
 			])
 		self.world = world
+		self.map_widget.set_map(self.world.get_current_map())
+	def get_world(self):
+		""" Returns World's data. """
+		return self.world
+	def load_world(self, new_world):
+		""" Replaces World object with a new one.
+		Used for loading savegames etc.
+		"""
+		self.world = new_world
 		self.map_widget.set_map(self.world.get_current_map())
 	def get_current_map(self):
 		""" Returns current map of the world
