@@ -1,3 +1,4 @@
+import os
 from contextlib import contextmanager
 import pygame
 from ...math import Size
@@ -27,9 +28,37 @@ class SDLEngine:
 		""" Puts image under specified name in the global image list. """
 		self.images[name] = image
 		return image
+	def make_unique_image_name(self, abs_image_path):
+		""" Tries to create unique short name for image path (should be abs path). """
+		path_name = os.path.splitext(abs_image_path)[0]
+		path_parts = []
+		while path_name:
+			path_name, dirname = os.path.split(path_name)
+			if dirname:
+				path_parts.append(dirname)
+			else:
+				path_parts.append(path_name)
+				path_name = ''
+		path_parts.reverse()
+
+		image_name = path_parts[-1]
+		path_parts.pop()
+		while path_parts and image_name in self.images:
+			image_name = path_parts[-1] + '_' + image_name
+			path_parts.pop()
+		if image_name in self.images:
+			return abs_image_path # Fallback to the full name.
+		return image_name
 	def get_image(self, name):
 		""" Returns image by name. """
 		return self.images[name]
+	def find_image_name_by_path(self, abs_filename):
+		""" Returns image name by file name (should abs path). """
+		for image_name in self.images:
+			image = self.images[image_name]
+			if hasattr(image, 'filename') and image.filename == abs_filename:
+				return image_name
+		return None
 	@contextmanager
 	def _enter_rendering_mode(self):
 		""" RAII that enters into SDL rendring mode till the end of scope. """

@@ -1,6 +1,7 @@
 """
 Various set of classes that represents images (tiles, sprites, UI etc).
 """
+import os
 import pygame
 from ...math import Point, Size, Rect
 
@@ -9,6 +10,7 @@ class Image:
 	"""
 	def __init__(self, filename):
 		""" Creates image from given file. """
+		self.filename = os.path.abspath(str(filename))
 		self._texture = pygame.image.load(str(filename))
 	def get_size(self):
 		""" Full image size. """

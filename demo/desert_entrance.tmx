@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="16">
+ <tileset firstgid="1" name="Floor" tilewidth="16" tileheight="16" tilecount="819" columns="21">
+  <image source="DawnLike/Objects/Floor.png" width="336" height="624"/>
+ </tileset>
+ <tileset firstgid="820" name="Wall" tilewidth="16" tileheight="16" tilecount="1020" columns="20">
+  <image source="DawnLike/Objects/Wall.png" width="320" height="816"/>
+ </tileset>
+ <tileset firstgid="1840" name="Tile" tilewidth="16" tileheight="16" tilecount="32" columns="8">
+  <image source="DawnLike/Objects/Tile.png" width="128" height="64"/>
+ </tileset>
+ <tileset firstgid="1872" name="Door1" tilewidth="16" tileheight="16" tilecount="48" columns="8">
+  <image source="DawnLike/Objects/Door1.png" width="128" height="96"/>
+ </tileset>
+ <tileset firstgid="1920" name="Ground0" tilewidth="16" tileheight="16" tilecount="56" columns="8">
+  <image source="DawnLike/Objects/Ground0.png" width="128" height="112"/>
+ </tileset>
+ <tileset firstgid="1976" name="Fence" tilewidth="16" tileheight="16" tilecount="96" columns="8">
+  <image source="DawnLike/Objects/Fence.png" width="128" height="192"/>
+ </tileset>
+ <layer id="3" name="Terrain" width="7" height="7">
+  <data encoding="csv">
+401,980,941,941,1856,982,401,
+401,401,401,401,401,401,401,
+401,401,401,401,401,401,401,
+401,401,401,401,401,401,401,
+401,401,401,401,401,401,401,
+401,401,401,401,401,401,401,
+401,401,401,401,401,401,401
+</data>
+ </layer>
+ <objectgroup id="2" name="Objects">
+  <object id="6" gid="1878" x="64" y="16" width="16" height="16"/>
+  <object id="7" gid="1872" x="64" y="16" width="16" height="16"/>
+  <object id="10" gid="1921" x="80" y="64" width="16" height="16"/>
+  <object id="11" gid="1924" x="64" y="32" width="16" height="16"/>
+  <object id="12" gid="1913" x="64" y="96" width="16" height="16"/>
+  <object id="13" gid="1928" x="16" y="80" width="16" height="16"/>
+  <object id="14" gid="2042" x="80" y="96" width="16" height="16"/>
+  <object id="15" gid="2040" x="48" y="96" width="16" height="16"/>
+ </objectgroup>
+</map>

@@ -7,11 +7,12 @@ from pathlib import Path
 import pygame
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import nanomyth
-from nanomyth.math import Matrix
+from nanomyth.math import Matrix, Point
 from nanomyth.game.map import Map, Terrain, Portal
 from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction
 import nanomyth.view.sdl
+from nanomyth.view.sdl.tmx import load_tmx_map
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 import graphics
 
@@ -108,9 +109,7 @@ main_map.add_actor((1+2, 1+2), Player('rogue', directional_sprites={
 	Direction.RIGHT : 'rogue_right',
 	}))
 
-desert_map = Map((7, 7))
-for key in desert_map.tiles.keys():
-	desert_map.set_tile(key, Terrain(['desert'], passable=True))
+desert_map = load_tmx_map(os.path.join(os.path.dirname(__file__), 'desert_entrance.tmx'), engine)
 
 world = World()
 world.add_map('main', main_map)
