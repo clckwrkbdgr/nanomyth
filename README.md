@@ -39,7 +39,7 @@ TODO
 
 1. [X] Simple static map on single screen.
 	- [X] Loading tilesets from file.
-	- [ ] Loading map layout from file.
+	- [X] Loading map layout from file.
 2. [X] Main menu.
 	- [X] MVC for all objects.
 	- [X] Screens (contexts), stackable event loops: update()+draw().
@@ -49,9 +49,9 @@ TODO
 	- [X] Movement on map.
 	- [X] Facing directions.
 	- [X] Obstacles.
-4. [ ] World of maps.
-	- [ ] Separate set of adjoined maps.
-	- [ ] Movement between maps (exits, entrances, portals; entering/starting points).
+4. [X] World of maps.
+	- [X] Separate set of adjoined maps.
+	- [X] Movement between maps (exits, entrances, portals; entering/starting points).
 5. [ ] Saving/loading.
 	- [ ] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
 	- [ ] Save/load in menu.
