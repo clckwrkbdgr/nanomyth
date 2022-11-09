@@ -31,6 +31,7 @@ def create_basement_map(engine, resources):
 	basement_map.set_tile(shift + (0, 1), Terrain(['ground_wall_left'], passable=False))
 	basement_map.set_tile(shift + (1, 1), Terrain(['ground_floor'], passable=True))
 	basement_map.set_tile(shift + (2, 1), Terrain(['ground_wall_right', 'stairs_up'], passable=True))
+	basement_map.set_tile(shift + (3, 1), Terrain([], passable=False)) # To close stairs tile from the right side.
 	basement_map.set_tile(shift + (0, 2), Terrain(['ground_wall_bottomleft'], passable=False))
 	basement_map.set_tile(shift + (1, 2), Terrain(['ground_wall_bottom'], passable=False))
 	basement_map.set_tile(shift + (2, 2), Terrain(['ground_wall_bottomright'], passable=False))
