@@ -1,6 +1,7 @@
 """ Utilities for TMX (Tiled editor) maps.
 """
 import os
+from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
 from ...game.map import Map, Terrain
@@ -12,7 +13,7 @@ def _load_tmx_image_tile(image, engine, tileset_sizes):
 	Returns image name for this specific tile.
 	"""
 	tileset_filename, tile_pos, _flags = image
-	tileset_filename = os.path.abspath(tileset_filename)
+	tileset_filename = Path(tileset_filename)
 	tile_pos = Point(
 			tile_pos[0] // tile_pos[2],
 			tile_pos[1] // tile_pos[3],
@@ -36,7 +37,7 @@ def load_tmx_map(filename, engine):
 	"""
 	tiled_map = pytmx.TiledMap(filename)
 	tileset_sizes = dict((
-		os.path.join(os.path.dirname(os.path.abspath(filename)), tileset.source),
+		Path(filename).parent/tileset.source,
 		Size(tileset.columns, tileset.tilecount // tileset.columns),
 		) for tileset in tiled_map.tilesets)
 

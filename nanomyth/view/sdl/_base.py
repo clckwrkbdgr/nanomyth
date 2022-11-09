@@ -1,5 +1,6 @@
 import os
 from contextlib import contextmanager
+from pathlib import Path
 import pygame
 from ...math import Size
 from . import context
@@ -28,35 +29,28 @@ class SDLEngine:
 		""" Puts image under specified name in the global image list. """
 		self.images[name] = image
 		return image
-	def make_unique_image_name(self, abs_image_path):
-		""" Tries to create unique short name for image path (should be abs path). """
-		path_name = os.path.splitext(abs_image_path)[0]
-		path_parts = []
-		while path_name:
-			path_name, dirname = os.path.split(path_name)
-			if dirname:
-				path_parts.append(dirname)
-			else:
-				path_parts.append(path_name)
-				path_name = ''
-		path_parts.reverse()
+	def make_unique_image_name(self, image_path):
+		""" Tries to create unique short name for image path. """
+		image_path = Path(image_path).resolve()
+		path_parts = list(image_path.parent.parts) + [image_path.stem]
 
 		image_name = path_parts[-1]
 		path_parts.pop()
-		while path_parts and image_name in self.images:
+		while path_parts and image_name in self.images: # pragma: no cover -- TODO move to utils and cover with unit test.
 			image_name = path_parts[-1] + '_' + image_name
 			path_parts.pop()
-		if image_name in self.images:
+		if image_name in self.images: # pragma: no cover -- TODO move to utils and cover with unit test.
 			return abs_image_path # Fallback to the full name.
 		return image_name
 	def get_image(self, name):
 		""" Returns image by name. """
 		return self.images[name]
-	def find_image_name_by_path(self, abs_filename):
-		""" Returns image name by file name (should abs path). """
+	def find_image_name_by_path(self, filename):
+		""" Returns image name by file name. """
+		filename = Path(filename).resolve()
 		for image_name in self.images:
 			image = self.images[image_name]
-			if hasattr(image, 'filename') and image.filename == abs_filename:
+			if hasattr(image, 'filename') and image.filename == filename:
 				return image_name
 		return None
 	@contextmanager

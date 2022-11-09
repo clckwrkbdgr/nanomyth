@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 import graphics
 
 resources = graphics.download_resources()
+DEMO_ROOTDIR = Path(__file__).parent
 
 print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
@@ -109,7 +110,7 @@ main_map.add_actor((1+2, 1+2), Player('rogue', directional_sprites={
 	Direction.RIGHT : 'rogue_right',
 	}))
 
-desert_map = load_tmx_map(os.path.join(os.path.dirname(__file__), 'desert_entrance.tmx'), engine)
+desert_map = load_tmx_map(DEMO_ROOTDIR/'desert_entrance.tmx', engine)
 
 world = World()
 world.add_map('main', main_map)
