@@ -9,6 +9,7 @@ __pycache__/
 
 # Game files.
 /demo/game.sav
+/demo/game?.sav
 
 # Demo tileset
 /demo/DawnLike/DawnLike.zip

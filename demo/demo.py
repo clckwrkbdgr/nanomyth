@@ -25,11 +25,17 @@ print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
 sys.stdout.flush()
 
-main_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
-engine = nanomyth.view.sdl.SDLEngine((640, 480), main_menu,
+engine = nanomyth.view.sdl.SDLEngine((640, 480),
 		scale=4,
 		window_title='Nanomyth Demo',
 		)
+
+ui.load_menu_images(engine, resources)
+
+font_mapping = '~1234567890-+!@#$%^&*()_={}[]|\\:;"\'<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' + '\x7f'*(3+5*12+7) + ' '
+fixed_font = nanomyth.view.sdl.font.FixedWidthFont(engine.get_image('white_font'), font_mapping)
+grey_font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('grey_font'), font_mapping)
+font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('white_font'), font_mapping, space_width=3, transparent_color=255)
 
 rogue = engine.add_image('Rogue', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Commissions'/'Rogue.png', (4, 4)))
 engine.add_image('rogue', rogue.get_tile((0, 0)))
@@ -73,13 +79,16 @@ def load_game(savefile):
 		main_menu_info.set_text('No such savefile.')
 	raise nanomyth.view.sdl.context.Menu.Finished
 
-save_game_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
-ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game, savefiles)
-load_game_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
-ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles)
+save_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
+ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game, savefiles, font, fixed_font, grey_font)
 
+load_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
+ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles, font, fixed_font, grey_font)
+
+main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
-		save_game_menu, load_game_menu)
+		save_game_menu, load_game_menu, font, fixed_font, grey_font)
+engine.init_context(main_menu)
 
 auto_sequence = None
 if sys.argv[1:] == ['auto']:

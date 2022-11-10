@@ -12,9 +12,8 @@ class SDLEngine:
 	Operates on set of Context objects.
 	Uses the topmost (the latest) Context object to process events and draw.
 	"""
-	def __init__(self, size, initial_context, scale=1, window_title=None):
+	def __init__(self, size, scale=1, window_title=None):
 		""" Creates SDL engine with a viewport of given size (required) and pixel scale factor (defaults to 1).
-		Another required argument is the initial game Context.
 		Optional window title may be set.
 		"""
 		self.scale = scale
@@ -22,9 +21,14 @@ class SDLEngine:
 		pygame.display.set_mode(tuple(size))
 		pygame.display.set_caption(window_title or '')
 		self.window = pygame.display.get_surface()
-		self.contexts = [initial_context]
-		self.running = False
+		self.contexts = []
 		self.images = {}
+	def init_context(self, context):
+		""" (Re-)Initializes current context.
+		Replaces all current contexts in the stack if were present.
+		By default engine is constructed with empty context stack and will immediately exit when run.
+		"""
+		self.contexts = [context]
 	def add_image(self, name, image):
 		""" Puts image under specified name in the global image list. """
 		self.images[name] = image
@@ -83,8 +87,7 @@ class SDLEngine:
 		Also handles switching contexts.
 		When the last context quits, the whole event loop stops.
 		"""
-		self.running = True
-		while self.running:
+		while self.contexts:
 			current_context = self.contexts[-1]
 			with self._enter_rendering_mode():
 				current_context.draw(self)
@@ -97,9 +100,7 @@ class SDLEngine:
 							self.contexts.append(new_context)
 					except context.Context.Finished:
 						self.contexts.pop()
-						if not self.contexts:
-							self.running = False
 				elif event.type == pygame.QUIT: # pragma: no cover
-					self.running = False
+					self.contexts.clear()
 			if custom_update:
 				custom_update()

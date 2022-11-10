@@ -4,7 +4,8 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import LevelMapWidget
+from .widget import LevelMapWidget, TextLineWidget, ImageWidget
+from ...math import Point
 
 class Context:
 	""" Basic game context.
@@ -30,9 +31,14 @@ class Context:
 
 		Default implementation does nothing.
 		"""
+	def _get_widgets_to_draw(self):
+		""" Override this function to change widgets to draw.
+		Widgets are drawn in the given order, from bottom to top.
+		"""
+		return self.widgets
 	def draw(self, engine):
 		""" Draws all widgets. """
-		for widget in self.widgets:
+		for widget in self._get_widgets_to_draw():
 			widget.draw(engine)
 
 class Game(Context):
@@ -101,7 +107,7 @@ class Menu(Context):
 
 	As this class is a Context, any other widgets (e.g. background image or title text) can be added via usual .add_widget()
 	"""
-	def __init__(self, on_escape=None):
+	def __init__(self, font, on_escape=None):
 		""" Creates menu context.
 		Items can be added later via .add_menu_item().
 
@@ -110,14 +116,44 @@ class Menu(Context):
 		"""
 		super().__init__()
 		self.items = []
+		self.background = None
+		self.caption = TextLineWidget(font, (0, 0))
 		self.selected = None
 		self.on_escape = on_escape
+	def _get_widgets_to_draw(self):
+		widgets = []
+		if self.background:
+			widgets.append(self.background)
+		widgets.extend(widget for widget, _ in self.items)
+		widgets.append(self.caption)
+		widgets.extend(self.widgets)
+		return widgets
 	def add_menu_item(self, new_menu_item, on_selection=None):
 		""" Adds new menu item (of MenuItem class) with optional action on selection.
 		If action is specified, it should be an action-like object (see Menu docstring).
 		"""
-		self.widgets.append(new_menu_item)
 		self.items.append((new_menu_item, on_selection))
+	def set_caption_pos(self, pos):
+		""" Moves caption.
+		Default position is topleft corner of the screen.
+		"""
+		self.caption.topleft = Point(pos)
+	def set_caption_text(self, text, font=None):
+		""" Changes caption text.
+		Default value is empty string (no caption).
+		Optionally changes caption's font.
+		"""
+		self.caption.set_text(text)
+		if font:
+			self.caption.font = font
+	def set_background(self, image):
+		""" Set background image.
+		Can be either some ImageWidget, or name of the image in global image list -
+		in this case image is locked to the topleft corner to fill the screen.
+		"""
+		if isinstance(image, str):
+			image = ImageWidget(image, (0, 0))
+		self.background = image
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
