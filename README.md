@@ -55,7 +55,7 @@ TODO
 5. [ ] Saving/loading.
 	- [X] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
 	- [X] Save/load in menu.
-	- [ ] Different slots for saving, separate dialog screen for choosing slot.
+	- [X] Different slots for saving, separate dialog screen for choosing slot.
 	- [ ] Dialog for overwriting save files [Yes/No].
 6. [ ] Autosave.
 	- [ ] Terrain with trigger event.

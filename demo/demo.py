@@ -20,7 +20,6 @@ import graphics, maps, ui
 
 resources = graphics.download_resources()
 DEMO_ROOTDIR = Path(__file__).parent
-SAVEFILE = DEMO_ROOTDIR/'game.sav'
 
 print('Demo app for the capabilities of the engine.')
 print('Press <ESC> to close.')
@@ -56,18 +55,31 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sp
 	Direction.RIGHT : 'rogue_right',
 	}))
 
-savefile = JsonpickleSavefile(SAVEFILE)
+savefiles = [
+		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
+		JsonpickleSavefile(DEMO_ROOTDIR/'game2.sav'),
+		JsonpickleSavefile(DEMO_ROOTDIR/'game3.sav'),
+		]
 
-def save_game():
+def save_game(savefile):
 	main_game.save_to_file(savefile)
 	main_menu_info.set_text('Game saved.')
+	raise nanomyth.view.sdl.context.Menu.Finished
 
-def load_game():
+def load_game(savefile):
 	if main_game.load_from_file(savefile):
 		main_menu_info.set_text('Game loaded.')
+	else:
+		main_menu_info.set_text('No such savefile.')
+	raise nanomyth.view.sdl.context.Menu.Finished
+
+save_game_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
+ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game, savefiles)
+load_game_menu = nanomyth.view.sdl.context.Menu(on_escape=nanomyth.view.sdl.context.Menu.Finished)
+ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles)
 
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
-		save_game, load_game)
+		save_game_menu, load_game_menu)
 
 auto_sequence = None
 if sys.argv[1:] == ['auto']:
@@ -87,7 +99,7 @@ if sys.argv[1:] == ['auto']:
 		'up', 'down', # Stuck on stairs.
 		'left', 'left', 'up', 'down', 'left', # Wandering around the basement.
 		'escape', # To main menu.
-		'down', 'return', # Save game.
+		'down', 'return', 'return', # Save game.
 		'.', '.', '.', # Just a pause.
 		'up', 'return', # Back to playing.
 		'right', # Go up.
@@ -99,7 +111,10 @@ if sys.argv[1:] == ['auto']:
 		'down', 'down', 'down', 'right', 'right', 'down', 'down', 'down', 'left', 'left', 'up', # Go to the portal.
 		'.', '.', '.', # Just a pause.
 		'escape', # To main menu.
-		'down', 'down', 'return', # Load game.
+		'down', 'down', 'return', # Load game screen.
+		'down', 'down', 'return', # No such savefile.
+		'.', '.', '.', # Just a pause.
+		'return', 'up', 'up', 'return', # Load previous save.
 		'.', '.', '.', # Just a pause.
 		'up', 'up', 'return', # Back to the game.
 		'.', '.', '.', # Just a pause.
