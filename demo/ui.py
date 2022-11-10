@@ -31,42 +31,16 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 	button_on_tiles = Matrix.from_iterable([
 		['button_on_left', 'button_on_middle', 'button_on_right'],
 		])
-	main_menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(100, 20),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Play'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Play'),
-				caption_shift=(4, 4),
-				), main_game_context)
-	main_menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(100, 40),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Save'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Save'),
-				caption_shift=(4, 4),
-				), save_function)
-	main_menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(100, 60),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Load'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Load'),
-				caption_shift=(4, 4),
-				), load_function)
-	main_menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(100, 80),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Exit'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Exit'),
-				caption_shift=(4, 4),
-				), nanomyth.view.sdl.context.Context.Finished)
+	main_menu.set_button_group_topleft((100, 20))
+	main_menu.set_button_height(20)
+	main_menu.set_button_caption_shift((4, 4))
+	main_menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_off_tiles, font=grey_font)
+	main_menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_on_tiles, font=font)
+
+	main_menu.add_menu_item(('Play', '> Play'), main_game_context)
+	main_menu.add_menu_item(('Save', '> Save'), save_function)
+	main_menu.add_menu_item(('Load', '> Load'), load_function)
+	main_menu.add_menu_item('Exit', nanomyth.view.sdl.context.Context.Finished)
 
 	main_menu.select_item(0)
 	return main_menu_info
@@ -82,33 +56,16 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	button_on_tiles = Matrix.from_iterable([
 		['button_on_left', 'button_on_middle', 'button_on_middle', 'button_on_right'],
 		])
-	menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(50, 20),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Savefile 1'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Savefile 1'),
-				caption_shift=(4, 4),
-				), lambda: handler(savefiles[0]))
-	menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(50, 40),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Savefile 2'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Savefile 2'),
-				caption_shift=(4, 4),
-				), lambda: handler(savefiles[1]))
-	menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				(50, 60),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Savefile 3'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Savefile 3'),
-				caption_shift=(4, 4),
-				), lambda: handler(savefiles[2]))
+	menu.set_button_group_topleft((50, 20))
+	menu.set_button_height(20)
+	menu.set_button_caption_shift((4, 4))
+	menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_off_tiles, font=grey_font)
+	menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_on_tiles, font=font)
+
+	menu.add_menu_item(('Slot 1', '> Slot 1'), lambda: handler(savefiles[0]))
+	menu.add_menu_item(('Slot 2', '> Slot 2'), lambda: handler(savefiles[1]))
+	menu.add_menu_item(('Slot 3', '> Slot 3'), lambda: handler(savefiles[2]))
+	#menu.add_menu_item(('Back', '< Back'), nanomyth.view.sdl.context.Context.Finished)
 	menu.add_menu_item(
 			nanomyth.view.sdl.widget.MenuItem(
 				(50, 80),

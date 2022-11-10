@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import LevelMapWidget, TextLineWidget, ImageWidget
+from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem
 from ...math import Point
 
 class Context:
@@ -120,6 +120,13 @@ class Menu(Context):
 		self.caption = TextLineWidget(font, (0, 0))
 		self.selected = None
 		self.on_escape = on_escape
+		self._button_group_topleft = Point(0, 0)
+		self._button_height = 8
+		self._button_caption_shift = Point(0, 0)
+		self._button_template = None
+		self._button_template_highlighted = None
+		self._button_caption_font = font
+		self._button_caption_font_highlighted = font
 	def _get_widgets_to_draw(self):
 		widgets = []
 		if self.background:
@@ -129,10 +136,42 @@ class Menu(Context):
 		widgets.extend(self.widgets)
 		return widgets
 	def add_menu_item(self, new_menu_item, on_selection=None):
-		""" Adds new menu item (of MenuItem class) with optional action on selection.
+		""" Adds new menu item with optional action on selection.
+
+		Item should be either MenuItem object, or string, or tuple of two strings.
+		In case of strings, they are treated as button caption (with optional normal/highlighted configuration)
+		and are created using templated method (see set_button_* functions).
+		WARNING: At least set_button_widget_template() is required for templated items.
+
 		If action is specified, it should be an action-like object (see Menu docstring).
 		"""
-		self.items.append((new_menu_item, on_selection))
+		if isinstance(new_menu_item, MenuItem):
+			self.items.append((new_menu_item, on_selection))
+			return
+		caption, caption_highlighted = '', None
+		if isinstance(new_menu_item, str):
+			caption = new_menu_item
+		else:
+			caption, caption_highlighted = new_menu_item
+		button_pos = self._button_group_topleft + Point(0, self._button_height) * len(self.items)
+		button = self._button_template[0](*(self._button_template[1]), (0, 0))
+		button_highlighted = None
+		if self._button_template_highlighted:
+			button_highlighted = self._button_template_highlighted[0](*(self._button_template_highlighted[1]), (0, 0))
+		self.items.append((
+			MenuItem(
+				button_pos,
+				button,
+				TextLineWidget(
+					self._button_caption_font, (0, 0), caption,
+					),
+				button_highlighted=button_highlighted,
+				caption_highlighted=TextLineWidget(
+					self._button_caption_font_highlighted, (0, 0), caption_highlighted,
+					) if caption_highlighted else None,
+				caption_shift=self._button_caption_shift,
+				),
+			on_selection))
 	def set_caption_pos(self, pos):
 		""" Moves caption.
 		Default position is topleft corner of the screen.
@@ -154,6 +193,41 @@ class Menu(Context):
 		if isinstance(image, str):
 			image = ImageWidget(image, (0, 0))
 		self.background = image
+	def set_button_group_topleft(self, pos):
+		""" Sets topleft position of menu buttons group.
+		Default is (0, 0)
+		"""
+		self._button_group_topleft = Point(pos)
+	def set_button_height(self, height):
+		""" Sets height of a menu button (including padding space to the next button).
+		Default is 8.
+		"""
+		self._button_height = height
+	def set_button_caption_shift(self, shift):
+		""" Sets shift for menu button's caption relative to the topleft position of a button.
+		Default is (0, 0).
+		"""
+		self._button_caption_shift = Point(shift)
+	def set_button_widget_template(self, widget_type, *params, font=None):
+		""" Sets template for menu button widget.
+		It will be placed automatically (using params set by set_button_group_topleft()/set_button_height().
+		Params should not include topleft position (the last param), it will be calculated automatically anyway.
+		Required when using templated menu items.
+		If font is specified, it is used for button captions instead of default menu font.
+		"""
+		self._button_template = (widget_type, params)
+		if font:
+			self._button_caption_font = font
+	def set_highlighted_button_widget_template(self, widget_type, *params, font=None):
+		""" Sets template for highlighted menu button widget.
+		It will be placed automatically (using params set by set_button_group_topleft()/set_button_height().
+		Params should not include topleft position (the last param), it will be calculated automatically anyway.
+		By default uses normal widget button template.
+		If font is specified, it is used for highlighted button captions instead of default menu font.
+		"""
+		self._button_template_highlighted = (widget_type, params)
+		if font:
+			self._button_caption_font_highlighted = font
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
