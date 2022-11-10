@@ -33,19 +33,11 @@ def load_menu_images(engine, resources):
 def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=None):
 	size = Size(size)
 	size = Size(max(size.width, 2), max(size.height, 2))
-	panel_tiles = []
-	for row_index in range(size.height):
-		vert_pos = 'top' if row_index == 0 else ('bottom' if row_index == size.height - 1 else '')
-		middle_pos = 'middle' if vert_pos == '' else vert_pos
-		panel_tiles.append([
-			'panel_{0}left'.format(vert_pos)
-			] + [
-			'panel_{0}'.format(middle_pos)
-			] * (size.width - 2) + [
-			'panel_{0}right'.format(vert_pos)
-			])
-	panel_tiles = Matrix.from_iterable(panel_tiles)
-	panel_widget = nanomyth.view.sdl.widget.TileMapWidget(panel_tiles)
+	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+		['panel_topleft',     'panel_top',         'panel_topright',    ],
+		['panel_left',        'panel_middle',      'panel_right',       ],
+		['panel_bottomleft',  'panel_bottom',      'panel_bottomright', ],
+		]), size)
 	dialog = nanomyth.view.sdl.context.MessageBox(text, font,
 			panel_widget=panel_widget,
 			text_shift=(4, 4),
