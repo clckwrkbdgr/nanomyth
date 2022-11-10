@@ -7,6 +7,11 @@ import pygame
 from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem
 from ...math import Point
 
+class WidgetAtPos:
+	def __init__(self, topleft, widget):
+		self.topleft = Point(topleft)
+		self.widget = widget
+
 class Context:
 	""" Basic game context.
 	Context handles some arbitrary game entities
@@ -17,14 +22,14 @@ class Context:
 		""" Raise this when context is finished. """
 		pass
 
-	def __init__(self, widgets=None):
-		""" Creates context with optional list of widgets.
+	def __init__(self):
+		""" Creates empty context.
 		Widgets can be added later via add_widget.
 		"""
-		self.widgets = widgets or []
-	def add_widget(self, widget):
+		self.widgets = []
+	def add_widget(self, topleft, widget):
 		""" Adds new widget. """
-		self.widgets.append(widget)
+		self.widgets.append(WidgetAtPos(topleft, widget))
 	def update(self, control_name): # pragma: no cover
 		""" Processes control events.
 		`control_name` is the name of a pressed key.
@@ -38,8 +43,8 @@ class Context:
 		return self.widgets
 	def draw(self, engine):
 		""" Draws all widgets. """
-		for widget in self._get_widgets_to_draw():
-			widget.draw(engine)
+		for _ in self._get_widgets_to_draw():
+			_.widget.draw(engine, _.topleft)
 
 class Game(Context):
 	""" Context for the main game screen: level map, player character etc.
@@ -50,10 +55,9 @@ class Game(Context):
 	def __init__(self, world):
 		""" Creates game with given world.
 		"""
-		self.map_widget = LevelMapWidget(None, (0, 0))
-		super().__init__([
-			self.map_widget,
-			])
+		super().__init__()
+		self.map_widget = LevelMapWidget(None)
+		self.add_widget((0, 0), self.map_widget)
 		self.world = world
 		self.map_widget.set_map(self.world.get_current_map())
 	def load_world(self, new_world):
@@ -117,7 +121,7 @@ class Menu(Context):
 		super().__init__()
 		self.items = []
 		self.background = None
-		self.caption = TextLineWidget(font, (0, 0))
+		self.caption = WidgetAtPos((0, 0), TextLineWidget(font))
 		self.selected = None
 		self.on_escape = on_escape
 		self._button_group_topleft = Point(0, 0)
@@ -130,7 +134,7 @@ class Menu(Context):
 	def _get_widgets_to_draw(self):
 		widgets = []
 		if self.background:
-			widgets.append(self.background)
+			widgets.append(WidgetAtPos((0, 0), self.background))
 		widgets.extend(widget for widget, _ in self.items)
 		widgets.append(self.caption)
 		widgets.extend(self.widgets)
@@ -145,32 +149,31 @@ class Menu(Context):
 
 		If action is specified, it should be an action-like object (see Menu docstring).
 		"""
+		button_pos = self._button_group_topleft + Point(0, self._button_height) * len(self.items)
 		if isinstance(new_menu_item, MenuItem):
-			self.items.append((new_menu_item, on_selection))
+			self.items.append((WidgetAtPos(button_pos, new_menu_item), on_selection))
 			return
 		caption, caption_highlighted = '', None
 		if isinstance(new_menu_item, str):
 			caption = new_menu_item
 		else:
 			caption, caption_highlighted = new_menu_item
-		button_pos = self._button_group_topleft + Point(0, self._button_height) * len(self.items)
-		button = self._button_template[0](*(self._button_template[1]), (0, 0))
+		button = self._button_template[0](*(self._button_template[1]))
 		button_highlighted = None
 		if self._button_template_highlighted:
-			button_highlighted = self._button_template_highlighted[0](*(self._button_template_highlighted[1]), (0, 0))
-		self.items.append((
+			button_highlighted = self._button_template_highlighted[0](*(self._button_template_highlighted[1]))
+		self.items.append((WidgetAtPos(button_pos,
 			MenuItem(
-				button_pos,
 				button,
 				TextLineWidget(
-					self._button_caption_font, (0, 0), caption,
+					self._button_caption_font, caption,
 					),
 				button_highlighted=button_highlighted,
 				caption_highlighted=TextLineWidget(
-					self._button_caption_font_highlighted, (0, 0), caption_highlighted,
+					self._button_caption_font_highlighted, caption_highlighted,
 					) if caption_highlighted else None,
 				caption_shift=self._button_caption_shift,
-				),
+				)),
 			on_selection))
 	def set_caption_pos(self, pos):
 		""" Moves caption.
@@ -182,16 +185,16 @@ class Menu(Context):
 		Default value is empty string (no caption).
 		Optionally changes caption's font.
 		"""
-		self.caption.set_text(text)
+		self.caption.widget.set_text(text)
 		if font:
-			self.caption.font = font
+			self.caption.widget.font = font
 	def set_background(self, image):
 		""" Set background image.
 		Can be either some ImageWidget, or name of the image in global image list -
 		in this case image is locked to the topleft corner to fill the screen.
 		"""
 		if isinstance(image, str):
-			image = ImageWidget(image, (0, 0))
+			image = ImageWidget(image)
 		self.background = image
 	def set_button_group_topleft(self, pos):
 		""" Sets topleft position of menu buttons group.
@@ -234,7 +237,7 @@ class Menu(Context):
 		"""
 		self.selected = selected_index
 		for index, item in enumerate(self.items):
-			item[0].make_highlighted(index == selected_index)
+			item[0].widget.make_highlighted(index == selected_index)
 	def perform_action(self, action):
 		""" Programmatically perform action.
 		Action should be an action-like object (see Menu docstring).
@@ -280,17 +283,15 @@ class MessageBox(Context):
 		They will be called upon corresponding user reaction.
 		"""
 		super().__init__()
-		self.text_shift = Point(text_shift or (0, 0))
 		self.on_ok = on_ok
 		self.on_cancel = on_cancel
-		self.add_widget(panel_widget)
-		self.add_widget(TextLineWidget(font, self.text_shift, text))
+		self.add_widget((0, 0), panel_widget)
+		self.add_widget(text_shift or (0, 0), TextLineWidget(font, text))
 	def add_button(self, button_widget, shift):
 		""" Adds button (non-functional decorative widget actually).
 		Shift is relative to the message box topleft position.
 		"""
-		button_widget.topleft = Point(shift)
-		self.add_widget(button_widget)
+		self.add_widget(shift, button_widget)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK

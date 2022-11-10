@@ -45,18 +45,18 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			'panel_{0}right'.format(vert_pos)
 			])
 	panel_tiles = Matrix.from_iterable(panel_tiles)
-	panel_widget = nanomyth.view.sdl.widget.TileMapWidget(panel_tiles, (0, 0))
+	panel_widget = nanomyth.view.sdl.widget.TileMapWidget(panel_tiles)
 	dialog = nanomyth.view.sdl.context.MessageBox(text, font,
 			panel_widget=panel_widget,
 			text_shift=(4, 4),
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
-	dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok'), (0, 0)), (
+	dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')), (
 		tile_size.width * (size.width - 2) - 2,
 		tile_size.height * (size.height - 1),
 		))
 	if on_cancel:
-		dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel'), (0, 0)), (
+		dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel')), (
 			tile_size.width * (size.width - 1) - 2,
 			tile_size.height * (size.height - 1),
 			))
@@ -67,8 +67,8 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 	main_menu.set_caption_pos((20, 4))
 	main_menu.set_caption_text('Nanomyth Demo', fixed_font)
 
-	main_menu_info = nanomyth.view.sdl.widget.TextLineWidget(font, (0, 100))
-	main_menu.add_widget(main_menu_info)
+	main_menu_info = nanomyth.view.sdl.widget.TextLineWidget(font)
+	main_menu.add_widget((0, 100), main_menu_info)
 
 	button_off_tiles = Matrix.from_iterable([
 		['button_off_left', 'button_off_middle', 'button_off_right'],
@@ -113,11 +113,10 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	#menu.add_menu_item(('Back', '< Back'), nanomyth.view.sdl.context.Context.Finished)
 	menu.add_menu_item(
 			nanomyth.view.sdl.widget.MenuItem(
-				(50, 80),
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles, (0, 0)),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, (0, 0), 'Back'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles, (0, 0)),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, (0, 0), '> Back'),
+				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles),
+				nanomyth.view.sdl.widget.TextLineWidget(grey_font, 'Back'),
+				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles),
+				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, '> Back'),
 				caption_shift=(4, 4),
 				), nanomyth.view.sdl.context.Context.Finished)
 
