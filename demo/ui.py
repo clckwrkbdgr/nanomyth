@@ -1,21 +1,66 @@
 import nanomyth.view.sdl
-from nanomyth.math import Point, Matrix
+from nanomyth.math import Point, Size, Matrix
 
 def load_menu_images(engine, resources):
 	background = engine.add_image('background', nanomyth.view.sdl.image.Image(resources['background']/'5DragonsBkgds'/'room2.png'))
 	background.get_size() # Dummy instruction, only for coverage of otherwise unused method.
 	engine.add_image('main_menu_background', background.get_region((160, 40, 160, 120)))
 
-	gui = engine.add_image('GUI', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Floor.png', (21, 39)))
-	engine.add_image('button_off_left',   gui.get_tile((4, 10)))
-	engine.add_image('button_off_middle', gui.get_tile((5, 10)))
-	engine.add_image('button_off_right',  gui.get_tile((6, 10)))
-	engine.add_image('button_on_left',   gui.get_tile((4, 4)))
-	engine.add_image('button_on_middle', gui.get_tile((5, 4)))
-	engine.add_image('button_on_right',  gui.get_tile((6, 4)))
+	gui = engine.add_image('GUI', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'GUI'/'GUI0.png', (16, 19)))
+	engine.add_image('panel_topleft',     gui.get_tile((1, 7)))
+	engine.add_image('panel_top',         gui.get_tile((2, 7)))
+	engine.add_image('panel_topright',    gui.get_tile((3, 7)))
+	engine.add_image('panel_left',        gui.get_tile((1, 8)))
+	engine.add_image('panel_middle',      gui.get_tile((2, 8)))
+	engine.add_image('panel_right',       gui.get_tile((3, 8)))
+	engine.add_image('panel_bottomleft',  gui.get_tile((1, 9)))
+	engine.add_image('panel_bottom',      gui.get_tile((2, 9)))
+	engine.add_image('panel_bottomright', gui.get_tile((3, 9)))
+	engine.add_image('button_ok', gui.get_tile((10, 2)))
+	engine.add_image('button_cancel', gui.get_tile((11, 2)))
+
+	button = engine.add_image('Button', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Floor.png', (21, 39)))
+	engine.add_image('button_off_left',   button.get_tile((4, 10)))
+	engine.add_image('button_off_middle', button.get_tile((5, 10)))
+	engine.add_image('button_off_right',  button.get_tile((6, 10)))
+	engine.add_image('button_on_left',   button.get_tile((4, 4)))
+	engine.add_image('button_on_middle', button.get_tile((5, 4)))
+	engine.add_image('button_on_right',  button.get_tile((6, 4)))
 
 	engine.add_image('grey_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_darkGrayShadow.png', (12, 14)))
 	engine.add_image('white_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_whiteShadow.png', (12, 14)))
+
+def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=None):
+	size = Size(size)
+	size = Size(max(size.width, 2), max(size.height, 2))
+	panel_tiles = []
+	for row_index in range(size.height):
+		vert_pos = 'top' if row_index == 0 else ('bottom' if row_index == size.height - 1 else '')
+		middle_pos = 'middle' if vert_pos == '' else vert_pos
+		panel_tiles.append([
+			'panel_{0}left'.format(vert_pos)
+			] + [
+			'panel_{0}'.format(middle_pos)
+			] * (size.width - 2) + [
+			'panel_{0}right'.format(vert_pos)
+			])
+	panel_tiles = Matrix.from_iterable(panel_tiles)
+	panel_widget = nanomyth.view.sdl.widget.TileMapWidget(panel_tiles, (0, 0))
+	dialog = nanomyth.view.sdl.context.MessageBox(text, font,
+			panel_widget=panel_widget,
+			text_shift=(4, 4),
+			)
+	tile_size = engine.get_image('panel_middle').get_size()
+	dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok'), (0, 0)), (
+		tile_size.width * (size.width - 2) - 2,
+		tile_size.height * (size.height - 1),
+		))
+	if on_cancel:
+		dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel'), (0, 0)), (
+			tile_size.width * (size.width - 1) - 2,
+			tile_size.height * (size.height - 1),
+			))
+	return dialog
 
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):
 	main_menu.set_background('main_menu_background')

@@ -263,3 +263,44 @@ class Menu(Context):
 			if self.selected is not None:
 				action = self.items[self.selected][1]
 				return self.perform_action(action)
+
+class MessageBox(Context):
+	""" Displays message and requires answer or confirmation.
+	"""
+	def __init__(self, text, font, panel_widget=None, text_shift=None, on_ok=None, on_cancel=None):
+		""" Creates message box with given text and font (required).
+		If panel_widget is specified, it will be draw under the text
+		and will be aligned to the center of the screen.
+		Text will start from the topleft corner of the panel
+		(or from the topleft corner of the screen by default)
+		plus optional text_shift.
+
+		Optional on_ok and on_cancel events can be passed.
+		Both should be callable with no arguments.
+		They will be called upon corresponding user reaction.
+		"""
+		super().__init__()
+		self.text_shift = Point(text_shift or (0, 0))
+		self.on_ok = on_ok
+		self.on_cancel = on_cancel
+		self.add_widget(panel_widget)
+		self.add_widget(TextLineWidget(font, self.text_shift, text))
+	def add_button(self, button_widget, shift):
+		""" Adds button (non-functional decorative widget actually).
+		Shift is relative to the message box topleft position.
+		"""
+		button_widget.topleft = Point(shift)
+		self.add_widget(button_widget)
+	def update(self, control_name):
+		""" Controls:
+		- <Enter>, <Space>: OK
+		- <Escape>: Cancel
+		"""
+		if control_name == 'escape':
+			if self.on_cancel:
+				self.on_cancel()
+			raise self.Finished()
+		elif control_name in ['space', 'return']:
+			if self.on_ok:
+				self.on_ok()
+			raise self.Finished()

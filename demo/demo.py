@@ -76,7 +76,8 @@ def load_game(savefile):
 	if main_game.load_from_file(savefile):
 		main_menu_info.set_text('Game loaded.')
 	else:
-		main_menu_info.set_text('No such savefile.')
+		main_menu_info.set_text('')
+		return ui.message_box(engine, resources, 'No such savefile.', font, size=(6, 2))
 	raise nanomyth.view.sdl.context.Menu.Finished
 
 save_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
