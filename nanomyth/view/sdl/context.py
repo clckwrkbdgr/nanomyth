@@ -5,7 +5,7 @@ Main context operations are performed by the SDLEngine itself.
 """
 import pygame
 from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem
-from ...math import Point
+from ...math import Point, Size
 
 class WidgetAtPos:
 	def __init__(self, topleft, widget):
@@ -270,12 +270,11 @@ class Menu(Context):
 class MessageBox(Context):
 	""" Displays message and requires answer or confirmation.
 	"""
-	def __init__(self, text, font, panel_widget=None, text_shift=None, on_ok=None, on_cancel=None):
+	def __init__(self, text, font, panel_widget, engine, text_shift=None, on_ok=None, on_cancel=None):
 		""" Creates message box with given text and font (required).
-		If panel_widget is specified, it will be draw under the text
+		Panel widget will be draw under the text
 		and will be aligned to the center of the screen.
 		Text will start from the topleft corner of the panel
-		(or from the topleft corner of the screen by default)
 		plus optional text_shift.
 
 		Optional on_ok and on_cancel events can be passed.
@@ -285,9 +284,16 @@ class MessageBox(Context):
 		super().__init__()
 		self.on_ok = on_ok
 		self.on_cancel = on_cancel
-		self._panel_widget = panel_widget
-		self.add_widget((0, 0), panel_widget)
-		self.add_widget(text_shift or (0, 0), TextLineWidget(font, text))
+
+		self._panel_size = panel_widget.get_size(engine)
+		window_size = engine.get_window_size()
+		self._panel_topleft = Point(
+				(window_size.width - self._panel_size.width) // 2,
+				(window_size.height - self._panel_size.height) // 2,
+				)
+
+		self.add_widget(self._panel_topleft, panel_widget)
+		self.add_widget(self._panel_topleft + (text_shift or Point(0, 0)), TextLineWidget(font, text))
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
@@ -295,12 +301,11 @@ class MessageBox(Context):
 		"""
 		pos = Point(pos)
 		if pos.x < 0 or pos.y < 0:
-			panel_size = self._panel_widget.get_size(engine)
 			if pos.x < 0:
-				pos.x = panel_size.width + pos.x
+				pos.x = self._panel_size.width + pos.x
 			if pos.y < 0:
-				pos.y = panel_size.height + pos.y
-		self.add_widget(pos, button_widget)
+				pos.y = self._panel_size.height + pos.y
+		self.add_widget(self._panel_topleft + pos, button_widget)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK

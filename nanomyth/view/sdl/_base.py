@@ -29,6 +29,12 @@ class SDLEngine:
 		By default engine is constructed with empty context stack and will immediately exit when run.
 		"""
 		self.contexts = [context]
+	def get_window_size(self):
+		""" Returns window size (unscaled). """
+		return Size(
+			self.window.get_width() // self.scale,
+			self.window.get_height() // self.scale,
+			)
 	def add_image(self, name, image):
 		""" Puts image under specified name in the global image list. """
 		self.images[name] = image

@@ -38,8 +38,7 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 		['panel_left',        'panel_middle',      'panel_right',       ],
 		['panel_bottomleft',  'panel_bottom',      'panel_bottomright', ],
 		]), size)
-	dialog = nanomyth.view.sdl.context.MessageBox(text, font,
-			panel_widget=panel_widget,
+	dialog = nanomyth.view.sdl.context.MessageBox(text, font, panel_widget, engine,
 			text_shift=(4, 4),
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
