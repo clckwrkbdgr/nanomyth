@@ -5,6 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
+from ...game.actor import NPC
 from ...game.map import Map, Terrain, Portal, Trigger
 from .image import TileSetImage
 
@@ -36,7 +37,12 @@ def load_tmx_map(filename, engine):
 
 	Tile layers are loaded in terrain tiles in given order.
 
-	Objects are recognized by properites:
+	Objects are mainly recognized by type:
+	- npc: Non-player character.
+	  May have properties:
+	  - message: Informational message to display when interacted with.
+
+	Other objects are recognized by properites:
 	- passable(bool): additional Terrain image, makes terrain passable/blocked.
 	- portal_dest_*: Creates portal tile (all properties are required):
 	  - portal_dest_map: Name of the map to go to.
@@ -68,17 +74,28 @@ def load_tmx_map(filename, engine):
 				int(obj.y // obj.height),
 				)
 			objects[pos].append(obj)
-			tile_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
-			tiles.cell(pos).append(tile_name)
+			if obj.type != 'npc':
+				tile_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
+				tiles.cell(pos).append(tile_name)
 
 	real_map = Map(tiles.size)
 	for pos in real_map.tiles.keys():
 		passable = True
 		for obj in (objects[pos] if pos in objects else []):
+			if obj.type == 'npc':
+				sprite_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
+				trigger = None
+				if 'trigger' in obj.properties:
+					trigger = Trigger(engine.get_trigger_action(obj.trigger))
+				npc = NPC(sprite_name, trigger=trigger)
+				if 'message' in obj.properties:
+					npc.set_message(obj.message )
+				real_map.add_actor(pos, npc)
+				continue
 			if 'passable' in obj.properties and not obj.passable:
 				passable = False
 			if 'trigger' in obj.properties:
-				real_map.add_trigger(pos, Trigger(engine.get_trigger_action('autosave')))
+				real_map.add_trigger(pos, Trigger(engine.get_trigger_action(obj.trigger)))
 			if 'portal_dest_map' in obj.properties:
 				real_map.add_portal(pos, Portal(
 					obj.portal_dest_map,

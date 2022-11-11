@@ -37,9 +37,9 @@ class Trigger:
 		which will be executed when trigger is activated.
 		"""
 		self.trigger_callback = trigger_callback
-	def activate(self):
+	def activate(self, *params):
 		if self.trigger_callback:
-			self.trigger_callback()
+			self.trigger_callback(*params)
 
 class ObjectOnMap:
 	def __init__(self, pos, obj):
@@ -100,6 +100,11 @@ class Map:
 		if not self.tiles.valid(new_pos):
 			return
 		if not self.tiles.cell(new_pos).passable:
+			return
+		other_actor = next((other.actor for other in self.actors if other.pos == new_pos), None)
+		if other_actor:
+			if other_actor.trigger:
+				other_actor.trigger.activate(other_actor)
 			return
 		portal = next((portal.obj for portal in self.portals if portal.pos == new_pos), None)
 		if portal:

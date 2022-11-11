@@ -51,6 +51,12 @@ def autosave():
 			)
 engine.register_trigger_action('autosave', autosave)
 
+def talking_to_farmer(farmer):
+	main_game.set_pending_context(
+			ui.message_box(engine, resources, farmer.get_message(), font, size=(5, 2))
+			)
+engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
+
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
 desert_map = load_tmx_map(DEMO_ROOTDIR/'desert_entrance.tmx', engine)
@@ -59,6 +65,7 @@ world = World()
 world.add_map('main', main_map)
 world.add_map('basement', basement_map)
 world.add_map('desert', desert_map)
+world.add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 
 main_game = nanomyth.view.sdl.context.Game(world)
 main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sprites={
@@ -106,56 +113,8 @@ engine.init_context(main_menu)
 auto_sequence = None
 if sys.argv[1:] == ['auto']:
 	import autodemo
-	save3 = os.path.join(os.path.dirname(__file__), 'game3.sav')
-	if os.path.exists(save3): # pragma: no cover -- We need slot 3 to be free.
-		os.unlink(save3)
-	auto_sequence = autodemo.AutoSequence(0.2, [
-		'up', # Test menu.
-		'down',
-		'down',
-		'down',
-		'down',
-		'up', 'up', 'up', # Navigate back to the "Play"
-		'return', # Play.
-		'up', 'up', # Test obstacles.
-		'left', # Test movement and direction.
-		'left', # Obstacle.
-		'down', 'down', # To the basement.
-		'up', 'down', # Stuck on stairs.
-		'left', 'left', 'up', 'down', 'left', # Wandering around the basement.
-		'escape', # To main menu.
-		'down', 'return', 'return', # Save game on existing slot.
-		'.', '.', '.', # Just a pause.
-		'escape', # Do not overwrite.
-		'.', '.', '.', # Just a pause.
-		'return', # Again confirmation...
-		'.', '.', '.', # Just a pause.
-		'return', # Now overwrite save.
-		'.', '.', '.', # Just a pause.
-		'return', 'escape', 'up', 'return', # Back to playing.
-		'right', # Go up.
-		'right', 'right', 'right', 'right', # Right into the wall.
-		'up', 'up', 'up', 'return', # Autosave.
-		'.', '.', '.', # Just a pause.
-		'down', 'down', 'down',
-		'down', # Exit home and into the desert.
-		'left', 'up', # Stuck in doorway.
-		'down', 'up', # Re-entering doorway...
-		'up', 'down', # and back to the desert.
-		'down', 'down', 'down', 'right', 'right', 'down', 'down', 'down', 'left', 'left', 'up', # Go to the portal.
-		'.', '.', '.', # Just a pause.
-		'escape', # To main menu.
-		'down', 'down', 'return', # Load game screen.
-		'down', 'down', 'down', 'return', # No such savefile.
-		'.', '.', '.', # Just a pause.
-		'escape', 'up', 'up', 'return', # Load previous save.
-		'.', '.', '.', # Just a pause.
-		'right', 'up', 'right', # Exit the basement again.
-		'right', 'down', 'down', 'down', 'down', 'left', # Exit the building and walk some.
-		'escape', 'return', 'up', 'return', # Load autosave.
-		'down', # Wander.
-		'.', '.', '.', # Just a pause.
-		'escape', # To main menu.
-		'escape', # Exit game.
-		])
+	save3 = DEMO_ROOTDIR/'game3.sav'
+	if save3.exists(): # pragma: no cover -- We need slot 3 to be free.
+		os.unlink(str(save3))
+	auto_sequence = autodemo.AutoSequence(0.2, DEMO_ROOTDIR/'autodemo.txt')
 engine.run(custom_update=auto_sequence)

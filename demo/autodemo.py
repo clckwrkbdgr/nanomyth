@@ -1,9 +1,26 @@
 import pygame
 import time
+import itertools
+from pathlib import Path
 
 class AutoSequence:
-	def __init__(self, delay_sec, keypresses):
+	def __init__(self, delay_sec, sequence_file):
 		self.delay = delay_sec
+
+		sequence_file = Path(sequence_file)
+		keypresses = list(itertools.chain.from_iterable(
+				map(str.split, # Split lines into keypresses
+					filter(None, # Remove empty lines.
+						map(str.strip, # Strip spaces.
+							(
+								line.split('#', 1)[0] # Strip comments.
+								for line in sequence_file.read_text().splitlines()
+								)
+							)
+						)
+					)
+				))
+
 		self.keypresses = keypresses
 		self.last_event = time.time()
 	def __call__(self):

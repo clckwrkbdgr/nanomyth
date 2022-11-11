@@ -28,6 +28,27 @@ class Direction(Enum):
 			return cls.RIGHT
 		assert False, "Should not reach here." # pragma: no cover
 
+class NPC:
+	""" Non-player character. """
+	def __init__(self, sprite, trigger=None):
+		""" Creates NPC with given sprite.
+		Optional trigger can be set. It will be activated when interacted with NPC.
+		Actor's Trigger should have callback with single parameter (actor itself).
+		"""
+		self.sprite = sprite
+		self.message = None
+		self.trigger = trigger
+	def get_sprite(self):
+		return self.sprite
+	def set_message(self, text):
+		""" Sets the text of the message that NPC provides when interacted with.
+		"""
+		self.message = text
+	def get_message(self):
+		""" Returns the text of the message that NPC provides when interacted with.
+		"""
+		return self.message
+
 class Player:
 	""" Player character. """
 	def __init__(self, default_sprite, directional_sprites=None):

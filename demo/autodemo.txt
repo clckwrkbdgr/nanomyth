@@ -1,0 +1,63 @@
+# vim: syntax=sh
+# Keypress sequence for auto-demo mode.
+# Format: <key>[ <key> ...] [# comment]
+
+up # Test menu.
+down
+down
+down
+down
+up up up # Navigate back to the "Play"
+return # Play.
+
+up up # Test obstacles.
+left # Test movement and direction.
+left # Obstacle.
+down down # To the basement.
+
+up down # Stuck on stairs.
+left left up down left # Wandering around the basement.
+escape # To main menu.
+down return return # Save game on existing slot.
+. . . # Just a pause.
+escape # Do not overwrite.
+. . . # Just a pause.
+return # Again confirmation...
+. . . # Just a pause.
+return # Now overwrite save.
+. . . # Just a pause.
+return escape up return # Back to playing.
+right # Go up.
+
+right right right right # Right into the wall.
+up up up return # Autosave.
+. . . # Just a pause.
+down down down
+down # Exit home and into the desert.
+
+left up # Stuck in doorway.
+down up # Re-entering doorway...
+up down # and back to the desert.
+down down down right right down down down left left up # Go to the portal.
+. . . # Just a pause.
+
+escape # To main menu.
+down down return # Load game screen.
+down down down return # No such savefile.
+. . . # Just a pause.
+escape up up return # Load previous save.
+. . . # Just a pause.
+right up right # Exit the basement again.
+right down down down down left # Exit the building and walk some.
+escape return up return # Load autosave.
+
+down down down down # Exit to desert.
+down down right right # To the farm
+right right # Talk to the farmer.
+return # Close the message.
+down # Just wander
+
+. . . # Just a pause.
+escape # To main menu.
+escape # Exit game.
+

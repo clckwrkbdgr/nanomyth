@@ -1,7 +1,7 @@
 import itertools
 from ...utils import unittest
 from ..map import Map, Terrain, Trigger
-from ..actor import Player, Direction
+from ..actor import Player, Direction, NPC
 from ...math import Point
 
 class TestMap(unittest.TestCase):
@@ -78,3 +78,19 @@ class TestMap(unittest.TestCase):
 		level_map.shift_player(Direction.LEFT)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
 		self.assertTrue(trigger_callback.triggered)
+	def should_talk_to_npc(self):
+		class TriggerCallback:
+			def __init__(self): self.talk = None
+			def __call__(self, npc): self.talk = npc.get_message()
+		level_map = Map((5, 5))
+		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
+		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
+		level_map.add_actor((2, 2), Player('rogue'))
+		trigger_callback = TriggerCallback()
+		npc = NPC('npc', trigger=Trigger(trigger_callback))
+		npc.set_message('Howdy!')
+		self.assertEqual(npc.get_sprite(), 'npc')
+		level_map.add_actor((1, 2), npc)
+		level_map.shift_player(Direction.LEFT)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
+		self.assertEqual(trigger_callback.talk, 'Howdy!')
