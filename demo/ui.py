@@ -43,15 +43,17 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			text_shift=(4, 4),
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
-	dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')), (
-		tile_size.width * (size.width - 2) - 2,
-		tile_size.height * (size.height - 1),
-		))
+	dialog.add_button(engine, (
+		-tile_size.width * 2 - 2,
+		-tile_size.height,
+		), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')),
+		)
 	if on_cancel:
-		dialog.add_button(nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel')), (
-			tile_size.width * (size.width - 1) - 2,
-			tile_size.height * (size.height - 1),
-			))
+		dialog.add_button(engine, (
+			-tile_size.width - 2,
+			-tile_size.height,
+			), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel')),
+			)
 	return dialog
 
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):

@@ -25,6 +25,13 @@ class TileMapWidget:
 		Tiles are either Images or image names in engine's image list.
 		"""
 		self.tilemap = tilemap
+	def get_size(self, engine):
+		""" Returns bounding size of the tile grid. """
+		tile_size = engine.get_image(self.tilemap.cell((0, 0))).get_size()
+		return Size(
+				self.tilemap.width * tile_size.width, 
+				self.tilemap.height * tile_size.height,
+				)
 	def draw(self, engine, topleft):
 		for pos in self.tilemap:
 			image = engine.get_image(self.tilemap.cell(pos))
@@ -56,6 +63,9 @@ class PanelWidget:
 				])
 		panel_tiles = Matrix.from_iterable(panel_tiles)
 		self.tilemap_widget = TileMapWidget(panel_tiles)
+	def get_size(self, engine):
+		""" Returns bounding size of the panel. """
+		return self.tilemap_widget.get_size(engine)
 	def draw(self, engine, topleft):
 		self.tilemap_widget.draw(engine, topleft)
 

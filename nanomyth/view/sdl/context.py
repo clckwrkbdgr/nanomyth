@@ -285,13 +285,22 @@ class MessageBox(Context):
 		super().__init__()
 		self.on_ok = on_ok
 		self.on_cancel = on_cancel
+		self._panel_widget = panel_widget
 		self.add_widget((0, 0), panel_widget)
 		self.add_widget(text_shift or (0, 0), TextLineWidget(font, text))
-	def add_button(self, button_widget, shift):
+	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
-		Shift is relative to the message box topleft position.
+		Position is relative to the message box topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
 		"""
-		self.add_widget(shift, button_widget)
+		pos = Point(pos)
+		if pos.x < 0 or pos.y < 0:
+			panel_size = self._panel_widget.get_size(engine)
+			if pos.x < 0:
+				pos.x = panel_size.width + pos.x
+			if pos.y < 0:
+				pos.y = panel_size.height + pos.y
+		self.add_widget(pos, button_widget)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK
