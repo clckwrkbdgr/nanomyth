@@ -23,6 +23,7 @@ class SDLEngine:
 		self.window = pygame.display.get_surface()
 		self.contexts = []
 		self.images = {}
+		self.trigger_actions = {}
 	def init_context(self, context):
 		""" (Re-)Initializes current context.
 		Replaces all current contexts in the stack if were present.
@@ -63,6 +64,14 @@ class SDLEngine:
 			if hasattr(image, 'filename') and image.filename == filename:
 				return image_name
 		return None
+	def register_trigger_action(self, action_name, action_callback):
+		""" Register actual callback function under a name,
+		so it can be referred later, e.g. when loading TMX map.
+		"""
+		self.trigger_actions[action_name] = action_callback
+	def get_trigger_action(self, action_name):
+		""" Returns previously registered trigger callback by name. """
+		return self.trigger_actions[action_name]
 	@contextmanager
 	def _enter_rendering_mode(self):
 		""" RAII that enters into SDL rendring mode till the end of scope. """

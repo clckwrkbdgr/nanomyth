@@ -57,10 +57,10 @@ TODO
 	- [X] Save/load in menu.
 	- [X] Different slots for saving, separate dialog screen for choosing slot.
 	- [X] Dialog for overwriting save files [Yes/No].
-6. [ ] Autosave.
-	- [ ] Terrain with trigger event.
-	- [ ] Autosaving on checkpoint tiles.
-	- [ ] Displaying message box [OK] on autosaving.
+6. [X] Autosave.
+	- [X] Terrain with trigger event.
+	- [X] Autosaving on checkpoint tiles.
+	- [X] Displaying message box [OK] on autosaving.
 7. [ ] NPC.
 	- [ ] Standalone objects like characters, info posts etc.
 	- [ ] Interactions with NPC.

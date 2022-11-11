@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
-from ...game.map import Map, Terrain, Portal
+from ...game.map import Map, Terrain, Portal, Trigger
 from .image import TileSetImage
 
 def _load_tmx_image_tile(image, engine, tileset_sizes):
@@ -42,6 +42,8 @@ def load_tmx_map(filename, engine):
 	  - portal_dest_map: Name of the map to go to.
 	  - portal_dest_x,
 	    portal_dest_y: Destination tile on the target map.
+	- trigger: name of the action callback that's executed when player steps on the tile.
+	  Action callback should be register beforehand using SDLEngine.register_trigger_action()
 
 	Objects that are not recognized are loaded into terrain tiles as top images.
 	"""
@@ -75,6 +77,8 @@ def load_tmx_map(filename, engine):
 		for obj in (objects[pos] if pos in objects else []):
 			if 'passable' in obj.properties and not obj.passable:
 				passable = False
+			if 'trigger' in obj.properties:
+				real_map.add_trigger(pos, Trigger(engine.get_trigger_action('autosave')))
 			if 'portal_dest_map' in obj.properties:
 				real_map.add_portal(pos, Portal(
 					obj.portal_dest_map,

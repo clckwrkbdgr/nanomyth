@@ -102,10 +102,11 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_off_tiles, font=grey_font)
 	menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_on_tiles, font=font)
 
+	if len(savefiles) == 4:
+		menu.add_menu_item(('Auto', '> Auto'), lambda: handler(savefiles[3]))
 	menu.add_menu_item(('Slot 1', '> Slot 1'), lambda: handler(savefiles[0]))
 	menu.add_menu_item(('Slot 2', '> Slot 2'), lambda: handler(savefiles[1]))
 	menu.add_menu_item(('Slot 3', '> Slot 3'), lambda: handler(savefiles[2]))
-	#menu.add_menu_item(('Back', '< Back'), nanomyth.view.sdl.context.Context.Finished)
 	menu.add_menu_item(
 			nanomyth.view.sdl.widget.MenuItem(
 				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles),

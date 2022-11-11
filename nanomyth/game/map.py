@@ -28,6 +28,19 @@ class Portal:
 		self.entrance_pos = Point(entrance_pos)
 		self.dest_map = dest_map
 
+class Trigger:
+	""" Provides means to trigger user-defined event.
+	Once player steps on it, event is triggered and attached action is taken.
+	"""
+	def __init__(self, trigger_callback):
+		""" Creates trigger with given callback (should not accept args),
+		which will be executed when trigger is activated.
+		"""
+		self.trigger_callback = trigger_callback
+	def activate(self):
+		if self.trigger_callback:
+			self.trigger_callback()
+
 class ObjectOnMap:
 	def __init__(self, pos, obj):
 		self.pos = Point(pos)
@@ -55,6 +68,7 @@ class Map:
 		self.tiles = Matrix(size, Terrain([]))
 		self.actors = []
 		self.portals = []
+		self.triggers = []
 	def set_tile(self, pos, tile):
 		self.tiles.set_cell(pos, tile)
 	def get_tile(self, pos):
@@ -65,6 +79,9 @@ class Map:
 	def add_portal(self, pos, portal):
 		""" Places a portal at the specified position. """
 		self.portals.append(ObjectOnMap(pos, portal))
+	def add_trigger(self, pos, trigger):
+		""" Places a trigger at the specified position. """
+		self.triggers.append(ObjectOnMap(pos, trigger))
 	def shift_player(self, shift):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),
@@ -89,6 +106,10 @@ class Map:
 			self.actors.remove(player)
 			raise Portalling(portal, player.actor)
 		player.pos = new_pos
+
+		trigger = next((trigger.obj for trigger in self.triggers if trigger.pos == new_pos), None)
+		if trigger:
+			trigger.activate()
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).

@@ -1,6 +1,6 @@
 import itertools
 from ...utils import unittest
-from ..map import Map, Terrain
+from ..map import Map, Terrain, Trigger
 from ..actor import Player, Direction
 from ...math import Point
 
@@ -65,3 +65,16 @@ class TestMap(unittest.TestCase):
 		level_map.shift_player((-1, 0))
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
 		self.assertEqual(next(_ for pos, _ in level_map.iter_actors()).direction, Direction.LEFT)
+	def should_trigger_event_after_walking_on_a_tile(self):
+		class TriggerCallback:
+			def __init__(self): self.triggered = False
+			def __call__(self): self.triggered = True
+		level_map = Map((5, 5))
+		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
+		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
+		trigger_callback = TriggerCallback()
+		level_map.add_trigger((1, 2), Trigger(trigger_callback))
+		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.shift_player(Direction.LEFT)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
+		self.assertTrue(trigger_callback.triggered)

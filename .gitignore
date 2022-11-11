@@ -8,6 +8,7 @@ __pycache__/
 /nanomyth.egg-info/
 
 # Game files.
+/demo/auto.sav
 /demo/game.sav
 /demo/game?.sav
 

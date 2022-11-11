@@ -137,7 +137,8 @@
   </object>
   <object id="24" name="bed" gid="73" x="64" y="32" width="16" height="16">
    <properties>
-    <property name="passable" type="bool" value="false"/>
+    <property name="passable" type="bool" value="true"/>
+    <property name="trigger" value="autosave"/>
    </properties>
   </object>
   <object id="25" name="carpet" gid="113" x="48" y="64" width="16" height="16"/>

@@ -44,6 +44,13 @@ engine.add_image('rogue_left', rogue.get_tile((0, 1)))
 engine.add_image('rogue_right', rogue.get_tile((0, 2)))
 engine.add_image('rogue_up', rogue.get_tile((0, 3)))
 
+def autosave():
+	main_game.save_to_file(autosavefile, force=True)
+	main_game.set_pending_context(
+			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
+			)
+engine.register_trigger_action('autosave', autosave)
+
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
 desert_map = load_tmx_map(DEMO_ROOTDIR/'desert_entrance.tmx', engine)
@@ -66,6 +73,7 @@ savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game2.sav'),
 		JsonpickleSavefile(DEMO_ROOTDIR/'game3.sav'),
 		]
+autosavefile = JsonpickleSavefile(DEMO_ROOTDIR/'auto.sav')
 
 def save_game(savefile, force=False):
 	ok = main_game.save_to_file(savefile, force=force)
@@ -88,7 +96,7 @@ save_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sd
 ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game, savefiles, font, fixed_font, grey_font)
 
 load_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
-ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles, font, fixed_font, grey_font)
+ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles + [autosavefile], font, fixed_font, grey_font)
 
 main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
@@ -127,6 +135,9 @@ if sys.argv[1:] == ['auto']:
 		'return', 'escape', 'up', 'return', # Back to playing.
 		'right', # Go up.
 		'right', 'right', 'right', 'right', # Right into the wall.
+		'up', 'up', 'up', 'return', # Autosave.
+		'.', '.', '.', # Just a pause.
+		'down', 'down', 'down',
 		'down', # Exit home and into the desert.
 		'left', 'up', # Stuck in doorway.
 		'down', 'up', # Re-entering doorway...
@@ -135,11 +146,14 @@ if sys.argv[1:] == ['auto']:
 		'.', '.', '.', # Just a pause.
 		'escape', # To main menu.
 		'down', 'down', 'return', # Load game screen.
-		'down', 'down', 'return', # No such savefile.
+		'down', 'down', 'down', 'return', # No such savefile.
 		'.', '.', '.', # Just a pause.
 		'escape', 'up', 'up', 'return', # Load previous save.
 		'.', '.', '.', # Just a pause.
 		'right', 'up', 'right', # Exit the basement again.
+		'right', 'down', 'down', 'down', 'down', 'left', # Exit the building and walk some.
+		'escape', 'return', 'up', 'return', # Load autosave.
+		'down', # Wander.
 		'.', '.', '.', # Just a pause.
 		'escape', # To main menu.
 		'escape', # Exit game.
