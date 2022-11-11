@@ -90,14 +90,22 @@ class SDLEngine:
 	def run(self, custom_update=None):
 		""" Main event loop.
 		Processes events and controls for the current context and draws its widgets.
-		Also handles switching contexts.
+		Also for transparent contexts draws all contexts under it until non-transparent is found.
+		Handles switching contexts.
 		When the last context quits, the whole event loop stops.
 		"""
 		while self.contexts:
-			current_context = self.contexts[-1]
+			contexts_to_draw = []
+			for c in reversed(self.contexts):
+				contexts_to_draw.append(c)
+				if not c.transparent:
+					break
+			contexts_to_draw = reversed(contexts_to_draw)
 			with self._enter_rendering_mode():
-				current_context.draw(self)
+				for c in contexts_to_draw:
+					c.draw(self)
 
+			current_context = self.contexts[-1]
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					try:

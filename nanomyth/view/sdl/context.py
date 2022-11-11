@@ -22,10 +22,14 @@ class Context:
 		""" Raise this when context is finished. """
 		pass
 
-	def __init__(self):
+	def __init__(self, transparent=False):
 		""" Creates empty context.
 		Widgets can be added later via add_widget.
+
+		Setting transparent = True makes it draw underlying context (if any).
+		Useful for context that does not cover the whole screen, like message boxes.
 		"""
+		self.transparent = transparent
 		self.widgets = []
 	def add_widget(self, topleft, widget):
 		""" Adds new widget. """
@@ -281,7 +285,7 @@ class MessageBox(Context):
 		Both should be callable with no arguments.
 		They will be called upon corresponding user reaction.
 		"""
-		super().__init__()
+		super().__init__(transparent=True)
 		self.on_ok = on_ok
 		self.on_cancel = on_cancel
 
