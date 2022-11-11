@@ -77,10 +77,15 @@ class Game(Context):
 		"""
 		self.world = new_world
 		self.map_widget.set_map(self.world.get_current_map())
-	def save_to_file(self, savefile):
+	def save_to_file(self, savefile, force=False):
 		""" Saves game state to the file using Savefile instance.
+		Returns True if was saved successfully, False if savefile already exists.
+		With force=True overwrites existing savefile.
 		"""
+		if savefile.exists() and not force:
+			return False
 		savefile.save(self.world)
+		return True
 	def load_from_file(self, savefile):
 		""" Loads game state from the file using Savefile instance.
 		"""

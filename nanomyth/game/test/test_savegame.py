@@ -61,14 +61,18 @@ class TestSavefile(fake_filesystem_unittest.TestCase):
 	def should_save_and_load_using_jsonpickle(self):
 		world = self._create_world()
 		savefile = savegame.JsonpickleSavefile('/game.sav')
+		self.assertFalse(savefile.exists())
 		self.assertIsNone(savefile.load())
 		savefile.save(world)
+		self.assertTrue(savefile.exists())
 		restored = savefile.load()
 		self.assertWorldsEqual(restored, world)
 	def should_save_and_load_using_pickle(self):
 		world = self._create_world()
 		savefile = savegame.PickleSavefile('/game.sav')
+		self.assertFalse(savefile.exists())
 		self.assertIsNone(savefile.load())
 		savefile.save(world)
+		self.assertTrue(savefile.exists())
 		restored = savefile.load()
 		self.assertWorldsEqual(restored, world)

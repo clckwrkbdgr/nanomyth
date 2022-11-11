@@ -40,6 +40,8 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 		]), size)
 	dialog = nanomyth.view.sdl.context.MessageBox(text, font, panel_widget, engine,
 			text_shift=(4, 4),
+			on_ok=on_ok,
+			on_cancel=on_cancel,
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
 	dialog.add_button(engine, (

@@ -9,6 +9,8 @@ class Savefile:
 		""" Savefile always operates on a real file.
 		"""
 		self.filename = Path(filename)
+	def exists(self):
+		return self.filename.exists()
 	def save(self, world): # pragma: no cover
 		""" Override this to store world in the file. """
 		raise NotImplementedError

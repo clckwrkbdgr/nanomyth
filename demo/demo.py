@@ -67,9 +67,14 @@ savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game3.sav'),
 		]
 
-def save_game(savefile):
-	main_game.save_to_file(savefile)
-	return ui.message_box(engine, resources, 'Game saved.', font, size=(6, 2))
+def save_game(savefile, force=False):
+	ok = main_game.save_to_file(savefile, force=force)
+	if not ok:
+		return ui.message_box(engine, resources, 'Overwrite slot?', font, size=(6, 2),
+				on_ok=lambda: save_game_menu.set_pending_context(save_game(savefile, force=True)),
+				on_cancel=lambda: (_ for _ in ()).throw(nanomyth.view.sdl.context.Menu.Finished()) # It's just a way to raise Exception from within labmda.
+				)
+	return ui.message_box(engine, resources, 'Game saved.', font, size=(5, 2))
 
 def load_game(savefile):
 	if main_game.load_from_file(savefile):
@@ -93,6 +98,9 @@ engine.init_context(main_menu)
 auto_sequence = None
 if sys.argv[1:] == ['auto']:
 	import autodemo
+	save3 = os.path.join(os.path.dirname(__file__), 'game3.sav')
+	if os.path.exists(save3): # pragma: no cover -- We need slot 3 to be free.
+		os.unlink(save3)
 	auto_sequence = autodemo.AutoSequence(0.2, [
 		'up', # Test menu.
 		'down',
@@ -108,7 +116,13 @@ if sys.argv[1:] == ['auto']:
 		'up', 'down', # Stuck on stairs.
 		'left', 'left', 'up', 'down', 'left', # Wandering around the basement.
 		'escape', # To main menu.
-		'down', 'return', 'return', # Save game.
+		'down', 'return', 'return', # Save game on existing slot.
+		'.', '.', '.', # Just a pause.
+		'escape', # Do not overwrite.
+		'.', '.', '.', # Just a pause.
+		'return', # Again confirmation...
+		'.', '.', '.', # Just a pause.
+		'return', # Now overwrite save.
 		'.', '.', '.', # Just a pause.
 		'return', 'escape', 'up', 'return', # Back to playing.
 		'right', # Go up.
@@ -123,7 +137,7 @@ if sys.argv[1:] == ['auto']:
 		'down', 'down', 'return', # Load game screen.
 		'down', 'down', 'return', # No such savefile.
 		'.', '.', '.', # Just a pause.
-		'return', 'up', 'up', 'return', # Load previous save.
+		'escape', 'up', 'up', 'return', # Load previous save.
 		'.', '.', '.', # Just a pause.
 		'right', 'up', 'right', # Exit the basement again.
 		'.', '.', '.', # Just a pause.

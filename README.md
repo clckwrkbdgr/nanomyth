@@ -52,11 +52,11 @@ TODO
 4. [X] World of maps.
 	- [X] Separate set of adjoined maps.
 	- [X] Movement between maps (exits, entrances, portals; entering/starting points).
-5. [ ] Saving/loading.
+5. [X] Saving/loading.
 	- [X] Pickle, jsonpickle, custom serializers via `__getstate__`/`__setstate__`
 	- [X] Save/load in menu.
 	- [X] Different slots for saving, separate dialog screen for choosing slot.
-	- [ ] Dialog for overwriting save files [Yes/No].
+	- [X] Dialog for overwriting save files [Yes/No].
 6. [ ] Autosave.
 	- [ ] Terrain with trigger event.
 	- [ ] Autosaving on checkpoint tiles.
