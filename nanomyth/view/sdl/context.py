@@ -31,6 +31,13 @@ class Context:
 		"""
 		self.transparent = transparent
 		self.widgets = []
+		self.pending_context = None
+	def set_pending_context(self, new_context):
+		""" Sets pending context.
+		It will be swtiched immediately after controls are back to this context.
+		See SDLEngine.run() for details.
+		"""
+		self.pending_context = new_context
 	def add_widget(self, topleft, widget):
 		""" Adds new widget. """
 		self.widgets.append(WidgetAtPos(topleft, widget))

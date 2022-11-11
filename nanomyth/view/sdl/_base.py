@@ -106,6 +106,9 @@ class SDLEngine:
 					c.draw(self)
 
 			current_context = self.contexts[-1]
+			if current_context.pending_context:
+				self.contexts.append(current_context.pending_context)
+				current_context.pending_context = None
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					try:

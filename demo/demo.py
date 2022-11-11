@@ -69,12 +69,11 @@ savefiles = [
 
 def save_game(savefile):
 	main_game.save_to_file(savefile)
-	main_menu_info.set_text('Game saved.')
-	raise nanomyth.view.sdl.context.Menu.Finished
+	return ui.message_box(engine, resources, 'Game saved.', font, size=(6, 2))
 
 def load_game(savefile):
 	if main_game.load_from_file(savefile):
-		main_menu_info.set_text('Game loaded.')
+		main_menu.set_pending_context(main_game)
 	else:
 		main_menu_info.set_text('')
 		return ui.message_box(engine, resources, 'No such savefile.', font, size=(6, 2))
@@ -111,7 +110,7 @@ if sys.argv[1:] == ['auto']:
 		'escape', # To main menu.
 		'down', 'return', 'return', # Save game.
 		'.', '.', '.', # Just a pause.
-		'up', 'return', # Back to playing.
+		'return', 'escape', 'up', 'return', # Back to playing.
 		'right', # Go up.
 		'right', 'right', 'right', 'right', # Right into the wall.
 		'down', # Exit home and into the desert.
@@ -125,8 +124,6 @@ if sys.argv[1:] == ['auto']:
 		'down', 'down', 'return', # No such savefile.
 		'.', '.', '.', # Just a pause.
 		'return', 'up', 'up', 'return', # Load previous save.
-		'.', '.', '.', # Just a pause.
-		'up', 'up', 'return', # Back to the game.
 		'.', '.', '.', # Just a pause.
 		'right', 'up', 'right', # Exit the basement again.
 		'.', '.', '.', # Just a pause.
