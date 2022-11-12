@@ -57,6 +57,26 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			)
 	return dialog
 
+def conversation(engine, resources, text, font, size=None, on_ok=None):
+	size = Size(size)
+	size = Size(max(size.width, 10), max(size.height, 7))
+	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+		['panel_topleft',     'panel_top',         'panel_topright',    ],
+		['panel_left',        'panel_middle',      'panel_right',       ],
+		['panel_bottomleft',  'panel_bottom',      'panel_bottomright', ],
+		]), size)
+	window_size = engine.get_window_size()
+	dialog = nanomyth.view.sdl.context.TextScreen(text, font, panel_widget, engine,
+			text_rect=(4, 4, window_size.width - 4, window_size.height - 8 - 4 - 16),
+			)
+	tile_size = engine.get_image('panel_middle').get_size()
+	dialog.add_button(engine, (
+		-tile_size.width - 2,
+		-tile_size.height,
+		), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')),
+		)
+	return dialog
+
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):
 	main_menu.set_background('main_menu_background')
 	main_menu.set_caption_pos((20, 4))

@@ -143,3 +143,29 @@ class MenuItem:
 			button.draw(engine, topleft)
 		if caption:
 			caption.draw(engine, topleft + self.caption_shift)
+
+class MultilineTextWidget:
+	""" Displays multiline text using pixel font
+	with option to scroll if text is larger than the screen can fit.
+	"""
+	def __init__(self, font, size, text=""):
+		""" Creates widget to display text with Font object.
+		Text will fit into given size.
+		Optional initial text can be provided; it can be changed at any moment using set_text().
+		"""
+		self.font = font
+		self.textlines = None
+		self.set_text(text)
+	def set_text(self, new_text):
+		self.textlines = []
+		for line in new_text.splitlines():
+			self.textlines.append(line)
+	def draw(self, engine, topleft):
+		font_height = self.font.get_letter_image('W').get_size().height
+		for row, textline in enumerate(self.textlines):
+			image_pos = Point(0, row * font_height)
+			for pos, letter in enumerate(textline):
+				image = self.font.get_letter_image(letter)
+				engine.render_texture(image.get_texture(), topleft + image_pos)
+				tile_size = image.get_size()
+				image_pos.x += tile_size.width

@@ -3,6 +3,7 @@ Demonstration for nanomyth engine API and usage patterns.
 Presents in form of a simple and small game.
 """
 import os, sys
+import textwrap
 from pathlib import Path
 import json, jsonpickle
 import pygame
@@ -52,8 +53,23 @@ def autosave():
 engine.register_trigger_action('autosave', autosave)
 
 def talking_to_farmer(farmer):
+	farmer_quest = textwrap.dedent("""\
+	Hello there, wanderer!
+
+	Please listen to my story.
+
+	I'm a local farmer growing food for the nearby village. I've been doing this for the last 20 years since I've inherited this farm from my father. This is the only place where farm plants can grow in this desert, so the whole village depends on the crops.
+
+	But some time ago vermins came from nowhere and started to steal growing food, leaving us with just scraps. We cannot survive with what's left, the whole village could starve!
+
+	My fellow dog, Smoke, has been helping me to fight of the vermins, but couple of days ago he disappeared. I'm afraid the worst, that the vermins kidnapped him. Without Smoke, I alone cannot protect this farm. Someone has to find my dog and bring him back!
+
+	I would ask you to do it, but apparently Smoke has not made into the game yet. So we're all gonna die.
+
+	Sob.
+	""")
 	main_game.set_pending_context(
-			ui.message_box(engine, resources, farmer.get_message(), font, size=(5, 2))
+			ui.conversation(engine, resources, farmer_quest, font, size=(5, 2))
 			)
 engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
 
