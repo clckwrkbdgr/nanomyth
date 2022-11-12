@@ -350,7 +350,8 @@ class TextScreen(Context):
 		self._panel_size = panel_widget.get_size(engine)
 
 		self.add_widget((0, 0), panel_widget)
-		self.add_widget(self.text_rect.topleft, MultilineTextWidget(font, self.text_rect.size, text))
+		self._text_widget = MultilineTextWidget(font, self.text_rect.size, text)
+		self.add_widget(self.text_rect.topleft, self._text_widget)
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
@@ -366,6 +367,12 @@ class TextScreen(Context):
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>, <Escape>: close dialog.
+		- <Up>: scroll text up.
+		- <Down>: scroll text down.
 		"""
 		if control_name in ['escape', 'space', 'return']:
 			raise self.Finished()
+		if control_name == 'up':
+			self._text_widget.set_top_line(self._text_widget.get_top_line() - 1)
+		elif control_name == 'down':
+			self._text_widget.set_top_line(self._text_widget.get_top_line() + 1)

@@ -150,19 +150,64 @@ class MultilineTextWidget:
 	"""
 	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
-		Text will fit into given size.
+		Text will fit into given size, auto-wrapped with option to scroll.
 		Optional initial text can be provided; it can be changed at any moment using set_text().
 		"""
 		self.font = font
+		self.size = size
 		self.textlines = None
 		self.set_text(text)
+		self.top_line = 0
 	def set_text(self, new_text):
 		self.textlines = []
 		for line in new_text.splitlines():
-			self.textlines.append(line)
+			line_width = []
+			current_line = ''
+			for letter in line:
+				letter_width = self.font.get_letter_image(letter).get_size().width
+				if sum(line_width) + letter_width > self.size.width:
+					if ' ' in current_line:
+						last_space_pos = current_line.rfind(' ')
+						self.textlines.append(current_line[:last_space_pos].rstrip())
+						current_line = current_line[last_space_pos+1:]
+						line_width = line_width[last_space_pos+1:]
+					else:
+						self.textlines.append(current_line)
+						current_line = ''
+						line_width = []
+						continue
+				current_line += letter
+				line_width.append(letter_width)
+			self.textlines.append(current_line)
+	def _number_of_lines_that_fit_the_screen(self):
+		font_height = self.font.get_letter_image('W').get_size().height
+		return self.size.height // font_height
+	def get_top_line(self):
+		""" Returns current topmost line. """
+		return self.top_line
+	def set_top_line(self, new_top_line):
+		""" Set topmost line to display.
+		It should be in range [0; total_lines - number_of_lines_that_fit_the_screen].
+		"""
+		new_top_line = max(0, new_top_line)
+		new_top_line = min(new_top_line, len(self.textlines) - self._number_of_lines_that_fit_the_screen())
+		self.top_line = new_top_line
+	def can_scroll_up(self):
+		""" Returns True if there are line higher than current viewport can display
+		and it can be scrolled up.
+		"""
+		return self.top_line > 0
+	def can_scroll_down(self):
+		""" Returns True if there are line lower than current viewport can display
+		and it can be scrolled down.
+		"""
+		return self.top_line + self._number_of_lines_that_fit_the_screen() < len(self.textlines)
+	def get_visible_text_lines(self):
+		""" Returns set of text lines that fit into the current viewport. """
+		return self.textlines[self.top_line:self.top_line + self._number_of_lines_that_fit_the_screen()]
 	def draw(self, engine, topleft):
 		font_height = self.font.get_letter_image('W').get_size().height
-		for row, textline in enumerate(self.textlines):
+		for row, textline in enumerate(self.get_visible_text_lines()):
 			image_pos = Point(0, row * font_height)
 			for pos, letter in enumerate(textline):
 				image = self.font.get_letter_image(letter)
