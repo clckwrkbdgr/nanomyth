@@ -64,14 +64,29 @@ def talking_to_farmer(farmer):
 
 	My fellow dog, Smoke, has been helping me to fight of the vermins, but couple of days ago he disappeared. I'm afraid the worst, that the vermins kidnapped him. Without Smoke, I alone cannot protect this farm. Someone has to find my dog and bring him back!
 
-	I would ask you to do it, but apparently Smoke has not made into the game yet. So we're all gonna die.
+	Could you please look for him? I would go myself, but someone need to stay here to ward off the vermins.
 
-	Sob.
+	I think that vermins are coming from the west of here. I would think they probably live in some sort of cave.
+
+	Godspeed!
 	""")
 	main_game.set_pending_context(
-			ui.conversation(engine, resources, farmer_quest, font, size=(5, 2))
+			ui.conversation(engine, resources, farmer_quest, font)
 			)
 engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
+
+def finding_Smoke(Smoke):
+	Smoke_is_found = textwrap.dedent("""\
+	Woof!
+	
+	(Smoke appears to be glad to see a person.)
+
+	(He won't follow you when you go to the farmer though. This part is still incomplete.)
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, Smoke_is_found, font)
+			)
+engine.register_trigger_action('finding_Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
@@ -82,6 +97,8 @@ world.add_map('main', main_map)
 world.add_map('basement', basement_map)
 world.add_map('desert', desert_map)
 world.add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
+world.add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
+world.add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
 
 main_game = nanomyth.view.sdl.context.Game(world)
 main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sprites={

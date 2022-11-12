@@ -61,9 +61,8 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			)
 	return dialog
 
-def conversation(engine, resources, text, font, size=None, on_ok=None):
-	size = Size(size)
-	size = Size(max(size.width, 10), max(size.height, 7))
+def conversation(engine, resources, text, font, on_ok=None):
+	size = Size(10, 7)
 	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
 		['panel_topleft',     'panel_top',         'panel_topright',    ],
 		['panel_left',        'panel_middle',      'panel_right',       ],

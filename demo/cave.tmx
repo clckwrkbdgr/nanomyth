@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="35">
+ <tileset firstgid="1" name="Floor" tilewidth="16" tileheight="16" tilecount="819" columns="21">
+  <image source="../../../Desktop/nanomyth/demo/DawnLike/Objects/Floor.png" width="336" height="624"/>
+ </tileset>
+ <tileset firstgid="820" name="Wall" tilewidth="16" tileheight="16" tilecount="1020" columns="20">
+  <image source="../../../Desktop/nanomyth/demo/DawnLike/Objects/Wall.png" width="320" height="816"/>
+ </tileset>
+ <tileset firstgid="1840" name="Ground0" tilewidth="16" tileheight="16" tilecount="56" columns="8">
+  <image source="../../../Desktop/nanomyth/demo/DawnLike/Objects/Ground0.png" width="128" height="112"/>
+ </tileset>
+ <tileset firstgid="1896" name="Dog0" tilewidth="16" tileheight="16" tilecount="56" columns="8">
+  <image source="../../../Desktop/nanomyth/demo/DawnLike/Characters/Dog0.png" width="128" height="112"/>
+ </tileset>
+ <layer id="1" name="Terrain" width="7" height="7">
+  <data encoding="csv">
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527,
+527,527,527,527,527,527,527
+</data>
+ </layer>
+ <layer id="3" name="Decor" width="7" height="7">
+  <data encoding="csv">
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,
+0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="Objects">
+  <object id="1" name="wall" gid="1268" x="0" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="2" name="wall" gid="1267" x="0" y="96" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="3" name="wall" gid="1267" x="0" y="80" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="4" name="wall" gid="1267" x="0" y="64" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="5" name="wall" gid="1270" x="0" y="48" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="6" name="wall" gid="1289" x="32" y="48" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="7" name="wall" gid="1248" x="16" y="48" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="8" name="wall" gid="1267" x="0" y="32" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="9" name="wall" gid="1267" x="64" y="64" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="10" name="wall" gid="1267" x="32" y="96" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="11" name="wall" gid="1267" x="96" y="64" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="12" name="wall" gid="1267" x="96" y="96" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="13" name="wall" gid="1267" x="96" y="80" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="14" name="wall" gid="1267" x="96" y="48" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="15" name="wall" gid="1267" x="96" y="32" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="16" name="wall" gid="1249" x="96" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="17" name="wall" gid="1287" x="32" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="18" name="wall" gid="1289" x="96" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="19" name="wall" gid="1289" x="64" y="80" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="20" name="wall" gid="1247" x="32" y="80" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="21" name="wall" gid="1247" x="0" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="22" name="wall" gid="1248" x="48" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="23" name="wall" gid="1248" x="64" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="24" name="wall" gid="1248" x="80" y="112" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="25" name="wall" gid="1248" x="48" y="80" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="26" name="wall" gid="1248" x="16" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="27" name="wall" gid="1248" x="32" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="28" name="wall" gid="1248" x="48" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="29" name="wall" gid="1248" x="64" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="30" name="wall" gid="1248" x="80" y="16" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="31" name="wall" gid="1271" x="64" y="48" width="16" height="16">
+   <properties>
+    <property name="passable" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="32" name="exit" gid="1844" x="16" y="112" width="16" height="16">
+   <properties>
+    <property name="portal_dest_map" value="cave_entrance"/>
+    <property name="portal_dest_x" type="int" value="3"/>
+    <property name="portal_dest_y" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="34" name="Smoke" type="npc" gid="1929" x="48" y="96" width="16" height="16">
+   <properties>
+    <property name="message" value="Woof!"/>
+    <property name="trigger" value="finding_Smoke"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
