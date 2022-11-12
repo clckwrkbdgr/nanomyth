@@ -61,10 +61,10 @@ TODO
 	- [X] Terrain with trigger event.
 	- [X] Autosaving on checkpoint tiles.
 	- [X] Displaying message box [OK] on autosaving.
-7. [ ] NPC.
+7. [X] NPC.
 	- [X] Standalone objects like characters, info posts etc.
 	- [X] Interactions with NPC.
-	- [ ] Separate screen dialog for large scrollable texts.
+	- [X] Separate screen dialog for large scrollable texts.
 8. [ ] Quests.
 	- [ ] Triggers to start/stop quests (checkpoint tiles, talking with NPCs).
 	- [ ] Quest steps, conditions on moving to the next step.

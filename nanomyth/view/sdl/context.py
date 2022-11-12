@@ -352,6 +352,28 @@ class TextScreen(Context):
 		self.add_widget((0, 0), panel_widget)
 		self._text_widget = MultilineTextWidget(font, self.text_rect.size, text)
 		self.add_widget(self.text_rect.topleft, self._text_widget)
+		self._button_up = None
+		self._button_down = None
+	def set_scroll_up_button(self, engine, pos, button_widget):
+		""" Adds button for scrolling up.
+		It should be of MenuItem class so it can be highlighted when scrolling up is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the message box topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_up = button_widget
+		self._button_up.make_highlighted(self._text_widget.can_scroll_up())
+		self.add_button(engine, pos, button_widget)
+	def set_scroll_down_button(self, engine, pos, button_widget):
+		""" Adds button for scrolling down.
+		It should be of MenuItem class so it can be highlighted when scrolling down is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the message box topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_down = button_widget
+		self._button_down.make_highlighted(self._text_widget.can_scroll_down())
+		self.add_button(engine, pos, button_widget)
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
@@ -376,3 +398,7 @@ class TextScreen(Context):
 			self._text_widget.set_top_line(self._text_widget.get_top_line() - 1)
 		elif control_name == 'down':
 			self._text_widget.set_top_line(self._text_widget.get_top_line() + 1)
+		if self._button_up:
+			self._button_up.make_highlighted(self._text_widget.can_scroll_up())
+		if self._button_down:
+			self._button_down.make_highlighted(self._text_widget.can_scroll_down())

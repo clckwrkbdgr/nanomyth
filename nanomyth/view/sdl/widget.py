@@ -166,16 +166,11 @@ class MultilineTextWidget:
 			for letter in line:
 				letter_width = self.font.get_letter_image(letter).get_size().width
 				if sum(line_width) + letter_width > self.size.width:
-					if ' ' in current_line:
-						last_space_pos = current_line.rfind(' ')
-						self.textlines.append(current_line[:last_space_pos].rstrip())
-						current_line = current_line[last_space_pos+1:]
-						line_width = line_width[last_space_pos+1:]
-					else:
-						self.textlines.append(current_line)
-						current_line = ''
-						line_width = []
-						continue
+					last_space_pos = current_line.rfind(' ')
+					last_space_pos = last_space_pos if last_space_pos > -1 else len(current_line)
+					self.textlines.append(current_line[:last_space_pos].rstrip())
+					current_line = current_line[last_space_pos+1:]
+					line_width = line_width[last_space_pos+1:]
 				current_line += letter
 				line_width.append(letter_width)
 			self.textlines.append(current_line)

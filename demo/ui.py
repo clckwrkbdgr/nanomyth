@@ -18,6 +18,10 @@ def load_menu_images(engine, resources):
 	engine.add_image('panel_bottomright', gui.get_tile((3, 9)))
 	engine.add_image('button_ok', gui.get_tile((10, 2)))
 	engine.add_image('button_cancel', gui.get_tile((11, 2)))
+	engine.add_image('button_scroll_up', gui.get_tile((10, 0)))
+	engine.add_image('button_scroll_up_highlighted', gui.get_tile((5, 1)))
+	engine.add_image('button_scroll_down', gui.get_tile((10, 0)))
+	engine.add_image('button_scroll_down_highlighted', gui.get_tile((5, 3)))
 
 	button = engine.add_image('Button', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Floor.png', (21, 39)))
 	engine.add_image('button_off_left',   button.get_tile((4, 10)))
@@ -70,6 +74,24 @@ def conversation(engine, resources, text, font, size=None, on_ok=None):
 			text_rect=(4, 4, window_size.width - 4, window_size.height - 8 - 4 - 16),
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
+	dialog.set_scroll_up_button(engine, (
+		-tile_size.width * 2 - 2,
+		-tile_size.height - 2,
+		), nanomyth.view.sdl.widget.MenuItem(
+			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up')),
+			None,
+			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up_highlighted')),
+			),
+		)
+	dialog.set_scroll_down_button(engine, (
+		2,
+		-tile_size.height - 2,
+		), nanomyth.view.sdl.widget.MenuItem(
+			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down')),
+			None,
+			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down_highlighted')),
+			),
+		)
 	dialog.add_button(engine, (
 		-tile_size.width - 2,
 		-tile_size.height,
