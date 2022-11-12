@@ -73,7 +73,7 @@ def talking_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_quest, font)
 			)
-	cave = world.get_map('cave')
+	cave = main_game.get_world().get_map('cave')
 	Smoke = next((other.actor for other in cave.actors if isinstance(other.actor, NPC)), None)
 	Smoke.set_trigger(Trigger(engine.get_trigger_action('finding_Smoke')))
 engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
@@ -115,11 +115,11 @@ def finding_Smoke(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_is_found, font)
 			)
-	farm = world.get_map('farm')
+	farm = main_game.get_world().get_map('farm')
 	farmer = next((other.actor for other in farm.actors if isinstance(other.actor, NPC)), None)
 	farmer.set_trigger(Trigger(engine.get_trigger_action('bringing_Smoke_to_farmer')))
-	Smoke_index = next((i for i, other in enumerate(world.get_current_map().actors) if other.actor == Smoke), None)
-	del world.get_current_map().actors[Smoke_index]
+	Smoke_index = next((i for i, other in enumerate(main_game.get_world().get_current_map().actors) if other.actor == Smoke), None)
+	del main_game.get_world().get_current_map().actors[Smoke_index]
 engine.register_trigger_action('finding_Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)

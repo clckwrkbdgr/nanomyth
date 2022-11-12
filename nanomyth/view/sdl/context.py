@@ -71,6 +71,12 @@ class Game(Context):
 		self.add_widget((0, 0), self.map_widget)
 		self.world = world
 		self.map_widget.set_map(self.world.get_current_map())
+	def get_world(self):
+		""" Returns world object.
+		As it can be completely replaced upon loading from savefile,
+		this is the only valid access. Direct acces to field .world is discouraged.
+		"""
+		return self.world
 	def load_world(self, new_world):
 		""" Replaces World object with a new one.
 		Used for loading savegames etc.
