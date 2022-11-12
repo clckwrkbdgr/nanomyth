@@ -10,6 +10,9 @@ down
 up up up # Navigate back to the "Play"
 return # Play.
 
+###########################################################################
+### OBSTACLES AND SAVEFILES
+
 up up # Test obstacles.
 left # Test movement and direction.
 left # Obstacle.
@@ -51,9 +54,21 @@ right up right # Exit the basement again.
 right down down down down left # Exit the building and walk some.
 escape return up return # Load autosave.
 . . . # Just a pause.
+down down left # Back to the original spawn point.
 
-down down down down # Exit to desert.
-down down right right # To the farm
+###########################################################################
+### QUESTS
+
+right down down # Exit to desert.
+
+down down left left left left # To the cave.
+left left left up up up # Into the cave.
+up up up right right up up right right down down down down left # Pass the maze.
+left . . . return # Talk to the unknown dog.
+right up up up up left left down down left left down down down # Back to the light.
+down down down right right right # To the yard.
+right right right right right right # To the farm.
+
 right right # Talk to the farmer.
 down down down down down # Scrolling text...
 down down down down down # Scrolling text...
@@ -66,7 +81,22 @@ up up up up up # Scrolling text back...
 up up up up up # Scrolling text back...
 up up up up up # Scrolling text back...
 return # Close the message.
-down # Just wander
+left # Leave the farm.
+
+left left left left left left # To the cave again.
+left left left up up up # Into the cave again.
+up up up right right up up right right down down down down left # Pass the maze.
+left . . . return # Talk to now known dog Smoke.
+left left right # Make sure that dog is disappeared from the tile.
+right up up up up left left down down left left down down down # Back to the light.
+down down down right right right # To the yard.
+right right right right right right # To the farm.
+
+right right . . . return # Talk to the farmer, receive thanks.
+
+left # Back to the yard.
+left left up up up # To the house.
+up left # Back to the original spawn point.
 
 . . . # Just a pause.
 escape # To main menu.

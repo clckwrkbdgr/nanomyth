@@ -38,6 +38,9 @@ class NPC:
 		self.sprite = sprite
 		self.message = None
 		self.trigger = trigger
+	def set_trigger(self, new_trigger):
+		""" Changes trigger which will be actived upon interaction. """
+		self.trigger = new_trigger
 	def get_sprite(self):
 		return self.sprite
 	def set_message(self, text):

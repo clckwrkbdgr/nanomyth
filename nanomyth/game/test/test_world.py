@@ -21,6 +21,7 @@ class TestWorld(unittest.TestCase):
 		self.assertEqual(world.get_current_map().get_tile((0, 0)).get_images(), ['floor'])
 		world.set_current_map('desert')
 		self.assertEqual(world.get_current_map().get_tile((0, 0)).get_images(), ['desert'])
+		self.assertEqual(world.get_map('home').get_tile((0, 0)).get_images(), ['floor'])
 	def should_portal_to_another_map(self):
 		world = self._create_world()
 		world.shift_player((0, -1))

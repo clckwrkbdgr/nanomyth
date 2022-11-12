@@ -19,6 +19,9 @@ class World:
 			self.current_map = map_name
 		self.maps[map_name] = level_map
 		return level_map
+	def get_map(self, map_name):
+		""" Returns Map object registered under given name. """
+		return self.maps[map_name]
 	def set_current_map(self, map_name):
 		""" Sets current map by name. """
 		self.current_map = map_name

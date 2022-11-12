@@ -200,7 +200,7 @@
   <object id="34" name="Smoke" type="npc" gid="1929" x="48" y="96" width="16" height="16">
    <properties>
     <property name="message" value="Woof!"/>
-    <property name="trigger" value="finding_Smoke"/>
+    <property name="trigger" value="Smoke_barks"/>
    </properties>
   </object>
  </objectgroup>

@@ -82,6 +82,9 @@ class TestMap(unittest.TestCase):
 		class TriggerCallback:
 			def __init__(self): self.talk = None
 			def __call__(self, npc): self.talk = npc.get_message()
+		class TriggerSecondCallback:
+			def __init__(self): self.talk = None
+			def __call__(self, npc): self.talk = npc.get_message()
 		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
@@ -91,6 +94,15 @@ class TestMap(unittest.TestCase):
 		npc.set_message('Howdy!')
 		self.assertEqual(npc.get_sprite(), 'npc')
 		level_map.add_actor((1, 2), npc)
+
 		level_map.shift_player(Direction.LEFT)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
 		self.assertEqual(trigger_callback.talk, 'Howdy!')
+
+		npc.set_message('Howdy again!')
+		trigger_second_callback = TriggerSecondCallback()
+		npc.set_trigger(Trigger(trigger_second_callback))
+		level_map.shift_player(Direction.LEFT)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
+		self.assertEqual(trigger_callback.talk, 'Howdy!')
+		self.assertEqual(trigger_second_callback.talk, 'Howdy again!')

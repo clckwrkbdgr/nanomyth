@@ -11,9 +11,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import nanomyth
 from nanomyth.math import Matrix, Point
 from nanomyth.game.savegame import PickleSavefile, JsonpickleSavefile
-from nanomyth.game.map import Map, Terrain, Portal
+from nanomyth.game.map import Map, Terrain, Portal, Trigger
 from nanomyth.game.world import World
-from nanomyth.game.actor import Player, Direction
+from nanomyth.game.actor import Player, Direction, NPC
 import nanomyth.view.sdl
 from nanomyth.view.sdl.tmx import load_tmx_map
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
@@ -73,7 +73,36 @@ def talking_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_quest, font)
 			)
+	cave = world.get_map('cave')
+	Smoke = next((other.actor for other in cave.actors if isinstance(other.actor, NPC)), None)
+	Smoke.set_trigger(Trigger(engine.get_trigger_action('finding_Smoke')))
 engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
+
+def bringing_Smoke_to_farmer(farmer):
+	farmer_thanks = textwrap.dedent("""\
+	Thank you for bringing my Smoke back!
+
+	Now we can protect our food crops. The village is saved.
+
+	Good luck to you on your adventures!
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, farmer_thanks, font)
+			)
+engine.register_trigger_action('bringing_Smoke_to_farmer', bringing_Smoke_to_farmer)
+
+def Smoke_barks(Smoke):
+	Smoke_wary = textwrap.dedent("""\
+	Bark! Bark!
+	
+	(The dog seems to be wary of you.)
+
+	(Probably you should step back.)
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, Smoke_wary, font)
+			)
+engine.register_trigger_action('Smoke_barks', Smoke_barks)
 
 def finding_Smoke(Smoke):
 	Smoke_is_found = textwrap.dedent("""\
@@ -81,11 +110,16 @@ def finding_Smoke(Smoke):
 	
 	(Smoke appears to be glad to see a person.)
 
-	(He won't follow you when you go to the farmer though. This part is still incomplete.)
+	(He will follow you when you go to the farmer.)
 	""")
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_is_found, font)
 			)
+	farm = world.get_map('farm')
+	farmer = next((other.actor for other in farm.actors if isinstance(other.actor, NPC)), None)
+	farmer.set_trigger(Trigger(engine.get_trigger_action('bringing_Smoke_to_farmer')))
+	Smoke_index = next((i for i, other in enumerate(world.get_current_map().actors) if other.actor == Smoke), None)
+	del world.get_current_map().actors[Smoke_index]
 engine.register_trigger_action('finding_Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
