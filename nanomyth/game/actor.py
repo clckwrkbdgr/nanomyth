@@ -30,11 +30,12 @@ class Direction(Enum):
 
 class NPC:
 	""" Non-player character. """
-	def __init__(self, sprite, trigger=None):
-		""" Creates NPC with given sprite.
+	def __init__(self, name, sprite, trigger=None):
+		""" Creates NPC with given name and sprite.
 		Optional trigger can be set. It will be activated when interacted with NPC.
 		Actor's Trigger should have callback with single parameter (actor itself).
 		"""
+		self.name = name
 		self.sprite = sprite
 		self.message = None
 		self.trigger = trigger
@@ -54,13 +55,14 @@ class NPC:
 
 class Player:
 	""" Player character. """
-	def __init__(self, default_sprite, directional_sprites=None):
-		""" Creates character with given sprite.
+	def __init__(self, name, default_sprite, directional_sprites=None):
+		""" Creates character with given name and sprite.
 		Default sprite is used for static sprite (no direction).
 		If directional_sprites is given, it should be a dict of {Direction : image_name}
 		Sprites for missing directions are substituted with default sprite.
 		By default characters faces DOWN (in isometric game this should is direction towards camera).
 		"""
+		self.name = name
 		self.default_sprite = default_sprite
 		self.directional_sprites = directional_sprites or {}
 		self.direction = Direction.DOWN

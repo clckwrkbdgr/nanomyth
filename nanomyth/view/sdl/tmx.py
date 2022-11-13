@@ -39,14 +39,19 @@ def load_tmx_map(filename, engine):
 
 	Objects are mainly recognized by type:
 	- npc: Non-player character.
-	  May have properties:
+	  - name: (Required)
+	  May have optional properties:
 	  - message: Informational message to display when interacted with.
+	  - trigger: Trigger for interacting with the NPC.
+		See definition below for details.
 	- portal: Portal tile (all properties are required):
 	  - dest_map: Name of the map to go to.
 	  - dest_x,
 	    dest_y: Destination tile on the target map.
 
-	Other objects are recognized by properites:
+	Other objects (without known type) are considered additional Terrain image with optional properties.
+
+	All objects may have optional properites:
 	- passable(bool): additional Terrain image, makes terrain passable/blocked.
 	- trigger: name of the action callback that's executed when player steps on the tile.
 	  Action callback should be register beforehand using SDLEngine.register_trigger_action()
@@ -87,7 +92,7 @@ def load_tmx_map(filename, engine):
 				trigger = None
 				if 'trigger' in obj.properties:
 					trigger = Trigger(engine.get_trigger_action(obj.trigger))
-				npc = NPC(sprite_name, trigger=trigger)
+				npc = NPC(obj.name, sprite_name, trigger=trigger)
 				if 'message' in obj.properties:
 					npc.set_message(obj.message )
 				real_map.add_actor(pos, npc)

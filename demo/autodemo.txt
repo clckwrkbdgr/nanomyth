@@ -93,8 +93,9 @@ down down down right right right # To the yard.
 right right right right right right # To the farm.
 
 right right . . . return # Talk to the farmer, receive thanks.
+up right . . . return # Talk to the dog, receive thanks.
 
-left # Back to the yard.
+down left # Back to the yard.
 left left up up up # To the house.
 up left # Back to the original spawn point.
 

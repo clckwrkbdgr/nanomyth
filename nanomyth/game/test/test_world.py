@@ -12,7 +12,7 @@ class TestWorld(unittest.TestCase):
 		desert.set_tile((0, 0), Terrain(['desert']))
 		world.add_map('home', home)
 		world.add_map('desert', desert)
-		home.add_actor((2, 2), Player('rogue'))
+		home.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		home.add_portal((2, 1), Portal('desert', (1, 2)))
 		return world
 

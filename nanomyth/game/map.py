@@ -76,6 +76,20 @@ class Map:
 	def add_actor(self, pos, actor):
 		""" Places actor on specified position. """
 		self.actors.append(ActorOnMap(pos, actor))
+	def remove_actor(self, name):
+		""" Removes actor with given name from the map.
+		Returns actor object.
+		Returns None if no such actor is found.
+		"""
+		actor_index, actor = next(((i, other.actor) for i, other in enumerate(self.actors) if other.actor.name == name), None)
+		if actor_index is not None:
+			del self.actors[actor_index]
+		return actor
+	def find_actor(self, name):
+		""" Returns actor with given name.
+		Returns None if no such actor is found.
+		"""
+		return next((other.actor for other in self.actors if other.actor.name == name), None)
 	def add_portal(self, pos, portal):
 		""" Places a portal at the specified position. """
 		self.portals.append(ObjectOnMap(pos, portal))

@@ -27,11 +27,21 @@ class TestMap(unittest.TestCase):
 		self.assertEqual(list(positions), expected)
 	def should_place_actors(self):
 		level_map = Map((5, 5))
-		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		self.assertEqual([(pos, player.get_sprite()) for pos, player in level_map.iter_actors()], [(Point(2, 2), 'rogue')])
+	def should_find_actors_by_name(self):
+		level_map = Map((5, 5))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		self.assertEqual(level_map.find_actor('Wanderer').get_sprite(), 'rogue')
+		self.assertIsNone(level_map.find_actor('Absent'))
+	def should_remove_actors(self):
+		level_map = Map((5, 5))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		level_map.remove_actor('Wanderer')
+		self.assertIsNone(level_map.find_actor('Wanderer'))
 	def should_shift_player(self):
 		level_map = Map((5, 5))
-		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 
 		level_map.shift_player((0, -1))
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 1))
@@ -56,7 +66,7 @@ class TestMap(unittest.TestCase):
 		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
-		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 
 		level_map.shift_player((0, -1))
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
@@ -74,7 +84,7 @@ class TestMap(unittest.TestCase):
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
 		trigger_callback = TriggerCallback()
 		level_map.add_trigger((1, 2), Trigger(trigger_callback))
-		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		level_map.shift_player(Direction.LEFT)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
 		self.assertTrue(trigger_callback.triggered)
@@ -88,9 +98,9 @@ class TestMap(unittest.TestCase):
 		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
-		level_map.add_actor((2, 2), Player('rogue'))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		trigger_callback = TriggerCallback()
-		npc = NPC('npc', trigger=Trigger(trigger_callback))
+		npc = NPC('Farmer', 'npc', trigger=Trigger(trigger_callback))
 		npc.set_message('Howdy!')
 		self.assertEqual(npc.get_sprite(), 'npc')
 		level_map.add_actor((1, 2), npc)

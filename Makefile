@@ -16,7 +16,7 @@ demo:
 autodemo:
 	@python -m coverage run --source=. \
 		--omit=setup.py,nanomyth/math/**.py,nanomyth/game/**.py,nanomyth/utils/**.py \
-		demo/demo.py auto
+		demo/demo.py auto $(AUTODEMOARGS)
 	@python -m coverage report -m || true
 
 clean:

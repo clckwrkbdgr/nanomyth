@@ -74,7 +74,7 @@ def talking_to_farmer(farmer):
 			ui.conversation(engine, resources, farmer_quest, font)
 			)
 	cave = main_game.get_world().get_map('cave')
-	Smoke = next((other.actor for other in cave.actors if isinstance(other.actor, NPC)), None)
+	Smoke = cave.find_actor('Smoke')
 	Smoke.set_trigger(Trigger(engine.get_trigger_action('finding_Smoke')))
 engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
 
@@ -104,6 +104,15 @@ def Smoke_barks(Smoke):
 			)
 engine.register_trigger_action('Smoke_barks', Smoke_barks)
 
+def Smoke_thanks(Smoke):
+	Smoke_text = textwrap.dedent("""\
+	Woof!
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, Smoke_text, font)
+			)
+engine.register_trigger_action('Smoke_thanks', Smoke_thanks)
+
 def finding_Smoke(Smoke):
 	Smoke_is_found = textwrap.dedent("""\
 	Woof!
@@ -116,10 +125,11 @@ def finding_Smoke(Smoke):
 			ui.conversation(engine, resources, Smoke_is_found, font)
 			)
 	farm = main_game.get_world().get_map('farm')
-	farmer = next((other.actor for other in farm.actors if isinstance(other.actor, NPC)), None)
+	farmer = farm.find_actor('farmer')
 	farmer.set_trigger(Trigger(engine.get_trigger_action('bringing_Smoke_to_farmer')))
-	Smoke_index = next((i for i, other in enumerate(main_game.get_world().get_current_map().actors) if other.actor == Smoke), None)
-	del main_game.get_world().get_current_map().actors[Smoke_index]
+	Smoke = main_game.get_world().get_current_map().remove_actor('Smoke')
+	farm.add_actor((2, 2), Smoke)
+	Smoke.set_trigger(Trigger(engine.get_trigger_action('Smoke_thanks')))
 engine.register_trigger_action('finding_Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
@@ -135,7 +145,7 @@ world.add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', en
 world.add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
 
 main_game = nanomyth.view.sdl.context.Game(world)
-main_game.get_current_map().add_actor((1+2, 1+2), Player('rogue', directional_sprites={
+main_game.get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',
 	Direction.LEFT : 'rogue_left',
@@ -178,10 +188,11 @@ main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
 engine.init_context(main_menu)
 
 auto_sequence = None
-if sys.argv[1:] == ['auto']:
+if sys.argv[1:2] == ['auto']:
+	args = sys.argv[2:]
 	import autodemo
 	save3 = DEMO_ROOTDIR/'game3.sav'
 	if save3.exists(): # pragma: no cover -- We need slot 3 to be free.
 		os.unlink(str(save3))
-	auto_sequence = autodemo.AutoSequence(0.2, DEMO_ROOTDIR/'autodemo.txt')
+	auto_sequence = autodemo.AutoSequence(0.2 if 'slow' in args else 0.05, DEMO_ROOTDIR/'autodemo.txt')
 engine.run(custom_update=auto_sequence)

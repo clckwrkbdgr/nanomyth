@@ -22,10 +22,10 @@ class TestDirection(unittest.TestCase):
 
 class TestPlayer(unittest.TestCase):
 	def should_create_character(self):
-		char = Player('rogue')
+		char = Player('Wanderer', 'rogue')
 		self.assertEqual(char.get_sprite(), 'rogue')
 	def should_turn_character(self):
-		char = Player('rogue', directional_sprites={
+		char = Player('Wanderer', 'rogue', directional_sprites={
 			Direction.UP : 'rogue_up',
 			Direction.DOWN : 'rogue_down',
 			Direction.LEFT : 'rogue_left',

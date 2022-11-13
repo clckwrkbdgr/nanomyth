@@ -21,7 +21,7 @@ class TestSavefile(fake_filesystem_unittest.TestCase):
 		bar_map.set_tile((0, 0), Terrain(['grass'], passable=True))
 		world.add_map('bar', bar_map)
 
-		foo_map.add_actor((0, 0), Player('rogue', directional_sprites={
+		foo_map.add_actor((0, 0), Player('Wanderer', 'rogue', directional_sprites={
 			Direction.UP : 'rogue_up',
 			Direction.DOWN : 'rogue_down',
 			Direction.LEFT : 'rogue_left',
