@@ -12,6 +12,7 @@ import nanomyth
 from nanomyth.math import Matrix, Point
 from nanomyth.game.savegame import PickleSavefile, JsonpickleSavefile
 from nanomyth.game.map import Map, Terrain, Portal, Trigger
+from nanomyth.game.quest import Quest
 from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction, NPC
 import nanomyth.view.sdl
@@ -52,6 +53,14 @@ def autosave():
 			)
 engine.register_trigger_action('autosave', autosave)
 
+quest = Quest("When there's Smoke...", [
+	'searching for Smoke', 'Smoke is back',
+	], [
+	'Smoke', 'farmer',
+	])
+engine.register_trigger_action('talking_to_farmer', quest.get_action_callback('farmer'))
+engine.register_trigger_action('Smoke_barks', quest.get_action_callback('Smoke'))
+
 def talking_to_farmer(farmer):
 	farmer_quest = textwrap.dedent("""\
 	Hello there, wanderer!
@@ -73,10 +82,9 @@ def talking_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_quest, font)
 			)
-	cave = main_game.get_world().get_map('cave')
-	Smoke = cave.find_actor('Smoke')
-	Smoke.set_trigger(Trigger(engine.get_trigger_action('finding_Smoke')))
-engine.register_trigger_action('talking_to_farmer', talking_to_farmer)
+quest.on_state(None, 'farmer', talking_to_farmer)
+quest.on_state(None, 'farmer', 'searching for Smoke')
+quest.on_state('searching for Smoke', 'farmer', talking_to_farmer)
 
 def bringing_Smoke_to_farmer(farmer):
 	farmer_thanks = textwrap.dedent("""\
@@ -89,7 +97,7 @@ def bringing_Smoke_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_thanks, font)
 			)
-engine.register_trigger_action('bringing_Smoke_to_farmer', bringing_Smoke_to_farmer)
+quest.on_state('Smoke is back', 'farmer', bringing_Smoke_to_farmer)
 
 def Smoke_barks(Smoke):
 	Smoke_wary = textwrap.dedent("""\
@@ -102,7 +110,7 @@ def Smoke_barks(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_wary, font)
 			)
-engine.register_trigger_action('Smoke_barks', Smoke_barks)
+quest.on_state(None, 'Smoke', Smoke_barks)
 
 def Smoke_thanks(Smoke):
 	Smoke_text = textwrap.dedent("""\
@@ -111,7 +119,7 @@ def Smoke_thanks(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_text, font)
 			)
-engine.register_trigger_action('Smoke_thanks', Smoke_thanks)
+quest.on_state('Smoke is back', 'Smoke', Smoke_thanks)
 
 def finding_Smoke(Smoke):
 	Smoke_is_found = textwrap.dedent("""\
@@ -124,13 +132,11 @@ def finding_Smoke(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_is_found, font)
 			)
-	farm = main_game.get_world().get_map('farm')
-	farmer = farm.find_actor('farmer')
-	farmer.set_trigger(Trigger(engine.get_trigger_action('bringing_Smoke_to_farmer')))
 	Smoke = main_game.get_world().get_current_map().remove_actor('Smoke')
+	farm = main_game.get_world().get_map('farm')
 	farm.add_actor((2, 2), Smoke)
-	Smoke.set_trigger(Trigger(engine.get_trigger_action('Smoke_thanks')))
-engine.register_trigger_action('finding_Smoke', finding_Smoke)
+quest.on_state('searching for Smoke', 'Smoke', 'Smoke is back')
+quest.on_state('searching for Smoke', 'Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
