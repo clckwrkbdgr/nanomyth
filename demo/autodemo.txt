@@ -36,11 +36,11 @@ right right right right # Right into the wall.
 up up up return # Autosave.
 . . . # Just a pause.
 down down down
-down # Exit home and into the desert.
+down # Exit home and into the yard.
 
 left up # Stuck in doorway.
 down up # Re-entering doorway...
-up down # and back to the desert.
+up down # and back to the yard.
 down down down right right down down down left left up # Go to the portal.
 . . . # Just a pause.
 
@@ -59,7 +59,7 @@ down down left # Back to the original spawn point.
 ###########################################################################
 ### QUESTS
 
-right down down # Exit to desert.
+right down down # Exit to yard.
 
 down down left left left left # To the cave.
 left left left up up up # Into the cave.

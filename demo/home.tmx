@@ -32,7 +32,7 @@
  <objectgroup id="2" name="Objects">
   <object id="1" name="doorway" gid="183" x="64" y="96" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="desert"/>
+    <property name="portal_dest_map" value="yard"/>
     <property name="portal_dest_x" type="int" value="4"/>
     <property name="portal_dest_y" type="int" value="0"/>
    </properties>

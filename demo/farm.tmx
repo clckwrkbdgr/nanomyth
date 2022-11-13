@@ -40,7 +40,7 @@
  <objectgroup id="2" name="Objects">
   <object id="1" name="road" gid="7" x="0" y="64" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="desert"/>
+    <property name="portal_dest_map" value="yard"/>
     <property name="portal_dest_x" type="int" value="6"/>
     <property name="portal_dest_y" type="int" value="2"/>
    </properties>
