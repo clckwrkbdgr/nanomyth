@@ -3,6 +3,7 @@ from ...math import Point
 from ..world import World
 from ..map import Map, Terrain, Portal
 from ..actor import Player, Direction
+from ..quest import Quest
 
 class TestWorld(unittest.TestCase):
 	def _create_world(self):
@@ -14,6 +15,8 @@ class TestWorld(unittest.TestCase):
 		world.add_map('desert', desert)
 		home.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		home.add_portal((2, 1), Portal('desert', (1, 2)))
+		quest = Quest('MyQuest', ['foo'], ['a'])
+		world.add_quest('my_quest', quest)
 		return world
 
 	def should_create_world_with_maps(self):
@@ -22,6 +25,7 @@ class TestWorld(unittest.TestCase):
 		world.set_current_map('desert')
 		self.assertEqual(world.get_current_map().get_tile((0, 0)).get_images(), ['desert'])
 		self.assertEqual(world.get_map('home').get_tile((0, 0)).get_images(), ['floor'])
+		self.assertEqual(world.get_quest('my_quest').title, 'MyQuest')
 	def should_portal_to_another_map(self):
 		world = self._create_world()
 		world.shift_player((0, -1))

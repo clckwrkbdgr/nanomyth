@@ -22,12 +22,6 @@ class Quest:
 		self.actions = list(actions)
 		self.state_machine = Matrix((len(self.actions), len(self.states)), [])
 		self.current_state = None
-	def get_action_callback(self, action_name):
-		""" Creates callback function to perform action for a current state.
-		Callback can accept any numbers of positional arguments,
-		they will be passed to all the real callbacks attached to the state/action pair.
-		"""
-		return lambda *params: self.perform_action(action_name, *params)
 	def perform_action(self, action_name, *params):
 		""" Performs action for the current state,
 		resulting in calling all real callbacks attached to the state/action pair.

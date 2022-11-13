@@ -11,6 +11,7 @@ class World:
 		"""
 		self.maps = {}
 		self.current_map = None
+		self.quests = {}
 	def add_map(self, map_name, level_map):
 		""" Adds new map under given name.
 		If there were not maps, sets this one as current.
@@ -28,6 +29,12 @@ class World:
 	def get_current_map(self):
 		""" Returns current map object. """
 		return self.maps[self.current_map]
+	def add_quest(self, quest_name, quest):
+		""" Registers new quest under ID. """
+		self.quests[quest_name] = quest
+	def get_quest(self, quest_name):
+		""" Returns quest by ID. """
+		return self.quests[quest_name]
 	def shift_player(self, shift):
 		try:
 			self.get_current_map().shift_player(shift)

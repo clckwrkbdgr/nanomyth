@@ -58,8 +58,10 @@ quest = Quest("When there's Smoke...", [
 	], [
 	'Smoke', 'farmer',
 	])
-engine.register_trigger_action('talking_to_farmer', quest.get_action_callback('farmer'))
-engine.register_trigger_action('Smoke_barks', quest.get_action_callback('Smoke'))
+def smoke_farmer_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('farmer', *params)
+engine.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
+def smoke_smoke_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('Smoke', *params)
+engine.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
 
 def talking_to_farmer(farmer):
 	farmer_quest = textwrap.dedent("""\
@@ -149,6 +151,7 @@ world.add_map('yard', yard_map)
 world.add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 world.add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
 world.add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
+world.add_quest('smoke', quest)
 
 main_game = nanomyth.view.sdl.context.Game(world)
 main_game.get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={

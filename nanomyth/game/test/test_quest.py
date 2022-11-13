@@ -18,8 +18,8 @@ class TestQuest(unittest.TestCase):
 		quest.on_state('foo', 'a', 'bar')
 		quest.on_state('bar', 'b', bar_callback)
 		
-		action_a = quest.get_action_callback('a')
-		action_b = quest.get_action_callback('b')
+		action_a = lambda *params: quest.perform_action('a', *params)
+		action_b = lambda *params: quest.perform_action('b', *params)
 
 		action_a('start quest')
 		self.assertEqual(foo_callback.data, [])
