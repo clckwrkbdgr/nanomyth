@@ -41,13 +41,13 @@ def load_tmx_map(filename, engine):
 	- npc: Non-player character.
 	  May have properties:
 	  - message: Informational message to display when interacted with.
+	- portal: Portal tile (all properties are required):
+	  - dest_map: Name of the map to go to.
+	  - dest_x,
+	    dest_y: Destination tile on the target map.
 
 	Other objects are recognized by properites:
 	- passable(bool): additional Terrain image, makes terrain passable/blocked.
-	- portal_dest_*: Creates portal tile (all properties are required):
-	  - portal_dest_map: Name of the map to go to.
-	  - portal_dest_x,
-	    portal_dest_y: Destination tile on the target map.
 	- trigger: name of the action callback that's executed when player steps on the tile.
 	  Action callback should be register beforehand using SDLEngine.register_trigger_action()
 
@@ -92,14 +92,15 @@ def load_tmx_map(filename, engine):
 					npc.set_message(obj.message )
 				real_map.add_actor(pos, npc)
 				continue
+			if obj.type == 'portal':
+				real_map.add_portal(pos, Portal(
+					obj.dest_map,
+					(obj.dest_x, obj.dest_y),
+					))
+				continue
 			if 'passable' in obj.properties and not obj.passable:
 				passable = False
 			if 'trigger' in obj.properties:
 				real_map.add_trigger(pos, Trigger(engine.get_trigger_action(obj.trigger)))
-			if 'portal_dest_map' in obj.properties:
-				real_map.add_portal(pos, Portal(
-					obj.portal_dest_map,
-					(obj.portal_dest_x, obj.portal_dest_y),
-					))
 		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=passable))
 	return real_map

@@ -41,18 +41,18 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="20" name="doorway" gid="1878" x="64" y="16" width="16" height="16">
+  <object id="20" name="doorway" type="portal" gid="1878" x="64" y="16" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="main"/>
-    <property name="portal_dest_x" type="int" value="4"/>
-    <property name="portal_dest_y" type="int" value="5"/>
+    <property name="dest_map" value="main"/>
+    <property name="dest_x" type="int" value="4"/>
+    <property name="dest_y" type="int" value="5"/>
    </properties>
   </object>
-  <object id="12" name="portal" gid="1913" x="64" y="96" width="16" height="16">
+  <object id="12" name="portal" type="portal" gid="1913" x="64" y="96" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="main"/>
-    <property name="portal_dest_x" type="int" value="3"/>
-    <property name="portal_dest_y" type="int" value="3"/>
+    <property name="dest_map" value="main"/>
+    <property name="dest_x" type="int" value="3"/>
+    <property name="dest_y" type="int" value="3"/>
    </properties>
   </object>
   <object id="14" gid="2042" x="80" y="96" width="16" height="16">
@@ -86,18 +86,18 @@
    </properties>
   </object>
   <object id="21" name="door" gid="1872" x="64" y="16" width="16" height="16"/>
-  <object id="23" name="road_to_farm" gid="1924" x="96" y="48" width="16" height="16">
+  <object id="23" name="road_to_farm" type="portal" gid="1924" x="96" y="48" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="farm"/>
-    <property name="portal_dest_x" type="int" value="0"/>
-    <property name="portal_dest_y" type="int" value="3"/>
+    <property name="dest_map" value="farm"/>
+    <property name="dest_x" type="int" value="0"/>
+    <property name="dest_y" type="int" value="3"/>
    </properties>
   </object>
-  <object id="24" name="road_to_cave" gid="1924" x="0" y="48" width="16" height="16">
+  <object id="24" name="road_to_cave" type="portal" gid="1924" x="0" y="48" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="cave_entrance"/>
-    <property name="portal_dest_x" type="int" value="6"/>
-    <property name="portal_dest_y" type="int" value="3"/>
+    <property name="dest_map" value="cave_entrance"/>
+    <property name="dest_x" type="int" value="6"/>
+    <property name="dest_y" type="int" value="3"/>
    </properties>
   </object>
  </objectgroup>

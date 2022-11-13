@@ -35,11 +35,11 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="1" name="road" gid="824" x="96" y="64" width="16" height="16">
+  <object id="1" name="road" type="portal" gid="824" x="96" y="64" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="yard"/>
-    <property name="portal_dest_x" type="int" value="0"/>
-    <property name="portal_dest_y" type="int" value="2"/>
+    <property name="dest_map" value="yard"/>
+    <property name="dest_x" type="int" value="0"/>
+    <property name="dest_y" type="int" value="2"/>
    </properties>
   </object>
   <object id="2" name="wall" gid="1237" x="0" y="16" width="16" height="16">
@@ -72,11 +72,11 @@
     <property name="passable" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="8" name="entrance" gid="11" x="48" y="16" width="16" height="16">
+  <object id="8" name="entrance" type="portal" gid="11" x="48" y="16" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="cave"/>
-    <property name="portal_dest_x" type="int" value="1"/>
-    <property name="portal_dest_y" type="int" value="6"/>
+    <property name="dest_map" value="cave"/>
+    <property name="dest_x" type="int" value="1"/>
+    <property name="dest_y" type="int" value="6"/>
    </properties>
   </object>
   <object id="9" name="cave door" gid="1927" x="48" y="16" width="16" height="16"/>

@@ -38,11 +38,11 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="1" name="road" gid="7" x="0" y="64" width="16" height="16">
+  <object id="1" name="road" type="portal" gid="7" x="0" y="64" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="yard"/>
-    <property name="portal_dest_x" type="int" value="6"/>
-    <property name="portal_dest_y" type="int" value="2"/>
+    <property name="dest_map" value="yard"/>
+    <property name="dest_x" type="int" value="6"/>
+    <property name="dest_y" type="int" value="2"/>
    </properties>
   </object>
   <object id="2" name="wall" gid="1079" x="0" y="112" width="16" height="16">

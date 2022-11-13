@@ -30,11 +30,11 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="1" name="doorway" gid="183" x="64" y="96" width="16" height="16">
+  <object id="1" name="doorway" type="portal" gid="183" x="64" y="96" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="yard"/>
-    <property name="portal_dest_x" type="int" value="4"/>
-    <property name="portal_dest_y" type="int" value="0"/>
+    <property name="dest_map" value="yard"/>
+    <property name="dest_x" type="int" value="4"/>
+    <property name="dest_y" type="int" value="0"/>
    </properties>
   </object>
   <object id="2" name="door" gid="177" x="64" y="96" width="16" height="16"/>
@@ -145,11 +145,11 @@
   <object id="26" name="carpet" gid="115" x="64" y="64" width="16" height="16"/>
   <object id="27" name="carpet" gid="131" x="64" y="80" width="16" height="16"/>
   <object id="28" name="carpet" gid="129" x="48" y="80" width="16" height="16"/>
-  <object id="37" name="hatch" gid="303" x="32" y="80" width="16" height="16">
+  <object id="37" name="hatch" type="portal" gid="303" x="32" y="80" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="basement"/>
-    <property name="portal_dest_x" type="int" value="4"/>
-    <property name="portal_dest_y" type="int" value="3"/>
+    <property name="dest_map" value="basement"/>
+    <property name="dest_x" type="int" value="4"/>
+    <property name="dest_y" type="int" value="3"/>
    </properties>
   </object>
  </objectgroup>

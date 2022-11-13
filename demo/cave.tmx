@@ -190,11 +190,11 @@
     <property name="passable" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="32" name="exit" gid="1844" x="16" y="112" width="16" height="16">
+  <object id="32" name="exit" type="portal" gid="1844" x="16" y="112" width="16" height="16">
    <properties>
-    <property name="portal_dest_map" value="cave_entrance"/>
-    <property name="portal_dest_x" type="int" value="3"/>
-    <property name="portal_dest_y" type="int" value="0"/>
+    <property name="dest_map" value="cave_entrance"/>
+    <property name="dest_x" type="int" value="3"/>
+    <property name="dest_y" type="int" value="0"/>
    </properties>
   </object>
   <object id="34" name="Smoke" type="npc" gid="1929" x="48" y="96" width="16" height="16">
