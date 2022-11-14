@@ -85,8 +85,8 @@ left # Leave the farm.
 
 left left left left left left # To the cave again.
 left left left up up up # Into the cave again.
-up up up right right up up right right down down down down left # Pass the maze.
-left . . . return # Talk to now known dog Smoke.
+up up . . . return up right right up up right right down down down down left # Pass the maze.
+left . . . return # Talk to now familiar dog Smoke.
 left left right # Make sure that dog is disappeared from the tile.
 right up up up up left left down down left left down down down # Back to the light.
 down down down right right right # To the yard.

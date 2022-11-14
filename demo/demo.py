@@ -53,12 +53,13 @@ def autosave():
 			)
 
 quest = Quest("When there's Smoke...", [
-	'searching for Smoke', 'Smoke is back',
+	'searching for Smoke', 'hearing Smoke', 'Smoke is back',
 	], [
-	'Smoke', 'farmer',
+	'Smoke', 'checkpoint', 'farmer',
 	])
 def smoke_farmer_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('farmer', *params)
 def smoke_smoke_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('Smoke', *params)
+def smoke_checkpoint_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('checkpoint', *params)
 
 def talking_to_farmer(farmer):
 	farmer_quest = textwrap.dedent("""\
@@ -84,6 +85,19 @@ def talking_to_farmer(farmer):
 quest.on_state(None, 'farmer', talking_to_farmer)
 quest.on_state(None, 'farmer', 'searching for Smoke')
 quest.on_state('searching for Smoke', 'farmer', talking_to_farmer)
+quest.on_state('hearing Smoke', 'farmer', talking_to_farmer)
+
+def hearing_Smoke(*params):
+	barking = textwrap.dedent("""\
+	You hear barking in the furthest parts of the dungeon.
+
+	It could be Smoke!
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, barking, font)
+			)
+quest.on_state('searching for Smoke', 'checkpoint', 'hearing Smoke')
+quest.on_state('searching for Smoke', 'checkpoint', hearing_Smoke)
 
 def bringing_Smoke_to_farmer(farmer):
 	farmer_thanks = textwrap.dedent("""\
@@ -136,6 +150,8 @@ def finding_Smoke(Smoke):
 	farm.add_actor((2, 2), Smoke)
 quest.on_state('searching for Smoke', 'Smoke', 'Smoke is back')
 quest.on_state('searching for Smoke', 'Smoke', finding_Smoke)
+quest.on_state('hearing Smoke', 'Smoke', 'Smoke is back')
+quest.on_state('hearing Smoke', 'Smoke', finding_Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
@@ -160,6 +176,7 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', di
 main_game.register_trigger_action('autosave', autosave)
 main_game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
 main_game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
+main_game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
