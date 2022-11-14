@@ -35,10 +35,12 @@ class World:
 	def get_quest(self, quest_name):
 		""" Returns quest by ID. """
 		return self.quests[quest_name]
-	def shift_player(self, shift, trigger_registry=None):
+	def shift_player(self, shift, trigger_registry=None, on_change_map=None):
 		""" Moves player character on the current map by given shift.
 		See details in Map.shift_player.
 		May move actors across the map or perform other global-world actions.
+		If on_change_map is supplied, it is a callable that accepts Map object
+		and is called when current map is changed.
 		"""
 		try:
 			self.get_current_map().shift_player(shift, trigger_registry=trigger_registry)
@@ -48,3 +50,5 @@ class World:
 					p.portal.entrance_pos,
 					p.player,
 					)
+			if on_change_map:
+				on_change_map(self.get_current_map())

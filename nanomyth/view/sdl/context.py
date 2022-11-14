@@ -5,6 +5,7 @@ Main context operations are performed by the SDLEngine itself.
 """
 import pygame
 from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget
+from ...game.actor import Direction
 from ...math import Point, Size, Rect
 
 class WidgetAtPos:
@@ -63,57 +64,20 @@ class Game(Context):
 
 	Any other widgets (e.g. UI) can be added via usual .add_widget()
 	"""
-	def __init__(self, world):
-		""" Creates game with given world.
+	def __init__(self, game):
+		""" Creates visual context for the game object.
 		"""
 		super().__init__()
 		self.map_widget = LevelMapWidget(None)
 		self.add_widget((0, 0), self.map_widget)
-		self.world = world
-		self.map_widget.set_map(self.world.get_current_map())
-		self.trigger_actions = {}
-	def get_world(self):
-		""" Returns world object.
-		As it can be completely replaced upon loading from savefile,
-		this is the only valid access. Direct acces to field .world is discouraged.
-		"""
-		return self.world
-	def load_world(self, new_world):
-		""" Replaces World object with a new one.
-		Used for loading savegames etc.
-		"""
-		self.world = new_world
-		self.map_widget.set_map(self.world.get_current_map())
-	def save_to_file(self, savefile, force=False):
-		""" Saves game state to the file using Savefile instance.
-		Returns True if was saved successfully, False if savefile already exists.
-		With force=True overwrites existing savefile.
-		"""
-		if savefile.exists() and not force:
-			return False
-		savefile.save(self.world)
-		return True
-	def load_from_file(self, savefile):
-		""" Loads game state from the file using Savefile instance.
-		"""
-		new_world = savefile.load()
-		if not new_world: # pragma: no cover -- should not reach here in properly developed game.
-			return False
-		self.load_world(new_world)
-		return True
-	def get_current_map(self):
-		""" Returns current map of the world
-		(usually where player is).
-		"""
-		return self.world.get_current_map()
-	def register_trigger_action(self, action_name, action_callback):
-		""" Register actual callback function under a name,
-		so it can be referred later, e.g. when loading TMX map.
-		"""
-		self.trigger_actions[action_name] = action_callback
-	def get_trigger_action(self, action_name):
-		""" Returns previously registered trigger callback by name. """
-		return self.trigger_actions[action_name]
+		self.game = game
+		self.game.on_change_map(self._update_map_widget)
+		self._update_map_widget(self.game.get_world().get_current_map())
+	def _update_map_widget(self, current_map):
+		self.map_widget.set_map(current_map)
+	def get_game(self):
+		""" Returns game object. """
+		return self.game
 	def update(self, control_name):
 		""" Controls player character: <Up>, <Down>, <Left>, <Right>
 		<ESC>: Exit to the previous context.
@@ -121,14 +85,13 @@ class Game(Context):
 		if control_name == 'escape':
 			raise self.Finished()
 		elif control_name == 'up':
-			self.world.shift_player((0, -1), trigger_registry=self.get_trigger_action)
+			self.game.shift_player(Direction.UP)
 		elif control_name == 'down':
-			self.world.shift_player((0, +1), trigger_registry=self.get_trigger_action)
+			self.game.shift_player(Direction.DOWN)
 		elif control_name == 'left':
-			self.world.shift_player((-1, 0), trigger_registry=self.get_trigger_action)
+			self.game.shift_player(Direction.LEFT)
 		elif control_name == 'right':
-			self.world.shift_player((+1, 0), trigger_registry=self.get_trigger_action)
-		self.map_widget.set_map(self.world.get_current_map())
+			self.game.shift_player(Direction.RIGHT)
 
 class Menu(Context):
 	""" Game context for menu screens.

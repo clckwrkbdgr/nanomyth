@@ -12,6 +12,7 @@ import nanomyth
 from nanomyth.math import Matrix, Point
 from nanomyth.game.savegame import PickleSavefile, JsonpickleSavefile
 from nanomyth.game.map import Map, Terrain, Portal, Trigger
+from nanomyth.game.game import Game
 from nanomyth.game.quest import Quest
 from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction, NPC
@@ -47,7 +48,7 @@ engine.add_image('rogue_right', rogue.get_tile((0, 2)))
 engine.add_image('rogue_up', rogue.get_tile((0, 3)))
 
 def autosave():
-	main_game.save_to_file(autosavefile, force=True)
+	main_game.get_game().save_to_file(autosavefile, force=True)
 	main_game.set_pending_context(
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
@@ -57,9 +58,9 @@ quest = Quest("When there's Smoke...", [
 	], [
 	'Smoke', 'checkpoint', 'farmer',
 	])
-def smoke_farmer_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('farmer', *params)
-def smoke_smoke_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('Smoke', *params)
-def smoke_checkpoint_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('checkpoint', *params)
+def smoke_farmer_quest_step(*params): game.get_world().get_quest('smoke').perform_action('farmer', *params)
+def smoke_smoke_quest_step(*params): game.get_world().get_quest('smoke').perform_action('Smoke', *params)
+def smoke_checkpoint_quest_step(*params): game.get_world().get_quest('smoke').perform_action('checkpoint', *params)
 
 def talking_to_farmer(farmer):
 	farmer_quest = textwrap.dedent("""\
@@ -145,8 +146,8 @@ def finding_Smoke(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_is_found, font)
 			)
-	Smoke = main_game.get_world().get_current_map().remove_actor('Smoke')
-	farm = main_game.get_world().get_map('farm')
+	Smoke = game.get_world().get_current_map().remove_actor('Smoke')
+	farm = game.get_world().get_map('farm')
 	farm.add_actor((2, 2), Smoke)
 quest.on_state('searching for Smoke', 'Smoke', 'Smoke is back')
 quest.on_state('searching for Smoke', 'Smoke', finding_Smoke)
@@ -157,26 +158,26 @@ main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
 yard_map = load_tmx_map(DEMO_ROOTDIR/'yard.tmx', engine)
 
-world = World()
-world.add_map('main', main_map)
-world.add_map('basement', basement_map)
-world.add_map('yard', yard_map)
-world.add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
-world.add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
-world.add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
-world.add_quest('smoke', quest)
+game = Game()
+game.get_world().add_map('main', main_map)
+game.get_world().add_map('basement', basement_map)
+game.get_world().add_map('yard', yard_map)
+game.get_world().add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
+game.get_world().add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
+game.get_world().add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
+game.get_world().add_quest('smoke', quest)
 
-main_game = nanomyth.view.sdl.context.Game(world)
-main_game.get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
+main_game = nanomyth.view.sdl.context.Game(game)
+game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',
 	Direction.LEFT : 'rogue_left',
 	Direction.RIGHT : 'rogue_right',
 	}))
-main_game.register_trigger_action('autosave', autosave)
-main_game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
-main_game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
-main_game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
+game.register_trigger_action('autosave', autosave)
+game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
+game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
+game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
@@ -186,7 +187,7 @@ savefiles = [
 autosavefile = JsonpickleSavefile(DEMO_ROOTDIR/'auto.sav')
 
 def save_game(savefile, force=False):
-	ok = main_game.save_to_file(savefile, force=force)
+	ok = game.save_to_file(savefile, force=force)
 	if not ok:
 		return ui.message_box(engine, resources, 'Overwrite slot?', font, size=(6, 2),
 				on_ok=lambda: save_game_menu.set_pending_context(save_game(savefile, force=True)),
@@ -195,7 +196,7 @@ def save_game(savefile, force=False):
 	return ui.message_box(engine, resources, 'Game saved.', font, size=(5, 2))
 
 def load_game(savefile):
-	if main_game.load_from_file(savefile):
+	if game.load_from_file(savefile):
 		main_menu.set_pending_context(main_game)
 	else:
 		main_menu_info.set_text('')

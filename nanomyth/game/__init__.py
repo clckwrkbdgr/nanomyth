@@ -1,1 +1,1 @@
-from . import map, actor, world, savegame
+from . import map, actor, world, savegame, game
