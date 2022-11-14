@@ -91,7 +91,7 @@ def load_tmx_map(filename, engine):
 				sprite_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
 				trigger = None
 				if 'trigger' in obj.properties:
-					trigger = Trigger(engine.get_trigger_action(obj.trigger))
+					trigger = Trigger(obj.trigger)
 				npc = NPC(obj.name, sprite_name, trigger=trigger)
 				if 'message' in obj.properties:
 					npc.set_message(obj.message )
@@ -106,6 +106,6 @@ def load_tmx_map(filename, engine):
 			if 'passable' in obj.properties and not obj.passable:
 				passable = False
 			if 'trigger' in obj.properties:
-				real_map.add_trigger(pos, Trigger(engine.get_trigger_action(obj.trigger)))
+				real_map.add_trigger(pos, Trigger(obj.trigger))
 		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=passable))
 	return real_map

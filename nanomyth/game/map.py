@@ -32,14 +32,17 @@ class Trigger:
 	""" Provides means to trigger user-defined event.
 	Once player steps on it, event is triggered and attached action is taken.
 	"""
-	def __init__(self, trigger_callback):
-		""" Creates trigger with given callback (should not accept args),
+	def __init__(self, trigger_name):
+		""" Creates trigger with given name,
 		which will be executed when trigger is activated.
 		"""
-		self.trigger_callback = trigger_callback
-	def activate(self, *params):
-		if self.trigger_callback:
-			self.trigger_callback(*params)
+		self.trigger_name = trigger_name
+	def activate(self, trigger_registry, *params):
+		""" Activates trigger by name using given trigger registry.
+		Registry should be a callable that accepts trigger name and returns actual callback.
+		"""
+		if self.trigger_name:
+			trigger_registry(self.trigger_name)(*params)
 
 class ObjectOnMap:
 	def __init__(self, pos, obj):
@@ -96,12 +99,13 @@ class Map:
 	def add_trigger(self, pos, trigger):
 		""" Places a trigger at the specified position. """
 		self.triggers.append(ObjectOnMap(pos, trigger))
-	def shift_player(self, shift):
+	def shift_player(self, shift, trigger_registry=None):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),
 		or a Direction object (in this case will be performed as a single-tile step in given direction).
 
 		Performs all available triggers if any are set on destination tile (like portals).
+		Requires reference to the trigger registry for that (see details in Trigger).
 		"""
 		player = next(_ for _ in self.actors if isinstance(_.actor, actor.Player))
 		if isinstance(shift, actor.Direction):
@@ -118,7 +122,7 @@ class Map:
 		other_actor = next((other.actor for other in self.actors if other.pos == new_pos), None)
 		if other_actor:
 			if other_actor.trigger:
-				other_actor.trigger.activate(other_actor)
+				other_actor.trigger.activate(trigger_registry, other_actor)
 			return
 		portal = next((portal.obj for portal in self.portals if portal.pos == new_pos), None)
 		if portal:
@@ -128,7 +132,7 @@ class Map:
 
 		trigger = next((trigger.obj for trigger in self.triggers if trigger.pos == new_pos), None)
 		if trigger:
-			trigger.activate()
+			trigger.activate(trigger_registry)
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).

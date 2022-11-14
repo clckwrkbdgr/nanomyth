@@ -71,6 +71,7 @@ class Game(Context):
 		self.add_widget((0, 0), self.map_widget)
 		self.world = world
 		self.map_widget.set_map(self.world.get_current_map())
+		self.trigger_actions = {}
 	def get_world(self):
 		""" Returns world object.
 		As it can be completely replaced upon loading from savefile,
@@ -105,6 +106,14 @@ class Game(Context):
 		(usually where player is).
 		"""
 		return self.world.get_current_map()
+	def register_trigger_action(self, action_name, action_callback):
+		""" Register actual callback function under a name,
+		so it can be referred later, e.g. when loading TMX map.
+		"""
+		self.trigger_actions[action_name] = action_callback
+	def get_trigger_action(self, action_name):
+		""" Returns previously registered trigger callback by name. """
+		return self.trigger_actions[action_name]
 	def update(self, control_name):
 		""" Controls player character: <Up>, <Down>, <Left>, <Right>
 		<ESC>: Exit to the previous context.
@@ -112,13 +121,13 @@ class Game(Context):
 		if control_name == 'escape':
 			raise self.Finished()
 		elif control_name == 'up':
-			self.world.shift_player((0, -1))
+			self.world.shift_player((0, -1), trigger_registry=self.get_trigger_action)
 		elif control_name == 'down':
-			self.world.shift_player((0, +1))
+			self.world.shift_player((0, +1), trigger_registry=self.get_trigger_action)
 		elif control_name == 'left':
-			self.world.shift_player((-1, 0))
+			self.world.shift_player((-1, 0), trigger_registry=self.get_trigger_action)
 		elif control_name == 'right':
-			self.world.shift_player((+1, 0))
+			self.world.shift_player((+1, 0), trigger_registry=self.get_trigger_action)
 		self.map_widget.set_map(self.world.get_current_map())
 
 class Menu(Context):

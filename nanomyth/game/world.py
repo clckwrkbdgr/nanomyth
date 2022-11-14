@@ -35,9 +35,13 @@ class World:
 	def get_quest(self, quest_name):
 		""" Returns quest by ID. """
 		return self.quests[quest_name]
-	def shift_player(self, shift):
+	def shift_player(self, shift, trigger_registry=None):
+		""" Moves player character on the current map by given shift.
+		See details in Map.shift_player.
+		May move actors across the map or perform other global-world actions.
+		"""
 		try:
-			self.get_current_map().shift_player(shift)
+			self.get_current_map().shift_player(shift, trigger_registry=trigger_registry)
 		except Portalling as p:
 			self.set_current_map(p.portal.dest_map)
 			self.get_current_map().add_actor(

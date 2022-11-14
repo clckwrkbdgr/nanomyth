@@ -51,7 +51,6 @@ def autosave():
 	main_game.set_pending_context(
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
-engine.register_trigger_action('autosave', autosave)
 
 quest = Quest("When there's Smoke...", [
 	'searching for Smoke', 'Smoke is back',
@@ -59,9 +58,7 @@ quest = Quest("When there's Smoke...", [
 	'Smoke', 'farmer',
 	])
 def smoke_farmer_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('farmer', *params)
-engine.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
 def smoke_smoke_quest_step(*params): main_game.get_world().get_quest('smoke').perform_action('Smoke', *params)
-engine.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
 
 def talking_to_farmer(farmer):
 	farmer_quest = textwrap.dedent("""\
@@ -160,6 +157,9 @@ main_game.get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', di
 	Direction.LEFT : 'rogue_left',
 	Direction.RIGHT : 'rogue_right',
 	}))
+main_game.register_trigger_action('autosave', autosave)
+main_game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
+main_game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
