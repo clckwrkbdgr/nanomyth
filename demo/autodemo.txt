@@ -57,7 +57,18 @@ escape return up return # Load autosave.
 down down left # Back to the original spawn point.
 
 ###########################################################################
-### QUESTS
+### QUEST FOODCART
+
+right down down # Exit to yard.
+down down left left left down right # Trying to push the cart.
+up right right down . . . return # Talking to Trader.
+left left down . . . return # Pushing cart
+up right right down . . . return # Receive thanks.
+up right up # Back to home.
+up up left # Back to the base.
+
+###########################################################################
+### QUEST FARMER SMOKE
 
 right down down # Exit to yard.
 

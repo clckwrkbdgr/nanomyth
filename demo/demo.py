@@ -53,6 +53,46 @@ def autosave():
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
 
+foodcart_quest = Quest("All flesh is grass", [
+	'pushing cart', 'cart is free',
+	], [
+	'trader', 'grass',
+	])
+def foodcart_trader_step(*params): game.get_world().get_quest('foodcart').perform_action('trader', *params)
+def foodcart_grass_step(*params): game.get_world().get_quest('foodcart').perform_action('grass', *params)
+
+def talking_to_trader(*params):
+	trader_quest = textwrap.dedent("""\
+	My food cart is stuck in this grass. Could you push from the back?
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, trader_quest, font)
+			)
+foodcart_quest.on_state(None, 'trader', talking_to_trader)
+foodcart_quest.on_state(None, 'trader', 'pushing cart')
+foodcart_quest.on_state('pushing cart', 'trader', talking_to_trader)
+foodcart_quest.on_state('pushing cart', 'grass', 'cart is free')
+def pushing_cart(*params):
+	push_cart = textwrap.dedent("""\
+	You are trying to push cart with all the strength when you notice that one of the wheels is entangled in a grass knot.
+
+	You cut the grass and the wheel is free.
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, push_cart, font)
+			)
+foodcart_quest.on_state('pushing cart', 'grass', pushing_cart)
+def cart_is_free(*params):
+	trader_thanks = textwrap.dedent("""\
+	Thanks! I'm going to the market to sell these crops from the farm that's east from here. Farmer there could use your help too.
+	""")
+	main_game.set_pending_context(
+			ui.conversation(engine, resources, trader_thanks, font)
+			)
+	game.get_world().get_current_map().remove_actor('foodcart')
+	game.get_world().get_current_map().remove_actor('Trader')
+foodcart_quest.on_state('cart is free', 'trader', cart_is_free)
+
 quest = Quest("When there's Smoke...", [
 	'searching for Smoke', 'hearing Smoke', 'Smoke is back',
 	], [
@@ -166,6 +206,7 @@ game.get_world().add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 game.get_world().add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
 game.get_world().add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
 game.get_world().add_quest('smoke', quest)
+game.get_world().add_quest('foodcart', foodcart_quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
 game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
@@ -178,6 +219,8 @@ game.register_trigger_action('autosave', autosave)
 game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
 game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
 game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
+game.register_trigger_action('talking_to_trader', foodcart_trader_step)
+game.register_trigger_action('push_foodcart', foodcart_grass_step)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
