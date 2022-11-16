@@ -33,8 +33,7 @@ return escape up return # Back to playing.
 right # Go up.
 
 right right right right # Right into the wall.
-up up up return # Autosave.
-. . . # Just a pause.
+up up up . . . return # Autosave.
 down down down
 down # Exit home and into the yard.
 

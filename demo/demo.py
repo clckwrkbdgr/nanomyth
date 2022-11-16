@@ -13,7 +13,7 @@ from nanomyth.math import Matrix, Point
 from nanomyth.game.savegame import PickleSavefile, JsonpickleSavefile
 from nanomyth.game.map import Map, Terrain, Portal, Trigger
 from nanomyth.game.game import Game
-from nanomyth.game.quest import Quest
+from nanomyth.game.quest import Quest, ExternalQuestAction
 from nanomyth.game.world import World
 from nanomyth.game.actor import Player, Direction, NPC
 import nanomyth.view.sdl
@@ -58,21 +58,21 @@ foodcart_quest = Quest("All flesh is grass", [
 	], [
 	'trader', 'grass',
 	])
-def foodcart_trader_step(*params): game.get_world().get_quest('foodcart').perform_action('trader', *params)
-def foodcart_grass_step(*params): game.get_world().get_quest('foodcart').perform_action('grass', *params)
+def foodcart_trader_step(trader): game.get_world().get_quest('foodcart').perform_action('trader', trigger_registry=game.get_trigger_action)
+def foodcart_grass_step(): game.get_world().get_quest('foodcart').perform_action('grass', trigger_registry=game.get_trigger_action)
 
-def talking_to_trader(*params):
+def trader_asks_for_help():
 	trader_quest = textwrap.dedent("""\
 	My food cart is stuck in this grass. Could you push from the back?
 	""")
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, trader_quest, font)
 			)
-foodcart_quest.on_state(None, 'trader', talking_to_trader)
+foodcart_quest.on_state(None, 'trader', ExternalQuestAction('trader_asks_for_help'))
 foodcart_quest.on_state(None, 'trader', 'pushing cart')
-foodcart_quest.on_state('pushing cart', 'trader', talking_to_trader)
+foodcart_quest.on_state('pushing cart', 'trader', ExternalQuestAction('trader_asks_for_help'))
 foodcart_quest.on_state('pushing cart', 'grass', 'cart is free')
-def pushing_cart(*params):
+def pushing_cart():
 	push_cart = textwrap.dedent("""\
 	You are trying to push cart with all the strength when you notice that one of the wheels is entangled in a grass knot.
 
@@ -81,8 +81,8 @@ def pushing_cart(*params):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, push_cart, font)
 			)
-foodcart_quest.on_state('pushing cart', 'grass', pushing_cart)
-def cart_is_free(*params):
+foodcart_quest.on_state('pushing cart', 'grass', ExternalQuestAction('pushing_cart'))
+def cart_is_free():
 	trader_thanks = textwrap.dedent("""\
 	Thanks! I'm going to the market to sell these crops from the farm that's east from here. Farmer there could use your help too.
 	""")
@@ -91,18 +91,18 @@ def cart_is_free(*params):
 			)
 	game.get_world().get_current_map().remove_actor('foodcart')
 	game.get_world().get_current_map().remove_actor('Trader')
-foodcart_quest.on_state('cart is free', 'trader', cart_is_free)
+foodcart_quest.on_state('cart is free', 'trader', ExternalQuestAction('cart_is_free'))
 
 quest = Quest("When there's Smoke...", [
 	'searching for Smoke', 'hearing Smoke', 'Smoke is back',
 	], [
 	'Smoke', 'checkpoint', 'farmer',
 	])
-def smoke_farmer_quest_step(*params): game.get_world().get_quest('smoke').perform_action('farmer', *params)
-def smoke_smoke_quest_step(*params): game.get_world().get_quest('smoke').perform_action('Smoke', *params)
-def smoke_checkpoint_quest_step(*params): game.get_world().get_quest('smoke').perform_action('checkpoint', *params)
+def smoke_farmer_quest_step(farmer): game.get_world().get_quest('smoke').perform_action('farmer', trigger_registry=game.get_trigger_action)
+def smoke_smoke_quest_step(smoke): game.get_world().get_quest('smoke').perform_action('Smoke', trigger_registry=game.get_trigger_action)
+def smoke_checkpoint_quest_step(): game.get_world().get_quest('smoke').perform_action('checkpoint', trigger_registry=game.get_trigger_action)
 
-def talking_to_farmer(farmer):
+def farmer_asks_for_help():
 	farmer_quest = textwrap.dedent("""\
 	Hello there, wanderer!
 
@@ -123,12 +123,12 @@ def talking_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_quest, font)
 			)
-quest.on_state(None, 'farmer', talking_to_farmer)
+quest.on_state(None, 'farmer', ExternalQuestAction('farmer_asks_for_help'))
 quest.on_state(None, 'farmer', 'searching for Smoke')
-quest.on_state('searching for Smoke', 'farmer', talking_to_farmer)
-quest.on_state('hearing Smoke', 'farmer', talking_to_farmer)
+quest.on_state('searching for Smoke', 'farmer', ExternalQuestAction('farmer_asks_for_help'))
+quest.on_state('hearing Smoke', 'farmer', ExternalQuestAction('farmer_asks_for_help'))
 
-def hearing_Smoke(*params):
+def hearing_Smoke():
 	barking = textwrap.dedent("""\
 	You hear barking in the furthest parts of the dungeon.
 
@@ -138,9 +138,9 @@ def hearing_Smoke(*params):
 			ui.conversation(engine, resources, barking, font)
 			)
 quest.on_state('searching for Smoke', 'checkpoint', 'hearing Smoke')
-quest.on_state('searching for Smoke', 'checkpoint', hearing_Smoke)
+quest.on_state('searching for Smoke', 'checkpoint', ExternalQuestAction('hearing_Smoke'))
 
-def bringing_Smoke_to_farmer(farmer):
+def bringing_Smoke_to_farmer():
 	farmer_thanks = textwrap.dedent("""\
 	Thank you for bringing my Smoke back!
 
@@ -151,9 +151,9 @@ def bringing_Smoke_to_farmer(farmer):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, farmer_thanks, font)
 			)
-quest.on_state('Smoke is back', 'farmer', bringing_Smoke_to_farmer)
+quest.on_state('Smoke is back', 'farmer', ExternalQuestAction('bringing_Smoke_to_farmer'))
 
-def Smoke_barks(Smoke):
+def Smoke_unknown():
 	Smoke_wary = textwrap.dedent("""\
 	Bark! Bark!
 	
@@ -164,18 +164,18 @@ def Smoke_barks(Smoke):
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_wary, font)
 			)
-quest.on_state(None, 'Smoke', Smoke_barks)
+quest.on_state(None, 'Smoke', ExternalQuestAction('Smoke_unknown'))
 
-def Smoke_thanks(Smoke):
+def Smoke_thanks():
 	Smoke_text = textwrap.dedent("""\
 	Woof!
 	""")
 	main_game.set_pending_context(
 			ui.conversation(engine, resources, Smoke_text, font)
 			)
-quest.on_state('Smoke is back', 'Smoke', Smoke_thanks)
+quest.on_state('Smoke is back', 'Smoke', ExternalQuestAction('Smoke_thanks'))
 
-def finding_Smoke(Smoke):
+def finding_Smoke():
 	Smoke_is_found = textwrap.dedent("""\
 	Woof!
 	
@@ -190,9 +190,9 @@ def finding_Smoke(Smoke):
 	farm = game.get_world().get_map('farm')
 	farm.add_actor((2, 2), Smoke)
 quest.on_state('searching for Smoke', 'Smoke', 'Smoke is back')
-quest.on_state('searching for Smoke', 'Smoke', finding_Smoke)
+quest.on_state('searching for Smoke', 'Smoke', ExternalQuestAction('finding_Smoke'))
 quest.on_state('hearing Smoke', 'Smoke', 'Smoke is back')
-quest.on_state('hearing Smoke', 'Smoke', finding_Smoke)
+quest.on_state('hearing Smoke', 'Smoke', ExternalQuestAction('finding_Smoke'))
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = maps.create_basement_map(engine, resources)
@@ -221,6 +221,15 @@ game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
 game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
 game.register_trigger_action('talking_to_trader', foodcart_trader_step)
 game.register_trigger_action('push_foodcart', foodcart_grass_step)
+game.register_trigger_action('trader_asks_for_help', trader_asks_for_help)
+game.register_trigger_action('pushing_cart', pushing_cart)
+game.register_trigger_action('cart_is_free', cart_is_free)
+game.register_trigger_action('farmer_asks_for_help', farmer_asks_for_help)
+game.register_trigger_action('hearing_Smoke', hearing_Smoke)
+game.register_trigger_action('bringing_Smoke_to_farmer', bringing_Smoke_to_farmer)
+game.register_trigger_action('Smoke_unknown', Smoke_unknown)
+game.register_trigger_action('Smoke_thanks', Smoke_thanks)
+game.register_trigger_action('finding_Smoke', finding_Smoke)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),

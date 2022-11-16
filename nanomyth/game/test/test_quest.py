@@ -1,5 +1,5 @@
 from ...utils import unittest
-from ..quest import Quest
+from ..quest import Quest, ExternalQuestAction
 
 class TestQuest(unittest.TestCase):
 	def should_create_quest_not_started_by_default(self):
@@ -8,28 +8,37 @@ class TestQuest(unittest.TestCase):
 	def should_perform_custom_calls_on_action(self):
 		class MyCallback:
 			def __init__(self): self.data = []
-			def __call__(self, *params): self.data.append(params)
-
-		quest = Quest('title', ['foo', 'bar'], ['a', 'b'])
+			def __call__(self, **params): self.data.append(params) if params else None
+		class TriggerRegistry:
+			def __init__(self, **callbacks):
+				self.registry = dict(**callbacks)
+			def __call__(self, name):
+				return self.registry[name]
 		foo_callback = MyCallback()
 		bar_callback = MyCallback()
-		quest.on_state(None, 'a', 'foo')
-		quest.on_state('foo', 'a', foo_callback)
-		quest.on_state('foo', 'a', 'bar')
-		quest.on_state('bar', 'b', bar_callback)
-		
-		action_a = lambda *params: quest.perform_action('a', *params)
-		action_b = lambda *params: quest.perform_action('b', *params)
+		trigger_registry = TriggerRegistry(
+				foo=foo_callback,
+				bar=bar_callback,
+				)
 
-		action_a('start quest')
+		quest = Quest('title', ['foo', 'bar'], ['a', 'b'])
+		quest.on_state(None, 'a', 'foo')
+		quest.on_state('foo', 'a', ExternalQuestAction('foo'))
+		quest.on_state('foo', 'a', 'bar')
+		quest.on_state('bar', 'b', ExternalQuestAction('bar', value=12345))
+		
+		action_a = lambda: quest.perform_action('a', trigger_registry=trigger_registry)
+		action_b = lambda: quest.perform_action('b', trigger_registry=trigger_registry)
+
+		action_a()
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(quest.current_state, 'foo')
-		action_a('first step')
-		self.assertEqual(foo_callback.data, [('first step',)])
+		action_a()
+		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(quest.current_state, 'bar')
-		action_b('second step')
-		self.assertEqual(foo_callback.data, [('first step',)])
-		self.assertEqual(bar_callback.data, [('second step',)])
+		action_b()
+		self.assertEqual(foo_callback.data, [])
+		self.assertEqual(bar_callback.data, [{'value':12345}])
 		self.assertEqual(quest.current_state, 'bar')
