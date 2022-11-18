@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+    <key id="graph_attr" attr.name="graph_attr" for="graph" attr.type="string">
+        <default>foo</default>
+    </key>
+    <key id="graph_attr_int" attr.name="graph_attr_int" for="graph" attr.type="integer">
+        <default>12345</default>
+    </key>
+    <key id="edge_attr" attr.name="edge_attr" for="edge" attr.type="string">
+        <default>bar</default>
+    </key>
+    <key id="edge_attr_double" attr.name="edge_attr_double" for="edge" attr.type="double">
+        <default>1.2345</default>
+    </key>
+    <key id="node_attr" attr.name="node_attr" for="node" attr.type="string">
+        <default>baz</default>
+    </key>
+    <key id="node_attr_float" attr.name="node_attr_float" for="node" attr.type="float">
+        <default>0.12345</default>
+    </key>
+
+    <graph edgedefault="directed">
+        <node id="A">
+			<data key="node_attr">lorem
+ipsum</data>
+            <data key="node_attr_float">6.66</data>
+        </node>
+        <node id="B">
+            <data key="node_attr">node attr</data>
+        </node>
+        <node id="C">
+            <data key="node_attr_float">67.89</data>
+        </node>
+        <edge id="AC" source="A" target="C">
+            <data key="edge_attr">forward</data>
+            <data key="edge_attr_double">12.345</data>
+        </edge>
+        <edge id="AA" source="A" target="A">
+            <data key="edge_attr">loop</data>
+        </edge>
+        <edge id="CA" source="C" target="A">
+            <data key="edge_attr_double">34.567</data>
+        </edge>
+        <edge id="BA" source="B" target="A">
+			<data key="edge_attr" />
+        </edge>
+    </graph>
+</graphml>
