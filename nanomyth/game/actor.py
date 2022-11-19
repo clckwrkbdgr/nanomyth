@@ -44,14 +44,6 @@ class NPC:
 		self.trigger = new_trigger
 	def get_sprite(self):
 		return self.sprite
-	def set_message(self, text):
-		""" Sets the text of the message that NPC provides when interacted with.
-		"""
-		self.message = text
-	def get_message(self):
-		""" Returns the text of the message that NPC provides when interacted with.
-		"""
-		return self.message
 
 class Player:
 	""" Player character. """

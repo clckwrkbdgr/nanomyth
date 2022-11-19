@@ -7,6 +7,7 @@ import pytmx
 from ...math import Matrix, Point, Size
 from ...game.actor import NPC
 from ...game.map import Map, Terrain, Portal, Trigger
+from ...game.quest import QuestStateChange
 from .image import TileSetImage
 
 def _load_tmx_image_tile(image, engine, tileset_sizes):
@@ -41,9 +42,11 @@ def load_tmx_map(filename, engine):
 	- npc: Non-player character.
 	  - name: (Required)
 	  May have optional properties:
-	  - message: Informational message to display when interacted with.
 	  - trigger: Trigger for interacting with the NPC.
 		See definition below for details.
+	  - quest: It means that NPC is a part of a quest,
+		and there should be a quest action with the name of the NPC present in that quest.
+		It will be triggered upon interaction with the NPC.
 	- portal: Portal tile (all properties are required):
 	  - dest_map: Name of the map to go to.
 	  - dest_x,
@@ -92,9 +95,9 @@ def load_tmx_map(filename, engine):
 				trigger = None
 				if 'trigger' in obj.properties:
 					trigger = Trigger(obj.trigger)
+				if 'quest' in obj.properties:
+					trigger = QuestStateChange(obj.quest, obj.name)
 				npc = NPC(obj.name, sprite_name, trigger=trigger)
-				if 'message' in obj.properties:
-					npc.set_message(obj.message )
 				real_map.add_actor(pos, npc)
 				continue
 			if obj.type == 'portal':
@@ -107,5 +110,8 @@ def load_tmx_map(filename, engine):
 				passable = False
 			if 'trigger' in obj.properties:
 				real_map.add_trigger(pos, Trigger(obj.trigger))
+			if 'quest' in obj.properties:
+				trigger = QuestStateChange(obj.quest, obj.name)
+				real_map.add_trigger(pos, trigger)
 		real_map.set_tile(pos, Terrain(tiles.cell(pos), passable=passable))
 	return real_map

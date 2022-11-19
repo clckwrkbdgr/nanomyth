@@ -2,6 +2,7 @@ import itertools
 from ...utils import unittest
 from ..map import Map, Terrain, Trigger
 from ..actor import Player, Direction, NPC
+from ..quest import QuestStateChange
 from ...math import Point
 
 class TestMap(unittest.TestCase):
@@ -85,27 +86,53 @@ class TestMap(unittest.TestCase):
 			def __call__(self, name):
 				return self.registry[name]
 		trigger_callback = TriggerCallback()
+		quest_trigger_callback = TriggerCallback()
 		trigger_registry = TriggerRegistry(
 				trigger=trigger_callback,
+				quest_step=quest_trigger_callback,
 				)
+
+		class MockQuest:
+			def __init__(self):
+				self.actions = []
+			def perform_action(self, action, trigger_registry):
+				trigger_registry(action)()
+		class QuestRegistry:
+			def __init__(self, **quests):
+				self.quests = dict(**quests)
+			def __call__(self, name):
+				return self.quests[name]
+		quest = MockQuest()
+		quest_registry = QuestRegistry(quest=quest)
 
 		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
 		level_map.add_trigger((1, 2), Trigger('trigger'))
 		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		level_map.add_trigger((0, 2), QuestStateChange('quest', 'quest_step'))
+
 		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(1, 2))
 		self.assertTrue(trigger_callback.triggered)
+
+		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry, quest_registry=quest_registry)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(0, 2))
+		self.assertTrue(quest_trigger_callback.triggered)
+
 	def should_talk_to_npc(self):
 		class TriggerCallback:
 			def __init__(self): self.talk = None
-			def __call__(self, npc): self.talk = npc.get_message()
+			def __call__(self, npc): self.talk = npc.name
 		class TriggerSecondCallback:
 			def __init__(self): self.talk = None
-			def __call__(self, npc): self.talk = npc.get_message()
+			def __call__(self, npc): self.talk = npc.name
+		class QuestTriggerCallback:
+			def __init__(self): self.talk = False
+			def __call__(self): self.talk = True
 		trigger_callback = TriggerCallback()
 		trigger_second_callback = TriggerSecondCallback()
+		quest_trigger_callback = QuestTriggerCallback()
 		class TriggerRegistry:
 			def __init__(self, **callbacks):
 				self.registry = dict(**callbacks)
@@ -114,24 +141,43 @@ class TestMap(unittest.TestCase):
 		trigger_registry = TriggerRegistry(
 				trigger=trigger_callback,
 				second=trigger_second_callback,
+				quest_step=quest_trigger_callback,
 				)
+
+		class MockQuest:
+			def __init__(self):
+				self.actions = []
+			def perform_action(self, action, trigger_registry):
+				trigger_registry(action)()
+		class QuestRegistry:
+			def __init__(self, **quests):
+				self.quests = dict(**quests)
+			def __call__(self, name):
+				return self.quests[name]
+		quest = MockQuest()
+		quest_registry = QuestRegistry(quest=quest)
 
 		level_map = Map((5, 5))
 		level_map.set_tile((2, 1), Terrain(['wall'], passable=False))
 		level_map.set_tile((1, 2), Terrain(['grass'], passable=True))
 		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		npc = NPC('Farmer', 'npc', trigger=Trigger('trigger'))
-		npc.set_message('Howdy!')
 		self.assertEqual(npc.get_sprite(), 'npc')
 		level_map.add_actor((1, 2), npc)
 
 		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
-		self.assertEqual(trigger_callback.talk, 'Howdy!')
+		self.assertEqual(trigger_callback.talk, 'Farmer')
 
-		npc.set_message('Howdy again!')
+		npc.name = 'IT Switcher'
 		npc.set_trigger(Trigger('second'))
 		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
-		self.assertEqual(trigger_callback.talk, 'Howdy!')
-		self.assertEqual(trigger_second_callback.talk, 'Howdy again!')
+		self.assertEqual(trigger_callback.talk, 'Farmer')
+		self.assertEqual(trigger_second_callback.talk, 'IT Switcher')
+
+		npc.name = 'Quest Giver'
+		npc.set_trigger(QuestStateChange('quest', 'quest_step'))
+		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry, quest_registry=quest_registry)
+		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
+		self.assertTrue(quest_trigger_callback.talk)

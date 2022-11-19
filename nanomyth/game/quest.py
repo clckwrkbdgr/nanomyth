@@ -19,6 +19,20 @@ class ExternalQuestAction:
 		callback = trigger_registry(self.name)
 		return callback(**(self.params))
 
+class QuestStateChange:
+	""" Provides means to trigger quest-related event.
+	Once player steps on it, quest state is changed.
+	"""
+	def __init__(self, quest_name, action_name):
+		self.quest_name = quest_name
+		self.action_name = action_name
+	def activate(self, quest_registry, trigger_registry):
+		""" Activates quest by name using given quest registry
+		and invokes it's action using given trigger registry.
+		Registry should be a callable that accepts quest name and returns Quest object.
+		"""
+		quest_registry(self.quest_name).perform_action(self.action_name, trigger_registry=trigger_registry)
+
 class Quest:
 	""" Defines player's quest as a list of tasks to follow.
 

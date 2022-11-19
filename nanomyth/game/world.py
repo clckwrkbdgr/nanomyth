@@ -43,7 +43,7 @@ class World:
 		and is called when current map is changed.
 		"""
 		try:
-			self.get_current_map().shift_player(shift, trigger_registry=trigger_registry)
+			self.get_current_map().shift_player(shift, trigger_registry=trigger_registry, quest_registry=self.get_quest)
 		except Portalling as p:
 			self.set_current_map(p.portal.dest_map)
 			self.get_current_map().add_actor(

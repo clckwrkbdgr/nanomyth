@@ -199,13 +199,12 @@
   </object>
   <object id="34" name="Smoke" type="npc" gid="1929" x="48" y="96" width="16" height="16">
    <properties>
-    <property name="message" value="Woof!"/>
-    <property name="trigger" value="Smoke_barks"/>
+    <property name="quest" value="smoke"/>
    </properties>
   </object>
-  <object id="35" name="smoke_quest_checkpoint" gid="527" x="16" y="80" width="16" height="16">
+  <object id="35" name="checkpoint" gid="527" x="16" y="80" width="16" height="16">
    <properties>
-    <property name="trigger" value="smoke_quest_checkpoint"/>
+    <property name="quest" value="smoke"/>
    </properties>
   </object>
  </objectgroup>

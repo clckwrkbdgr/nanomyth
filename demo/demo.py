@@ -161,13 +161,6 @@ game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rog
 	}))
 game.register_trigger_action('autosave', autosave)
 
-def smoke_farmer_quest_step(farmer): game.get_world().get_quest('smoke').perform_action('farmer', trigger_registry=game.get_trigger_action)
-def smoke_smoke_quest_step(smoke): game.get_world().get_quest('smoke').perform_action('Smoke', trigger_registry=game.get_trigger_action)
-def smoke_checkpoint_quest_step(): game.get_world().get_quest('smoke').perform_action('checkpoint', trigger_registry=game.get_trigger_action)
-game.register_trigger_action('talking_to_farmer', smoke_farmer_quest_step)
-game.register_trigger_action('Smoke_barks', smoke_smoke_quest_step)
-game.register_trigger_action('smoke_quest_checkpoint', smoke_checkpoint_quest_step)
-
 game.register_trigger_action('farmer_asks_for_help', farmer_asks_for_help)
 game.register_trigger_action('hearing_Smoke', hearing_Smoke)
 game.register_trigger_action('bringing_Smoke_to_farmer', bringing_Smoke_to_farmer)

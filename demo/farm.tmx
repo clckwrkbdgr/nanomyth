@@ -162,8 +162,7 @@
   </object>
   <object id="25" name="farmer" type="npc" gid="2066" x="32" y="64" width="16" height="16">
    <properties>
-    <property name="message" value="Howdy!"/>
-    <property name="trigger" value="talking_to_farmer"/>
+    <property name="quest" value="smoke"/>
    </properties>
   </object>
  </objectgroup>

@@ -1,5 +1,6 @@
 from ..math import Matrix, Point
 from . import actor
+from .quest import QuestStateChange
 
 class Terrain:
 	""" Represents single map tile of terrain.
@@ -99,7 +100,7 @@ class Map:
 	def add_trigger(self, pos, trigger):
 		""" Places a trigger at the specified position. """
 		self.triggers.append(ObjectOnMap(pos, trigger))
-	def shift_player(self, shift, trigger_registry=None):
+	def shift_player(self, shift, trigger_registry=None, quest_registry=None):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),
 		or a Direction object (in this case will be performed as a single-tile step in given direction).
@@ -122,7 +123,10 @@ class Map:
 		other_actor = next((other.actor for other in self.actors if other.pos == new_pos), None)
 		if other_actor:
 			if other_actor.trigger:
-				other_actor.trigger.activate(trigger_registry, other_actor)
+				if isinstance(other_actor.trigger, QuestStateChange):
+					other_actor.trigger.activate(quest_registry, trigger_registry)
+				else:
+					other_actor.trigger.activate(trigger_registry, other_actor)
 			return
 		portal = next((portal.obj for portal in self.portals if portal.pos == new_pos), None)
 		if portal:
@@ -132,7 +136,10 @@ class Map:
 
 		trigger = next((trigger.obj for trigger in self.triggers if trigger.pos == new_pos), None)
 		if trigger:
-			trigger.activate(trigger_registry)
+			if isinstance(trigger, QuestStateChange):
+				trigger.activate(quest_registry, trigger_registry)
+			else:
+				trigger.activate(trigger_registry)
 	def iter_tiles(self):
 		""" Iterates over tiles.
 		Yields pairs (pos, tile).
