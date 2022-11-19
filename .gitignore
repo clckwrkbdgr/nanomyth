@@ -1,6 +1,7 @@
 # Temp files.
 *.pyc
 __pycache__/
+*.bak.xgr
 
 # Build cache.
 /build/

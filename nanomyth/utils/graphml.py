@@ -13,7 +13,7 @@ class Node:
 		self.id = node_id
 		self.attributes = attributes
 	def __getitem__(self, key):
-		return self.attributes[key]
+		return self.attributes.get(key, None)
 
 class Edge:
 	""" Graph edge.
@@ -29,7 +29,7 @@ class Edge:
 		self.target = target
 		self.attributes = attributes
 	def __getitem__(self, key):
-		return self.attributes[key]
+		return self.attributes.get(key, None)
 
 class Graph:
 	""" Graph structure.
@@ -43,7 +43,7 @@ class Graph:
 		self.nodes = []
 		self.edges = []
 	def __getitem__(self, key):
-		return self.default_graph_attributes[key]
+		return self.default_graph_attributes.get(key, None)
 
 	@classmethod
 	def parse(cls, filename):
@@ -97,7 +97,7 @@ class Graph:
 			attributes = dict(**(result.default_node_attributes))
 			for attr in node.getElementsByTagName("data"):
 				key = attr.getAttribute("key")
-				value = _convert_attr_value(_get_element_content(attr), node_attr_types[key])
+				value = _convert_attr_value(_get_element_content(attr), node_attr_types.get(key, 'string'))
 				attributes[key] = value
 			result.nodes.append(Node(node_id, attributes))
 

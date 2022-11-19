@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="comment" attr.name="comment" for="graph" attr.type="string">
+        <default></default>
+    </key>
+    <key id="creator" attr.name="creator" for="graph" attr.type="string">
+        <default>Qt Visual Graph Editor 0.7.0</default>
+    </key>
+    <key id="id" attr.name="id" for="graph" attr.type="string">
+        <default>When there's Smoke...</default>
+    </key>
+    <key id="labels.policy" attr.name="labels.policy" for="graph" attr.type="integer">
+        <default>1</default>
+    </key>
+    <key id="title" attr.name="title" for="graph" attr.type="string">
+        <default>When there's Smoke...</default>
+    </key>
+    <key id="action" attr.name="action" for="edge" attr.type="string">
+        <default></default>
+    </key>
+    <key id="color" attr.name="color" for="edge" attr.type="string">
+        <default>#a0a0a4</default>
+    </key>
+    <key id="direction" attr.name="direction" for="edge" attr.type="string">
+        <default>directed</default>
+    </key>
+    <key id="labels.visibleIds" attr.name="labels.visibleIds" for="edge" attr.type="string">
+        <default>label|id</default>
+    </key>
+    <key id="points" attr.name="points" for="edge" attr.type="string">
+        <default></default>
+    </key>
+    <key id="style" attr.name="style" for="edge" attr.type="string">
+        <default>solid</default>
+    </key>
+    <key id="trigger" attr.name="trigger" for="edge" attr.type="string">
+        <default></default>
+    </key>
+    <key id="weight" attr.name="weight" for="edge" attr.type="double">
+        <default>1</default>
+    </key>
+    <key id="color" attr.name="color" for="node" attr.type="string">
+        <default>#ffffff</default>
+    </key>
+    <key id="label.position" attr.name="label.position" for="node" attr.type="integer">
+        <default>0</default>
+    </key>
+    <key id="labels.visibleIds" attr.name="labels.visibleIds" for="node" attr.type="string">
+        <default>label|id</default>
+    </key>
+    <key id="shape" attr.name="shape" for="node" attr.type="string">
+        <default>square</default>
+    </key>
+    <key id="stroke.color" attr.name="stroke.color" for="node" attr.type="string">
+        <default>#000000</default>
+    </key>
+    <key id="stroke.size" attr.name="stroke.size" for="node" attr.type="double">
+        <default>1</default>
+    </key>
+    <key id="stroke.style" attr.name="stroke.style" for="node" attr.type="string">
+        <default>solid</default>
+    </key>
+    <key id="x" attr.name="x" for="node" attr.type="float">
+        <default>0</default>
+    </key>
+    <key id="y" attr.name="y" for="node" attr.type="float">
+        <default>0</default>
+    </key>
+    <graph edgedefault="directed">
+        <node id="Start">
+            <data key="color">#000000</data>
+            <data key="height">40</data>
+            <data key="label.color">#dddddd</data>
+            <data key="shape">disc</data>
+            <data key="start">true</data>
+            <data key="width">40</data>
+            <data key="x">-150</data>
+            <data key="y">0</data>
+        </node>
+        <node id="Smoke is back">
+            <data key="height">40</data>
+            <data key="width">150</data>
+            <data key="x">250</data>
+            <data key="y">375</data>
+        </node>
+        <node id="searching for Smoke">
+            <data key="height">40</data>
+            <data key="width">150</data>
+            <data key="x">125</data>
+            <data key="y">100</data>
+        </node>
+        <node id="hearing Smoke">
+            <data key="height">40</data>
+            <data key="width">150</data>
+            <data key="x">-125</data>
+            <data key="y">325</data>
+        </node>
+        <edge id="farmer continue to ask for help" source="hearing Smoke" target="hearing Smoke">
+            <data key="action">farmer_asks_for_help</data>
+            <data key="trigger">farmer</data>
+        </edge>
+        <edge id="farmer still asks for help" source="searching for Smoke" target="searching for Smoke">
+            <data key="action">farmer_asks_for_help</data>
+            <data key="trigger">farmer</data>
+        </edge>
+        <edge id="finding Smoke directly" source="searching for Smoke" target="Smoke is back">
+            <data key="action">finding_Smoke</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="Smoke is found" source="hearing Smoke" target="Smoke is back">
+            <data key="action">finding_Smoke</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="farmer asks for help" source="Start" target="searching for Smoke">
+            <data key="action">farmer_asks_for_help</data>
+            <data key="trigger">farmer</data>
+        </edge>
+        <edge id="Smoke barks when not familiar" source="Start" target="Start">
+            <data key="action">Smoke_unknown</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="Smoke thanks" source="Smoke is back" target="Smoke is back">
+            <data key="action">Smoke_thanks</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="checkpoint" source="searching for Smoke" target="hearing Smoke">
+            <data key="action">hearing_Smoke</data>
+            <data key="trigger">checkpoint</data>
+        </edge>
+        <edge id="farmer thanks" source="Smoke is back" target="Smoke is back">
+            <data key="action">bringing_Smoke_to_farmer</data>
+            <data key="trigger">farmer</data>
+        </edge>
+    </graph>
+</graphml>
