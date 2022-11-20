@@ -22,6 +22,15 @@ def load_menu_images(engine, resources):
 	engine.add_image('button_scroll_up_highlighted', gui.get_tile((5, 1)))
 	engine.add_image('button_scroll_down', gui.get_tile((10, 0)))
 	engine.add_image('button_scroll_down_highlighted', gui.get_tile((5, 3)))
+	engine.add_image('main_panel_topleft',     gui.get_tile((13, 16)))
+	engine.add_image('main_panel_top',         gui.get_tile((14, 16)))
+	engine.add_image('main_panel_topright',    gui.get_tile((15, 16)))
+	engine.add_image('main_panel_left',        gui.get_tile((13, 17)))
+	engine.add_image('main_panel_middle',      gui.get_tile((14, 17)))
+	engine.add_image('main_panel_right',       gui.get_tile((15, 17)))
+	engine.add_image('main_panel_bottomleft',  gui.get_tile((13, 18)))
+	engine.add_image('main_panel_bottom',      gui.get_tile((14, 18)))
+	engine.add_image('main_panel_bottomright', gui.get_tile((15, 18)))
 
 	button = engine.add_image('Button', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Floor.png', (21, 39)))
 	engine.add_image('button_off_left',   button.get_tile((4, 10)))
@@ -33,6 +42,16 @@ def load_menu_images(engine, resources):
 
 	engine.add_image('grey_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_darkGrayShadow.png', (12, 14)))
 	engine.add_image('white_font', nanomyth.view.sdl.image.TileSetImage(resources['font']/'8x8text_whiteShadow.png', (12, 14)))
+
+def panel(engine, resources, size):
+	size = Size(size)
+	size = Size(max(size.width, 2), max(size.height, 2))
+	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+		['main_panel_topleft',     'main_panel_top',         'main_panel_topright',    ],
+		['main_panel_left',        'main_panel_middle',      'main_panel_right',       ],
+		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
+		]), size)
+	return panel_widget
 
 def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=None):
 	size = Size(size)

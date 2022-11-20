@@ -124,6 +124,13 @@ ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game,
 load_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles + [autosavefile], font, fixed_font, grey_font)
 
+main_ui_panel = ui.panel(engine, resources, (3, 7))
+main_ui_panel_pos = Point(
+		engine.get_window_size().width - main_ui_panel.get_size(engine).width,
+		0,
+		)
+main_game.add_widget(main_ui_panel_pos, main_ui_panel)
+
 main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
 		save_game_menu, load_game_menu, font, fixed_font, grey_font)
