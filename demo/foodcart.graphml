@@ -67,6 +67,12 @@
         <default>0</default>
     </key>
     <graph edgedefault="directed">
+        <node id="hearing Smoke">
+            <data key="height">40</data>
+            <data key="width">150</data>
+            <data key="x">-125</data>
+            <data key="y">325</data>
+        </node>
         <node id="Start">
             <data key="color">#000000</data>
             <data key="height">40</data>
@@ -77,59 +83,110 @@
             <data key="x">-150</data>
             <data key="y">0</data>
         </node>
-        <node id="Smoke is back">
-            <data key="height">40</data>
-            <data key="width">150</data>
-            <data key="x">250</data>
-            <data key="y">375</data>
-        </node>
         <node id="searching for Smoke">
             <data key="height">40</data>
             <data key="width">150</data>
             <data key="x">125</data>
             <data key="y">100</data>
         </node>
-        <node id="hearing Smoke">
+        <node id="Smoke is back">
             <data key="height">40</data>
             <data key="width">150</data>
-            <data key="x">-125</data>
-            <data key="y">325</data>
+            <data key="x">250</data>
+            <data key="y">375</data>
         </node>
-        <edge id="farmer continue to ask for help" source="hearing Smoke" target="hearing Smoke">
-            <data key="action">farmer_asks_for_help</data>
+        <edge id="farmer asks for help" source="Start" target="searching for Smoke">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Hello there, wanderer!
+
+Please listen to my story.
+
+I'm a local farmer growing food for the nearby village. I've been doing this for the last 20 years since I've inherited this farm from my father. This is the only place where farm plants can grow in this desert, so the whole village depends on the crops.
+
+But some time ago vermins came from nowhere and started to steal growing food, leaving us with just scraps. We cannot survive with what's left, the whole village could starve!
+
+My fellow dog, Smoke, has been helping me to fight of the vermins, but couple of days ago he disappeared. I'm afraid the worst, that the vermins kidnapped him. Without Smoke, I alone cannot protect this farm. Someone has to find my dog and bring him back!
+
+Could you please look for him? I would go myself, but someone need to stay here to ward off the vermins.
+
+I think that vermins are coming from the west of here. I would think they probably live in some sort of cave.
+
+Godspeed!</data>
             <data key="trigger">farmer</data>
         </edge>
         <edge id="farmer still asks for help" source="searching for Smoke" target="searching for Smoke">
-            <data key="action">farmer_asks_for_help</data>
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Please find my dog.</data>
             <data key="trigger">farmer</data>
         </edge>
-        <edge id="finding Smoke directly" source="searching for Smoke" target="Smoke is back">
-            <data key="action">finding_Smoke</data>
+        <edge id="moving Smoke to farm" source="hearing Smoke" target="Smoke is back">
+            <data key="action">portal_actor</data>
+            <data key="actor">Smoke</data>
+            <data key="dest_map">farm</data>
+            <data key="dest_map_x">2</data>
+            <data key="dest_map_y">2</data>
             <data key="trigger">Smoke</data>
         </edge>
-        <edge id="Smoke is found" source="hearing Smoke" target="Smoke is back">
-            <data key="action">finding_Smoke</data>
-            <data key="trigger">Smoke</data>
-        </edge>
-        <edge id="farmer asks for help" source="Start" target="searching for Smoke">
-            <data key="action">farmer_asks_for_help</data>
+        <edge id="farmer continue to ask for help" source="hearing Smoke" target="hearing Smoke">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Please find my dog.</data>
             <data key="trigger">farmer</data>
         </edge>
-        <edge id="Smoke barks when not familiar" source="Start" target="Start">
-            <data key="action">Smoke_unknown</data>
+        <edge id="moving Smoke to farm directly" source="searching for Smoke" target="Smoke is back">
+            <data key="action">portal_actor</data>
+            <data key="actor">Smoke</data>
+            <data key="dest_map">farm</data>
+            <data key="dest_map_x">2</data>
+            <data key="dest_map_y">2</data>
             <data key="trigger">Smoke</data>
         </edge>
         <edge id="Smoke thanks" source="Smoke is back" target="Smoke is back">
-            <data key="action">Smoke_thanks</data>
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Woof!</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="Smoke is found" source="hearing Smoke" target="Smoke is back">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Woof!
+
+(Smoke appears to be glad to see a person.)
+
+(He will follow you when you go to the farmer.)</data>
             <data key="trigger">Smoke</data>
         </edge>
         <edge id="checkpoint" source="searching for Smoke" target="hearing Smoke">
-            <data key="action">hearing_Smoke</data>
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">You hear barking in the furthest parts of the dungeon.
+
+It could be Smoke!</data>
             <data key="trigger">checkpoint</data>
         </edge>
         <edge id="farmer thanks" source="Smoke is back" target="Smoke is back">
-            <data key="action">bringing_Smoke_to_farmer</data>
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Thank you for bringing my Smoke back!
+
+Now we can protect our food crops. The village is saved.
+
+Good luck to you on your adventures!</data>
             <data key="trigger">farmer</data>
+        </edge>
+        <edge id="Smoke barks when not familiar" source="Start" target="Start">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Bark! Bark!
+
+(The dog seems to be wary of you.)
+
+(Probably you should step back.)</data>
+            <data key="trigger">Smoke</data>
+        </edge>
+        <edge id="finding Smoke directly" source="searching for Smoke" target="Smoke is back">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Woof!
+
+(Smoke appears to be glad to see a person.)
+
+(He will follow you when you go to the farmer.)</data>
+            <data key="trigger">Smoke</data>
         </edge>
     </graph>
 </graphml>

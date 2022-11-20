@@ -108,7 +108,7 @@ class Graph:
 			attributes = dict(**(result.default_edge_attributes))
 			for attr in edge.getElementsByTagName("data"):
 				key = attr.getAttribute("key")
-				value = _convert_attr_value(_get_element_content(attr), edge_attr_types[key])
+				value = _convert_attr_value(_get_element_content(attr), edge_attr_types.get(key, 'string'))
 				attributes[key] = value
 			result.edges.append(Edge(edge_id, source, target, attributes))
 

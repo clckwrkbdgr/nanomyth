@@ -18,6 +18,11 @@ def load_graphml_quest(filename):
 	Edges should have two required attributes:
 	- 'trigger': a name of the FSM action (the one that triggers transion).
 	- 'action': a name of the external action callback to execute upon triggering. It will be added using ExternalQuestAction wrapper.
+	All other attributes will be passed as keyword arguments to ExternalQuestAction callback.
+	WARNING: Some GraphML editors may add non-user attributes which will still be parsed by this loader,
+	so callbacks should have some double-star-unpack argument for these 'extra' parameters, e.g.:
+	callback(param1, param2, **extra)
+
 	Actions that are not supposed to change states (just trigger a callback) should be added as loopback edges.
 	Otherwise trigger will force quest to switch to a new target state.
 	"""
@@ -39,7 +44,8 @@ def load_graphml_quest(filename):
 		action, trigger = edge['action'], edge['trigger']
 		if source != target:
 			transitions.add( (source, trigger, target) )
-		quest.on_state(source, trigger, ExternalQuestAction(action))
+		params = {key:value for key, value in edge.attributes.items() if key not in ('action', 'trigger')}
+		quest.on_state(source, trigger, ExternalQuestAction(action, **params))
 	for source, trigger, target in transitions:
 		quest.on_state(source, trigger, target)
 	return quest

@@ -54,84 +54,15 @@ def autosave():
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
 
-def farmer_asks_for_help():
-	farmer_quest = textwrap.dedent("""\
-	Hello there, wanderer!
-
-	Please listen to my story.
-
-	I'm a local farmer growing food for the nearby village. I've been doing this for the last 20 years since I've inherited this farm from my father. This is the only place where farm plants can grow in this desert, so the whole village depends on the crops.
-
-	But some time ago vermins came from nowhere and started to steal growing food, leaving us with just scraps. We cannot survive with what's left, the whole village could starve!
-
-	My fellow dog, Smoke, has been helping me to fight of the vermins, but couple of days ago he disappeared. I'm afraid the worst, that the vermins kidnapped him. Without Smoke, I alone cannot protect this farm. Someone has to find my dog and bring him back!
-
-	Could you please look for him? I would go myself, but someone need to stay here to ward off the vermins.
-
-	I think that vermins are coming from the west of here. I would think they probably live in some sort of cave.
-
-	Godspeed!
-	""")
+def show_dialog(dialog_message, **params):
 	main_game.set_pending_context(
-			ui.conversation(engine, resources, farmer_quest, font)
+			ui.conversation(engine, resources, dialog_message, font)
 			)
 
-def hearing_Smoke():
-	barking = textwrap.dedent("""\
-	You hear barking in the furthest parts of the dungeon.
-
-	It could be Smoke!
-	""")
-	main_game.set_pending_context(
-			ui.conversation(engine, resources, barking, font)
-			)
-
-def bringing_Smoke_to_farmer():
-	farmer_thanks = textwrap.dedent("""\
-	Thank you for bringing my Smoke back!
-
-	Now we can protect our food crops. The village is saved.
-
-	Good luck to you on your adventures!
-	""")
-	main_game.set_pending_context(
-			ui.conversation(engine, resources, farmer_thanks, font)
-			)
-
-def Smoke_unknown():
-	Smoke_wary = textwrap.dedent("""\
-	Bark! Bark!
-	
-	(The dog seems to be wary of you.)
-
-	(Probably you should step back.)
-	""")
-	main_game.set_pending_context(
-			ui.conversation(engine, resources, Smoke_wary, font)
-			)
-
-def Smoke_thanks():
-	Smoke_text = textwrap.dedent("""\
-	Woof!
-	""")
-	main_game.set_pending_context(
-			ui.conversation(engine, resources, Smoke_text, font)
-			)
-
-def finding_Smoke():
-	Smoke_is_found = textwrap.dedent("""\
-	Woof!
-	
-	(Smoke appears to be glad to see a person.)
-
-	(He will follow you when you go to the farmer.)
-	""")
-	main_game.set_pending_context(
-			ui.conversation(engine, resources, Smoke_is_found, font)
-			)
-	Smoke = game.get_world().get_current_map().remove_actor('Smoke')
-	farm = game.get_world().get_map('farm')
-	farm.add_actor((2, 2), Smoke)
+def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
+	Smoke = game.get_world().get_current_map().remove_actor(actor)
+	farm = game.get_world().get_map(dest_map)
+	farm.add_actor((int(dest_map_x), int(dest_map_y)), Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 basement_map = manual_content.create_basement_map(engine, resources)
@@ -160,13 +91,8 @@ game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rog
 	Direction.RIGHT : 'rogue_right',
 	}))
 game.register_trigger_action('autosave', autosave)
-
-game.register_trigger_action('farmer_asks_for_help', farmer_asks_for_help)
-game.register_trigger_action('hearing_Smoke', hearing_Smoke)
-game.register_trigger_action('bringing_Smoke_to_farmer', bringing_Smoke_to_farmer)
-game.register_trigger_action('Smoke_unknown', Smoke_unknown)
-game.register_trigger_action('Smoke_thanks', Smoke_thanks)
-game.register_trigger_action('finding_Smoke', finding_Smoke)
+game.register_trigger_action('show_dialog', show_dialog)
+game.register_trigger_action('portal_actor', portal_actor)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
