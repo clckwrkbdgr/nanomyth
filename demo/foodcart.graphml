@@ -77,8 +77,8 @@
             <data key="color">#000000</data>
             <data key="height">40</data>
             <data key="label.color">#dddddd</data>
+            <data key="point">start</data>
             <data key="shape">disc</data>
-            <data key="start">true</data>
             <data key="width">40</data>
             <data key="x">-150</data>
             <data key="y">0</data>
@@ -91,6 +91,7 @@
         </node>
         <node id="Smoke is back">
             <data key="height">40</data>
+            <data key="point">finish</data>
             <data key="width">150</data>
             <data key="x">250</data>
             <data key="y">375</data>

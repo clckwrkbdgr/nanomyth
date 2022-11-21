@@ -12,8 +12,10 @@ def load_graphml_quest(filename):
 
 	Quest title should be set in graph attribute 'title'.
 
-	Some node should have attribute 'start' set to 'true'.
-	This will be the start state.
+	Optional attribute "point" can be set for nodes. It can have two values:
+	- start: This will be the starting state.
+	- finish: Upon reaching this node, quest becomes finished.
+	There should be only one point=start node, but could be more than one point=finish nodes.
 
 	Edges should have two required attributes:
 	- 'trigger': a name of the FSM action (the one that triggers transion).
@@ -28,11 +30,12 @@ def load_graphml_quest(filename):
 	"""
 	quest_data = Graph.parse(filename)
 
-	states = [node.id for node in quest_data.nodes if not node['start']]
+	start_node = next(node.id for node in quest_data.nodes if node['point'] == 'start')
+	finish_nodes = [node.id for node in quest_data.nodes if node['point'] == 'finish']
+	states = [node.id for node in quest_data.nodes if node.id != start_node]
 	actions = list(set(edge['trigger'] for edge in quest_data.edges))
-	quest = Quest(quest_data['title'], states, actions)
+	quest = Quest(quest_data['title'], states, actions, finish_states=finish_nodes)
 
-	start_node = next(node.id for node in quest_data.nodes if node['start'])
 	transitions = set()
 	external_actions = []
 	for edge in quest_data.edges:
