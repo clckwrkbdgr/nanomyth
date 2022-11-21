@@ -15,7 +15,7 @@ class TestWorld(unittest.TestCase):
 		world.add_map('desert', desert)
 		home.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		home.add_portal((2, 1), Portal('desert', (1, 2)))
-		quest = Quest('my_quest', 'MyQuest', ['foo'], ['a'])
+		quest = Quest('my_quest', 'MyQuest', ['foo', 'end'], ['a'], finish_states=['end'])
 		world.add_quest(quest)
 		return world
 
@@ -26,6 +26,13 @@ class TestWorld(unittest.TestCase):
 		self.assertEqual(world.get_current_map().get_tile((0, 0)).get_images(), ['desert'])
 		self.assertEqual(world.get_map('home').get_tile((0, 0)).get_images(), ['floor'])
 		self.assertEqual(world.get_quest('my_quest').title, 'MyQuest')
+	def should_get_list_of_active_quests(self):
+		world = self._create_world()
+		self.assertEqual([quest.id for quest in world.get_active_quests()], [])
+		world.get_quest('my_quest').current_state = 'foo'
+		self.assertEqual([quest.id for quest in world.get_active_quests()], ['my_quest'])
+		world.get_quest('my_quest').current_state = 'end'
+		self.assertEqual([quest.id for quest in world.get_active_quests()], [])
 	def should_portal_to_another_map(self):
 		class Callback:
 			def __init__(self): self.data = []

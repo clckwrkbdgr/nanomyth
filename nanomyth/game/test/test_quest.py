@@ -17,10 +17,12 @@ class TestQuest(unittest.TestCase):
 				return self.registry[name]
 		foo_callback = MyCallback()
 		bar_callback = MyCallback()
+		start_callback = MyCallback()
 		finish_callback = MyCallback()
 		trigger_registry = TriggerRegistry(
 				foo=foo_callback,
 				bar=bar_callback,
+				start=start_callback,
 				finish=finish_callback,
 				)
 
@@ -31,6 +33,7 @@ class TestQuest(unittest.TestCase):
 		quest.on_state('bar', 'b', ExternalQuestAction('bar', value=12345))
 		quest.on_state('bar', 'a', 'end')
 		quest.on_state('end', 'b', ExternalQuestAction('bar', value=67890))
+		quest.on_start('start')
 		quest.on_finish('finish')
 
 		self.assertFalse(quest.is_active())
@@ -38,32 +41,38 @@ class TestQuest(unittest.TestCase):
 		action_a = lambda: quest.perform_action('a', trigger_registry=trigger_registry)
 		action_b = lambda: quest.perform_action('b', trigger_registry=trigger_registry)
 
+		self.assertEqual(start_callback.data, [])
 		action_a()
 		self.assertTrue(quest.is_active())
+		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(finish_callback.data, [])
 		self.assertEqual(quest.current_state, 'foo')
 		action_a()
 		self.assertTrue(quest.is_active())
+		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(finish_callback.data, [])
 		self.assertEqual(quest.current_state, 'bar')
 		action_b()
 		self.assertTrue(quest.is_active())
+		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}])
 		self.assertEqual(finish_callback.data, [])
 		self.assertEqual(quest.current_state, 'bar')
 		action_a()
 		self.assertEqual(quest.current_state, 'end')
+		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}])
 		self.assertEqual(finish_callback.data, [{'quest':'quest_id'}])
 		action_b()
 		self.assertEqual(quest.current_state, 'end')
+		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}, {'value':67890}])

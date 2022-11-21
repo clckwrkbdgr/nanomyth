@@ -35,6 +35,9 @@ class World:
 	def get_quest(self, quest_name):
 		""" Returns quest by ID. """
 		return self.quests[quest_name]
+	def get_active_quests(self):
+		""" Returns list of all the active quests. """
+		return [quest for quest in self.quests.values() if quest.is_active()]
 	def shift_player(self, shift, trigger_registry=None, on_change_map=None):
 		""" Moves player character on the current map by given shift.
 		See details in Map.shift_player.

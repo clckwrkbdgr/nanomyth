@@ -57,6 +57,7 @@ class Quest:
 		self.actions = list(actions)
 		self.state_machine = Matrix((len(self.actions), len(self.states)), [])
 		self.finish_states = list(finish_states or [])
+		self.start_callback = None
 		self.finish_callback = None
 		self.current_state = None
 	def is_active(self):
@@ -75,11 +76,21 @@ class Quest:
 			))
 		for action_callback in actions_to_take:
 			if isinstance(action_callback, str):
+				launch_start_callback = False
+				if self.current_state is None and self.start_callback:
+					launch_start_callback = True
 				self.current_state = action_callback
+				if launch_start_callback:
+					self.start_callback(trigger_registry)
 				if self.current_state in self.finish_states and self.finish_callback:
 					self.finish_callback(trigger_registry)
 			else:
 				action_callback(trigger_registry)
+	def on_start(self, callback_name):
+		""" Performs callback action when quest moves from start state via any action.
+		Callback should accept parameter keyword quest=<this quest id>
+		"""
+		self.start_callback = ExternalQuestAction(callback_name, quest=self.id)
 	def on_finish(self, callback_name):
 		""" Performs callback action when quest reaches any of the "finish" states via any action.
 		Callback should accept parameter keyword quest=<this quest id>

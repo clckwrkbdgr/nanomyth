@@ -54,8 +54,8 @@ def autosave():
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
 
-def quest_is_finished(quest=None):
-	main_ui_text.set_text('Quest is finished: {0}'.format(quest))
+def update_active_quest_count(quest=None):
+	main_ui_text.set_text('Active quests: {0}'.format(len(game.get_world().get_active_quests())))
 
 def show_dialog(dialog_message, **params):
 	main_game.set_pending_context(
@@ -79,7 +79,8 @@ game.get_world().add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 game.get_world().add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
 game.get_world().add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
 quest = load_graphml_quest(DEMO_ROOTDIR/'smoke.graphml')
-quest.on_finish('quest_is_finished')
+quest.on_start('update_active_quest_count')
+quest.on_finish('update_active_quest_count')
 game.get_world().add_quest(quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
@@ -87,7 +88,8 @@ foodcart_quest = manual_content.create_foodcart_quest(
 		game, main_game,
 		engine, resources, font,
 		)
-foodcart_quest.on_finish('quest_is_finished')
+foodcart_quest.on_start('update_active_quest_count')
+foodcart_quest.on_finish('update_active_quest_count')
 game.get_world().add_quest(foodcart_quest)
 game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
@@ -98,7 +100,7 @@ game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rog
 game.register_trigger_action('autosave', autosave)
 game.register_trigger_action('show_dialog', show_dialog)
 game.register_trigger_action('portal_actor', portal_actor)
-game.register_trigger_action('quest_is_finished', quest_is_finished)
+game.register_trigger_action('update_active_quest_count', update_active_quest_count)
 
 savefiles = [
 		JsonpickleSavefile(DEMO_ROOTDIR/'game1.sav'),
@@ -141,6 +143,7 @@ main_ui_text = nanomyth.view.sdl.context.MultilineTextWidget(font,
 		)
 main_game.add_widget(main_ui_panel_pos, main_ui_panel)
 main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
+update_active_quest_count()
 
 main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,

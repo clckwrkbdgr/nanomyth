@@ -68,7 +68,7 @@ TODO
 8. [ ] Quests.
 	- [X] Triggers to start/stop quests (checkpoint tiles, talking with NPCs).
 	- [X] Quest steps, conditions on moving to the next step.
-	- [ ] Displaying current quest state on HUD.
+	- [X] Displaying current quest state on HUD.
 	- [ ] List of quests, quest book dialog.
 9. [ ] Items.
 	- [ ] Items laying on terrain.
