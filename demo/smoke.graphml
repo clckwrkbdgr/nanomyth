@@ -88,10 +88,16 @@
         </node>
         <node id="Smoke is back">
             <data key="height">40</data>
-            <data key="point">finish</data>
             <data key="width">150</data>
             <data key="x">250</data>
             <data key="y">375</data>
+        </node>
+        <node id="Finish">
+            <data key="height">40</data>
+            <data key="point">finish</data>
+            <data key="width">150</data>
+            <data key="x">-25</data>
+            <data key="y">550</data>
         </node>
         <edge id="farmer asks for help" source="Start" target="searching for Smoke">
             <data key="action">show_dialog</data>
@@ -159,7 +165,7 @@ Godspeed!</data>
 It could be Smoke!</data>
             <data key="trigger">checkpoint</data>
         </edge>
-        <edge id="farmer thanks" source="Smoke is back" target="Smoke is back">
+        <edge id="farmer thanks" source="Smoke is back" target="Finish">
             <data key="action">show_dialog</data>
             <data key="dialog_message">Thank you for bringing my Smoke back!
 
@@ -167,6 +173,16 @@ Now we can protect our food crops. The village is saved.
 
 Good luck to you on your adventures!</data>
             <data key="trigger">farmer</data>
+        </edge>
+        <edge id="farmer thanks again" source="Finish" target="Finish">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Thanks again for finding my Smoke!</data>
+            <data key="trigger">farmer</data>
+        </edge>
+        <edge id="Smoke thanks again" source="Finish" target="Finish">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Woof!</data>
+            <data key="trigger">Smoke</data>
         </edge>
         <edge id="Smoke barks when not familiar" source="Start" target="Start">
             <data key="action">show_dialog</data>

@@ -43,10 +43,10 @@ def create_basement_map(engine, resources):
 
 def create_foodcart_quest(game, main_game, engine, resources, font):
 	foodcart_quest = Quest('foodcart', "All flesh is grass", [
-		'pushing cart', 'cart is free',
+		'pushing cart', 'cart is free', 'trader is gone',
 		], [
 		'trader', 'grass',
-		], finish_states=['cart is free'],
+		], finish_states=['trader is gone'],
 		)
 	def foodcart_trader_step(trader): game.get_world().get_quest('foodcart').perform_action('trader', trigger_registry=game.get_trigger_action)
 	def foodcart_grass_step(): game.get_world().get_quest('foodcart').perform_action('grass', trigger_registry=game.get_trigger_action)
@@ -80,6 +80,7 @@ def create_foodcart_quest(game, main_game, engine, resources, font):
 				)
 		game.get_world().get_current_map().remove_actor('foodcart')
 		game.get_world().get_current_map().remove_actor('Trader')
+	foodcart_quest.on_state('cart is free', 'trader', 'trader is gone')
 	foodcart_quest.on_state('cart is free', 'trader', ExternalQuestAction('cart_is_free'))
 
 	game.register_trigger_action('talking_to_trader', foodcart_trader_step)
