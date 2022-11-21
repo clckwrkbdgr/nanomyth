@@ -1,5 +1,6 @@
 """ Utilities to loading quests from GraphML files.
 """
+from pathlib import Path
 from ...utils.graphml import Graph
 from ...game.quest import Quest, ExternalQuestAction
 
@@ -10,7 +11,10 @@ def load_graphml_quest(filename):
 	where nodes are quest states,
 	and edges are external actions and/or transitions.
 
-	Quest title should be set in graph attribute 'title'.
+	Graph attributes:
+	- id: Graph internal ID.
+	  If not present, file base name (without extension) is used.
+	- title: Human-readable quest title.
 
 	Optional attribute "point" can be set for nodes. It can have two values:
 	- start: This will be the starting state.
@@ -34,7 +38,7 @@ def load_graphml_quest(filename):
 	finish_nodes = [node.id for node in quest_data.nodes if node['point'] == 'finish']
 	states = [node.id for node in quest_data.nodes if node.id != start_node]
 	actions = list(set(edge['trigger'] for edge in quest_data.edges))
-	quest = Quest(quest_data['title'], states, actions, finish_states=finish_nodes)
+	quest = Quest(quest_data['id'] or Path(filename).stem, quest_data['title'], states, actions, finish_states=finish_nodes)
 
 	transitions = set()
 	external_actions = []

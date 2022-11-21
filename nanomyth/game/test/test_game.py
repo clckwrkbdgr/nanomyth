@@ -18,8 +18,8 @@ def _create_game():
 	home.add_actor((2, 2), Player('Wanderer', 'rogue'))
 	home.add_portal((2, 1), Portal('desert', (1, 2)))
 	home.add_trigger((1, 2), Trigger('trigger'))
-	quest = Quest('MyQuest', ['foo'], ['a'])
-	game.get_world().add_quest('my_quest', quest)
+	quest = Quest('my_quest', 'MyQuest', ['foo'], ['a'])
+	game.get_world().add_quest(quest)
 	return game
 
 class TestGame(unittest.TestCase):

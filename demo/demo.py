@@ -75,15 +75,15 @@ game.get_world().add_map('yard', yard_map)
 game.get_world().add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 game.get_world().add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))
 game.get_world().add_map('cave', load_tmx_map(DEMO_ROOTDIR/'cave.tmx', engine))
-quest = load_graphml_quest(DEMO_ROOTDIR/'foodcart.graphml')
-game.get_world().add_quest('smoke', quest)
+quest = load_graphml_quest(DEMO_ROOTDIR/'smoke.graphml')
+game.get_world().add_quest(quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
 foodcart_quest = manual_content.create_foodcart_quest(
 		game, main_game,
 		engine, resources, font,
 		)
-game.get_world().add_quest('foodcart', foodcart_quest)
+game.get_world().add_quest(foodcart_quest)
 game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',

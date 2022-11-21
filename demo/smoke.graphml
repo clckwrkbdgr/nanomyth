@@ -6,9 +6,6 @@
     <key id="creator" attr.name="creator" for="graph" attr.type="string">
         <default>Qt Visual Graph Editor 0.7.0</default>
     </key>
-    <key id="id" attr.name="id" for="graph" attr.type="string">
-        <default>When there's Smoke...</default>
-    </key>
     <key id="labels.policy" attr.name="labels.policy" for="graph" attr.type="integer">
         <default>1</default>
     </key>

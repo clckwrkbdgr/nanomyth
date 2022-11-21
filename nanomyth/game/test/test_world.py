@@ -15,8 +15,8 @@ class TestWorld(unittest.TestCase):
 		world.add_map('desert', desert)
 		home.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		home.add_portal((2, 1), Portal('desert', (1, 2)))
-		quest = Quest('MyQuest', ['foo'], ['a'])
-		world.add_quest('my_quest', quest)
+		quest = Quest('my_quest', 'MyQuest', ['foo'], ['a'])
+		world.add_quest(quest)
 		return world
 
 	def should_create_world_with_maps(self):

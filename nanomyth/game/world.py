@@ -29,9 +29,9 @@ class World:
 	def get_current_map(self):
 		""" Returns current map object. """
 		return self.maps[self.current_map]
-	def add_quest(self, quest_name, quest):
-		""" Registers new quest under ID. """
-		self.quests[quest_name] = quest
+	def add_quest(self, quest):
+		""" Registers new quest under its ID. """
+		self.quests[quest.id] = quest
 	def get_quest(self, quest_name):
 		""" Returns quest by ID. """
 		return self.quests[quest_name]

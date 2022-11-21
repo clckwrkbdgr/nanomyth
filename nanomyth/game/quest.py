@@ -44,13 +44,14 @@ class Quest:
 	e.g. when NPC is approached by player with some item in it's inventory,
 	they can show a conversation dialog with thanks and/or take said item.
 	"""
-	def __init__(self, title, states, actions, finish_states=None):
-		""" Creates quest with a title and lists of states/actions for the state machine.
+	def __init__(self, quest_id, title, states, actions, finish_states=None):
+		""" Creates quest with an ID, a title and lists of states/actions for the state machine.
 		Default state is None, which is considered "not started yet".
 
 		If finish_states are given, it is a list of states that are considered finish points.
 		After reaching them, quest becomes finished (inactive).
 		"""
+		self.id = quest_id
 		self.title = title
 		self.states = [None] + list(states)
 		self.actions = list(actions)
@@ -80,8 +81,10 @@ class Quest:
 			else:
 				action_callback(trigger_registry)
 	def on_finish(self, callback_name):
-		""" Performs callback action when quest reaches any of the "finish" states via any action. """
-		self.finish_callback = ExternalQuestAction(callback_name, quest=self.title)
+		""" Performs callback action when quest reaches any of the "finish" states via any action.
+		Callback should accept parameter keyword quest=<this quest id>
+		"""
+		self.finish_callback = ExternalQuestAction(callback_name, quest=self.id)
 	def on_state(self, state_name, action_name, callback):
 		""" Attaches callback function to the state/action pair,
 		meaning that it will be called when given action is performed while quest is in given state.

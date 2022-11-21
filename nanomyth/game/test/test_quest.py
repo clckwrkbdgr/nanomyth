@@ -3,8 +3,9 @@ from ..quest import Quest, ExternalQuestAction
 
 class TestQuest(unittest.TestCase):
 	def should_create_quest_not_started_by_default(self):
-		quest = Quest('title', ['foo', 'bar'], ['a', 'b'])
+		quest = Quest('quest_id', 'title', ['foo', 'bar'], ['a', 'b'])
 		self.assertIsNone(quest.current_state)
+		self.assertFalse(quest.is_active())
 	def should_perform_custom_calls_on_action(self):
 		class MyCallback:
 			def __init__(self): self.data = []
@@ -23,7 +24,7 @@ class TestQuest(unittest.TestCase):
 				finish=finish_callback,
 				)
 
-		quest = Quest('title', ['foo', 'bar', 'end'], ['a', 'b'], finish_states=['end'])
+		quest = Quest('quest_id', 'title', ['foo', 'bar', 'end'], ['a', 'b'], finish_states=['end'])
 		quest.on_state(None, 'a', 'foo')
 		quest.on_state('foo', 'a', ExternalQuestAction('foo'))
 		quest.on_state('foo', 'a', 'bar')
@@ -60,10 +61,10 @@ class TestQuest(unittest.TestCase):
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}])
-		self.assertEqual(finish_callback.data, [{'quest':'title'}])
+		self.assertEqual(finish_callback.data, [{'quest':'quest_id'}])
 		action_b()
 		self.assertEqual(quest.current_state, 'end')
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}, {'value':67890}])
-		self.assertEqual(finish_callback.data, [{'quest':'title'}])
+		self.assertEqual(finish_callback.data, [{'quest':'quest_id'}])
