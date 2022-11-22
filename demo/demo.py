@@ -53,9 +53,16 @@ def autosave():
 	main_game.set_pending_context(
 			ui.message_box(engine, resources, 'Autosaved.', font, size=(5, 2))
 			)
+	info_line.set_text('Autosaved')
 
 def update_active_quest_count(quest=None):
 	main_ui_text.set_text('Active quests: {0}'.format(len(game.get_world().get_active_quests())))
+	if quest:
+		quest = game.get_world().get_quest(quest)
+		if quest.is_active():
+			info_line.set_text('Quest started: {0}'.format(quest.title))
+		else:
+			info_line.set_text('Quest finished: {0}'.format(quest.title))
 
 def show_dialog(dialog_message, **params):
 	main_game.set_pending_context(
@@ -116,6 +123,7 @@ def save_game(savefile, force=False):
 				on_ok=lambda: save_game_menu.set_pending_context(save_game(savefile, force=True)),
 				on_cancel=lambda: (_ for _ in ()).throw(nanomyth.view.sdl.context.Menu.Finished()) # It's just a way to raise Exception from within labmda.
 				)
+	info_line.set_text('Game saved')
 	return ui.message_box(engine, resources, 'Game saved.', font, size=(5, 2))
 
 def load_game(savefile):
@@ -124,6 +132,7 @@ def load_game(savefile):
 	else:
 		main_menu_info.set_text('')
 		return ui.message_box(engine, resources, 'No such savefile.', font, size=(6, 2))
+	info_line.set_text('Game loaded')
 	raise nanomyth.view.sdl.context.Menu.Finished
 
 save_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
@@ -144,6 +153,8 @@ main_ui_text = nanomyth.view.sdl.context.MultilineTextWidget(font,
 main_game.add_widget(main_ui_panel_pos, main_ui_panel)
 main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
 update_active_quest_count()
+
+info_line = ui.add_info_panel(main_game, engine, font)
 
 main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,

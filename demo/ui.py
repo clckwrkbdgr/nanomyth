@@ -6,6 +6,11 @@ def load_menu_images(engine, resources):
 	background.get_size() # Dummy instruction, only for coverage of otherwise unused method.
 	engine.add_image('main_menu_background', background.get_region((160, 40, 160, 120)))
 
+	decor = engine.add_image('Decor', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Objects'/'Decor0.png', (8, 22)))
+	engine.add_image('info_line_left',   decor.get_tile((0, 10)))
+	engine.add_image('info_line_middle', decor.get_tile((1, 10)))
+	engine.add_image('info_line_right',  decor.get_tile((2, 10)))
+
 	gui = engine.add_image('GUI', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'GUI'/'GUI0.png', (16, 19)))
 	engine.add_image('panel_topleft',     gui.get_tile((1, 7)))
 	engine.add_image('panel_top',         gui.get_tile((2, 7)))
@@ -52,6 +57,19 @@ def panel(engine, resources, size):
 		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
 		]), size)
 	return panel_widget
+
+def add_info_panel(parent_context, engine, font):
+	info_line_pos = Point(
+			0,
+			engine.get_window_size().height - 8,
+			)
+	info_line_panel = nanomyth.view.sdl.widget.TileMapWidget(Matrix.from_iterable([
+		['info_line_left'] + ['info_line_middle'] * 8 + ['info_line_right'],
+		]))
+	info_line = nanomyth.view.sdl.widget.TextLineWidget(font)
+	parent_context.add_widget(info_line_pos, info_line_panel)
+	parent_context.add_widget(info_line_pos, info_line)
+	return info_line
 
 def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=None):
 	size = Size(size)
@@ -115,6 +133,7 @@ def conversation(engine, resources, text, font, on_ok=None):
 		-tile_size.height,
 		), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')),
 		)
+	info_line = add_info_panel(dialog, engine, font)
 	return dialog
 
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):
