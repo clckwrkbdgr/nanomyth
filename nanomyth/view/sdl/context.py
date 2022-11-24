@@ -32,6 +32,7 @@ class Context:
 		"""
 		self.transparent = transparent
 		self.widgets = []
+		self.key_bindings = {}
 		self.pending_context = None
 	def set_pending_context(self, new_context):
 		""" Sets pending context.
@@ -42,12 +43,21 @@ class Context:
 	def add_widget(self, topleft, widget):
 		""" Adds new widget. """
 		self.widgets.append(WidgetAtPos(topleft, widget))
+	def bind_key(self, key_name, action):
+		""" Registers custom handler for key name.
+		Actions should be a function with no arguments
+		that returns new context or None, or raises an Exception.
+		"""
+		self.key_bindings[key_name] = action
 	def update(self, control_name): # pragma: no cover
 		""" Processes control events.
 		`control_name` is the name of a pressed key.
 
-		Default implementation does nothing.
+		Default implementation does nothing except processing custom key bindings.
+		Custom implementations should call this basic implementation if they allow custom key bindings.
 		"""
+		if control_name in self.key_bindings:
+			return self.key_bindings[control_name]()
 	def _get_widgets_to_draw(self):
 		""" Override this function to change widgets to draw.
 		Widgets are drawn in the given order, from bottom to top.
@@ -92,6 +102,7 @@ class Game(Context):
 			self.game.shift_player(Direction.LEFT)
 		elif control_name == 'right':
 			self.game.shift_player(Direction.RIGHT)
+		return super().update(control_name)
 
 class Menu(Context):
 	""" Game context for menu screens.
@@ -260,6 +271,7 @@ class Menu(Context):
 			if self.selected is not None:
 				action = self.items[self.selected][1]
 				return self.perform_action(action)
+		return super().update(control_name)
 
 class MessageBox(Context):
 	""" Displays message and requires answer or confirmation.
@@ -313,6 +325,7 @@ class MessageBox(Context):
 			if self.on_ok:
 				self.on_ok()
 			raise self.Finished()
+		return super().update(control_name)
 
 class TextScreen(Context):
 	""" Displays multiline (scrollablle) text screen.
@@ -380,3 +393,4 @@ class TextScreen(Context):
 			self._button_up.make_highlighted(self._text_widget.can_scroll_up())
 		if self._button_down:
 			self._button_down.make_highlighted(self._text_widget.can_scroll_down())
+		return super().update(control_name)

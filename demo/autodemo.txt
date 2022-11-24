@@ -56,22 +56,18 @@ escape return up return # Load autosave.
 down down left # Back to the original spawn point.
 
 ###########################################################################
-### QUEST FOODCART
+### QUEST FOODCART (START)
 
 right down down # Exit to yard.
 down down left left left down right # Trying to push the cart.
 up right right down . . . return # Talking to Trader.
-left left down . . . return # Pushing cart
-up right right down . . . return # Receive thanks.
-up right up # Back to home.
-up up left # Back to the base.
+
+q . . . escape # Check quest list.
 
 ###########################################################################
-### QUEST FARMER SMOKE
+### QUEST FARMER SMOKE (START)
 
-right down down # Exit to yard.
-
-down down left left left left # To the cave.
+left left left # To the cave.
 left left left up up up # Into the cave.
 up up up right right up up right right down down down down left # Pass the maze.
 left . . . return # Talk to the unknown dog.
@@ -92,8 +88,22 @@ up up up up up # Scrolling text back...
 up up up up up # Scrolling text back...
 return # Close the message.
 left # Leave the farm.
+left left left # Back to the center of the yard.
 
-left left left left left left # To the cave again.
+q . . . escape # Check quest list.
+
+###########################################################################
+### QUEST FOODCART (FINISH)
+
+left left down . . . return # Pushing cart
+up right right down . . . return # Receive thanks.
+
+q . . . escape # Check quest list.
+
+###########################################################################
+### QUEST FARMER SMOKE (FINISH)
+
+left left left # To the cave again.
 left left left up up up # Into the cave again.
 up up . . . return up right right up up right right down down down down left # Pass the maze.
 left . . . return # Talk to now familiar dog Smoke.
@@ -105,9 +115,14 @@ right right right right right right # To the farm.
 right right . . . return # Talk to the farmer, receive thanks.
 up right . . . return # Talk to the dog, receive thanks.
 
+q . . . escape # Check quest list.
+
 down left # Back to the yard.
 left left up up up # To the house.
 up left # Back to the original spawn point.
+
+###########################################################################
+### END
 
 . . . # Just a pause.
 escape # To main menu.

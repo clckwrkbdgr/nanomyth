@@ -56,7 +56,6 @@ def autosave():
 	info_line.set_text('Autosaved')
 
 def update_active_quest_count(quest=None):
-	main_ui_text.set_text('Active quests: {0}'.format(len(game.get_world().get_active_quests())))
 	if quest:
 		quest = game.get_world().get_quest(quest)
 		if quest.is_active():
@@ -146,13 +145,21 @@ main_ui_panel_pos = Point(
 		engine.get_window_size().width - main_ui_panel.get_size(engine).width,
 		0,
 		)
+main_ui_text = """\
+[Q]uests
+"""
 main_ui_text = nanomyth.view.sdl.context.MultilineTextWidget(font,
 		size=main_ui_panel.get_size(engine) - (4+4, 4+4),
-		text='',
+		text=main_ui_text,
 		)
 main_game.add_widget(main_ui_panel_pos, main_ui_panel)
 main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
 update_active_quest_count()
+
+def show_quest_list():
+	items = ['* {0}'.format(quest.title) for quest in game.get_world().get_active_quests()]
+	return ui.item_list(engine, resources, font, 'Active quests:', items)
+main_game.bind_key('q', show_quest_list)
 
 info_line = ui.add_info_panel(main_game, engine, font)
 
