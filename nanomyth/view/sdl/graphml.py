@@ -2,7 +2,7 @@
 """
 from pathlib import Path
 from ...utils.graphml import Graph
-from ...game.quest import Quest, ExternalQuestAction
+from ...game.quest import Quest, ExternalQuestAction, HistoryMessage
 
 def load_graphml_quest(filename):
 	""" Loads Quest object from GraphML file and returns prepared quest.
@@ -51,7 +51,10 @@ def load_graphml_quest(filename):
 		action, trigger = edge['action'], edge['trigger']
 		if source != target:
 			transitions.add( (source, trigger, target) )
-		params = {key:value for key, value in edge.attributes.items() if key not in ('action', 'trigger')}
+		history = edge.attributes.get('history')
+		if history:
+			quest.on_state(source, trigger, HistoryMessage(history))
+		params = {key:value for key, value in edge.attributes.items() if key not in ('action', 'trigger', 'history')}
 		quest.on_state(source, trigger, ExternalQuestAction(action, **params))
 	for source, trigger, target in transitions:
 		quest.on_state(source, trigger, target)

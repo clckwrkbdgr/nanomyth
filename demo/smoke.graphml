@@ -22,7 +22,7 @@
         <default>directed</default>
     </key>
     <key id="labels.visibleIds" attr.name="labels.visibleIds" for="edge" attr.type="string">
-        <default>label|id</default>
+        <default>id|label</default>
     </key>
     <key id="points" attr.name="points" for="edge" attr.type="string">
         <default></default>
@@ -43,7 +43,7 @@
         <default>0</default>
     </key>
     <key id="labels.visibleIds" attr.name="labels.visibleIds" for="node" attr.type="string">
-        <default>label|id</default>
+        <default>id|label</default>
     </key>
     <key id="shape" attr.name="shape" for="node" attr.type="string">
         <default>square</default>
@@ -116,6 +116,7 @@ Could you please look for him? I would go myself, but someone need to stay here 
 I think that vermins are coming from the west of here. I would think they probably live in some sort of cave.
 
 Godspeed!</data>
+            <data key="history">Farmer asks to find his dog.</data>
             <data key="trigger">farmer</data>
         </edge>
         <edge id="farmer still asks for help" source="searching for Smoke" target="searching for Smoke">
@@ -156,6 +157,7 @@ Godspeed!</data>
 (Smoke appears to be glad to see a person.)
 
 (He will follow you when you go to the farmer.)</data>
+            <data key="history">You need to get Smoke back to farmer.</data>
             <data key="trigger">Smoke</data>
         </edge>
         <edge id="checkpoint" source="searching for Smoke" target="hearing Smoke">
@@ -163,6 +165,7 @@ Godspeed!</data>
             <data key="dialog_message">You hear barking in the furthest parts of the dungeon.
 
 It could be Smoke!</data>
+            <data key="history">You think Smoke is in the furthest parts of the dungeon.</data>
             <data key="trigger">checkpoint</data>
         </edge>
         <edge id="farmer thanks" source="Smoke is back" target="Finish">
@@ -200,6 +203,7 @@ Good luck to you on your adventures!</data>
 (Smoke appears to be glad to see a person.)
 
 (He will follow you when you go to the farmer.)</data>
+            <data key="history">You need to get Smoke back to farmer.</data>
             <data key="trigger">Smoke</data>
         </edge>
     </graph>
