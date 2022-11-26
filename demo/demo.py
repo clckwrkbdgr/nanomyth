@@ -157,7 +157,7 @@ main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
 update_active_quest_count()
 
 def show_quest_list():
-	items = ['* {0}\n    - {1}'.format(quest.title, quest.current_state) for quest in game.get_world().get_active_quests()]
+	items = ['* {0}\n    - {1}'.format(quest.title, quest.get_last_history_entry()) for quest in game.get_world().get_active_quests()]
 	return ui.item_list(engine, resources, font, 'Active quests:', items)
 main_game.bind_key('q', show_quest_list)
 

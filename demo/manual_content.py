@@ -1,7 +1,7 @@
 import textwrap
 from nanomyth.math import Point
 from nanomyth.game.map import Map, Terrain, Portal
-from nanomyth.game.quest import Quest, ExternalQuestAction
+from nanomyth.game.quest import Quest, ExternalQuestAction, HistoryMessage
 import nanomyth.view.sdl
 import ui
 
@@ -58,6 +58,7 @@ def create_foodcart_quest(game, main_game, engine, resources, font):
 				ui.conversation(engine, resources, trader_quest, font)
 				)
 	foodcart_quest.on_state(None, 'trader', ExternalQuestAction('trader_asks_for_help'))
+	foodcart_quest.on_state(None, 'trader', HistoryMessage('Trader asks to help him move the cart.'))
 	foodcart_quest.on_state(None, 'trader', 'pushing cart')
 	foodcart_quest.on_state('pushing cart', 'trader', ExternalQuestAction('trader_asks_for_help'))
 	foodcart_quest.on_state('pushing cart', 'grass', 'cart is free')
@@ -70,6 +71,7 @@ def create_foodcart_quest(game, main_game, engine, resources, font):
 		main_game.set_pending_context(
 				ui.conversation(engine, resources, push_cart, font)
 				)
+	foodcart_quest.on_state('pushing cart', 'grass', HistoryMessage('The cart is free. You should tell this to trader.'))
 	foodcart_quest.on_state('pushing cart', 'grass', ExternalQuestAction('pushing_cart'))
 	def cart_is_free():
 		trader_thanks = textwrap.dedent("""\

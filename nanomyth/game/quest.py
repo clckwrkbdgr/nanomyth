@@ -19,6 +19,14 @@ class ExternalQuestAction:
 		callback = trigger_registry(self.name)
 		return callback(**(self.params))
 
+class HistoryMessage:
+	""" Element of a Quest's history.
+	"""
+	def __init__(self, message):
+		self.message = message
+	def __str__(self):
+		return self.message
+
 class QuestStateChange:
 	""" Provides means to trigger quest-related event.
 	Once player steps on it, quest state is changed.
@@ -60,6 +68,15 @@ class Quest:
 		self.start_callback = None
 		self.finish_callback = None
 		self.current_state = None
+		self.history = []
+	def get_history(self):
+		""" Returns full quest history. """
+		return self.history
+	def get_last_history_entry(self):
+		""" Returns the last quest history entry
+		or None if there is nothing written there yet.
+		"""
+		return self.history[-1] if self.history else None
 	def is_active(self):
 		""" Retursn True if quest is active,
 		i.e. started and not finished.
@@ -74,18 +91,20 @@ class Quest:
 			self.actions.index(action_name),
 			self.states.index(self.current_state),
 			))
-		for action_callback in actions_to_take:
-			if isinstance(action_callback, str):
+		for action in actions_to_take:
+			if isinstance(action, str):
 				launch_start_callback = False
 				if self.current_state is None and self.start_callback:
 					launch_start_callback = True
-				self.current_state = action_callback
+				self.current_state = action
 				if launch_start_callback:
 					self.start_callback(trigger_registry)
 				if self.current_state in self.finish_states and self.finish_callback:
 					self.finish_callback(trigger_registry)
+			elif isinstance(action, HistoryMessage):
+				self.history.append(str(action))
 			else:
-				action_callback(trigger_registry)
+				action(trigger_registry)
 	def on_start(self, callback_name):
 		""" Performs callback action when quest moves from start state via any action.
 		Callback should accept parameter keyword quest=<this quest id>
@@ -105,7 +124,7 @@ class Quest:
 		Use None instead of state to mark starting point of the quest,
 		i.e the call/transition that will be performed when approached given action in default (not started) state.
 		"""
-		assert isinstance(callback, str) or isinstance(callback, ExternalQuestAction), repr(callback)
+		assert isinstance(callback, (str, ExternalQuestAction, HistoryMessage)), repr(callback)
 		self.state_machine.cell((
 			self.actions.index(action_name),
 			self.states.index(state_name),
