@@ -157,23 +157,31 @@ class MultilineTextWidget:
 	""" Displays multiline text using pixel font
 	with option to scroll if text is larger than the screen can fit.
 	"""
-	def __init__(self, font, size, text=""):
+	def __init__(self, font, size, text="", autoheight=False):
 		""" Creates widget to display text with Font object.
 		Text will fit into given size, auto-wrapped with option to scroll.
+		If autoheight=True, widget auto-expands the height to fit the whole text, scrolling is not available.
 		Optional initial text can be provided; it can be changed at any moment using set_text().
 		"""
 		self.font = font
-		self.size = size
+		self.size = Size(size)
+		self.autoheight = autoheight
 		self.textlines = None
 		self.set_text(text)
 		self.top_line = 0
+	def get_size(self, engine):
+		return self.size
 	def set_text(self, new_text):
 		self.textlines = []
+		total_height = 0
 		for line in new_text.splitlines():
 			line_width = []
+			line_height = 0
 			current_line = ''
 			for letter in line:
-				letter_width = self.font.get_letter_image(letter).get_size().width
+				letter_size = self.font.get_letter_image(letter).get_size()
+				letter_width = letter_size.width
+				line_height = max(line_height, letter_size.height)
 				if sum(line_width) + letter_width > self.size.width:
 					last_space_pos = current_line.rfind(' ')
 					last_space_pos = last_space_pos if last_space_pos > -1 else len(current_line)
@@ -182,8 +190,13 @@ class MultilineTextWidget:
 					line_width = line_width[last_space_pos+1:]
 				current_line += letter
 				line_width.append(letter_width)
+			total_height += line_height
 			self.textlines.append(current_line)
+		if self.autoheight:
+			self.size.height = total_height
 	def _number_of_lines_that_fit_the_screen(self):
+		if self.autoheight:
+			return len(self.textlines)
 		font_height = self.font.get_letter_image('W').get_size().height
 		return self.size.height // font_height
 	def get_top_line(self):
@@ -193,6 +206,8 @@ class MultilineTextWidget:
 		""" Set topmost line to display.
 		It should be in range [0; total_lines - number_of_lines_that_fit_the_screen].
 		"""
+		if self.autoheight: # pragma: no cover -- should not reach here actually.
+			return
 		new_top_line = max(0, new_top_line)
 		new_top_line = min(new_top_line, len(self.textlines) - self._number_of_lines_that_fit_the_screen())
 		self.top_line = new_top_line

@@ -99,7 +99,12 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 	return dialog
 
 def item_list(engine, resources, font, caption, items):
-	items = [nanomyth.view.sdl.widget.TextLineWidget(font, item) for item in items]
+	window_size = engine.get_window_size()
+
+	items = [nanomyth.view.sdl.widget.MultilineTextWidget(
+		font, (window_size.width, 0), item,
+		autoheight=True,
+		) for item in items]
 
 	size = Size(10, 7)
 	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
@@ -110,7 +115,6 @@ def item_list(engine, resources, font, caption, items):
 
 	caption_widget = nanomyth.view.sdl.widget.TextLineWidget(font, caption)
 
-	window_size = engine.get_window_size()
 	dialog = nanomyth.view.sdl.context.ItemList(engine, panel_widget, items,
 			caption_widget=caption_widget,
 			view_rect=Rect((4, 4, window_size.width - 4, window_size.height - 4 - 12)),
