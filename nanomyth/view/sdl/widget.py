@@ -77,6 +77,15 @@ class TextLineWidget:
 		"""
 		self.font = font
 		self.text = text
+	def get_size(self, engine):
+		""" Returns bounding size of the text line. """
+		height = self.font.get_letter_image('W').get_size().height
+		width = 0
+		for pos, letter in enumerate(self.text):
+			image = self.font.get_letter_image(letter)
+			tile_size = image.get_size()
+			width += tile_size.width
+		return Size(width, height)
 	def set_text(self, new_text):
 		self.text = new_text
 	def draw(self, engine, topleft):

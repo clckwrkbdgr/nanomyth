@@ -58,14 +58,14 @@ class Context:
 		"""
 		if control_name in self.key_bindings:
 			return self.key_bindings[control_name]()
-	def _get_widgets_to_draw(self):
+	def _get_widgets_to_draw(self, engine):
 		""" Override this function to change widgets to draw.
 		Widgets are drawn in the given order, from bottom to top.
 		"""
 		return self.widgets
 	def draw(self, engine):
 		""" Draws all widgets. """
-		for _ in self._get_widgets_to_draw():
+		for _ in self._get_widgets_to_draw(engine):
 			_.widget.draw(engine, _.topleft)
 
 class Game(Context):
@@ -136,7 +136,7 @@ class Menu(Context):
 		self._button_template_highlighted = None
 		self._button_caption_font = font
 		self._button_caption_font_highlighted = font
-	def _get_widgets_to_draw(self):
+	def _get_widgets_to_draw(self, engine):
 		widgets = []
 		if self.background:
 			widgets.append(WidgetAtPos((0, 0), self.background))
@@ -393,4 +393,120 @@ class TextScreen(Context):
 			self._button_up.make_highlighted(self._text_widget.can_scroll_up())
 		if self._button_down:
 			self._button_down.make_highlighted(self._text_widget.can_scroll_down())
+		return super().update(control_name)
+
+class ItemList(Context):
+	""" Displays list of items with option to scroll up/down.
+	Each item is a standalone widget of any type.
+	"""
+	def __init__(self, engine, background_widget, items, caption_widget=None, view_rect=None):
+		""" Creates item list screen.
+		Requires background widget (of any type) and list of items.
+		Each item is a standalone widget of any type.
+		Items will fit into given optional view_rect (defaults to the whole screen).
+		If total item set is larger than the given view_rect, list becomes scrollable.
+		Scroll buttons can be added manually using set_scroll_up_button()/set_scroll_down_button().
+
+		Optional caption widget will be placed at the top of the list (always shown).
+		"""
+		super().__init__(transparent=False)
+		window_size = engine.get_window_size()
+		self.view_rect = Rect(view_rect or (0, 0, window_size.width, window_size.height))
+		self._panel_size = background_widget.get_size(engine)
+		self._caption_widget = caption_widget
+		self._caption_height = self._caption_widget.get_size(engine).height if self._caption_widget else 0
+
+		self.items = items
+		self.item_heights = [item.get_size(engine).height for item in self.items]
+		self._current_top_item = 0
+
+		self.add_widget((0, 0), background_widget)
+		self._button_up = None
+		self._button_down = None
+	def _get_visible_items_count(self):
+		if not self.items:
+			return 0
+		result = 0
+		total_height = 0
+		if self._caption_widget:
+			total_height += self._caption_height
+		for item_index in range(self._current_top_item, len(self.items)):
+			item_height = self.item_heights[item_index]
+			if total_height + item_height > self.view_rect.height:
+				break
+			total_height += item_height
+			result += 1
+		return result or 1
+	def can_scroll_up(self):
+		""" Returns True if list can be scrolled up. """
+		return self._current_top_item > 0
+	def can_scroll_down(self):
+		""" Returns True if list can be scrolled down. """
+		return self._curret_top_item + self._get_visible_items_count() < len(self.items)
+	def add_button(self, engine, pos, button_widget):
+		""" Adds button (non-functional decorative widget actually).
+		Position is relative to the view rect topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		pos = Point(pos)
+		if pos.x < 0 or pos.y < 0:
+			if pos.x < 0:
+				pos.x = self._panel_size.width + pos.x
+			if pos.y < 0:
+				pos.y = self._panel_size.height + pos.y
+		self.add_widget(pos, button_widget)
+	def set_scroll_up_button(self, engine, pos, button_widget):
+		""" Adds button for scrolling up.
+		It should be of MenuItem class so it can be highlighted when scrolling up is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the view rect topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_up = button_widget
+		self._button_up.make_highlighted(self.can_scroll_up())
+		self.add_button(engine, pos, button_widget)
+	def set_scroll_down_button(self, engine, pos, button_widget):
+		""" Adds button for scrolling down.
+		It should be of MenuItem class so it can be highlighted when scrolling down is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the view rect topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_down = button_widget
+		self._button_down.make_highlighted(self.can_scroll_down())
+		self.add_button(engine, pos, button_widget)
+	def _get_widgets_to_draw(self, engine):
+		widgets = []
+		widgets.extend(self.widgets)
+
+		top_pos = self.view_rect.top
+		if self._caption_widget:
+			widgets.append(WidgetAtPos((
+				self.view_rect.left,
+				top_pos,
+				), self._caption_widget))
+			top_pos += self._caption_height
+		for item_index in range(self._current_top_item, self._current_top_item + self._get_visible_items_count()):
+			widgets.append(WidgetAtPos((
+				self.view_rect.left,
+				top_pos,
+				), self.items[item_index]))
+			top_pos += self.item_heights[item_index]
+		return widgets
+	def update(self, control_name):
+		""" Controls:
+		- <Enter>, <Space>, <Escape>: close dialog.
+		- <Up>: scroll list up.
+		- <Down>: scroll list down.
+		"""
+		if control_name in ['escape', 'space', 'return']:
+			raise self.Finished()
+		if control_name == 'up':
+			self._current_top_item = max(0, self._current_top_item - 1)
+		elif control_name == 'down':
+			self._current_top_item = min(len(self.items), self._current_top_item + 1)
+		if self._button_up:
+			self._button_up.make_highlighted(self.can_scroll_up())
+		if self._button_down:
+			self._button_down.make_highlighted(self.can_scroll_down())
 		return super().update(control_name)

@@ -99,27 +99,22 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 	return dialog
 
 def item_list(engine, resources, font, caption, items):
+	items = [nanomyth.view.sdl.widget.TextLineWidget(font, item) for item in items]
+
 	size = Size(10, 7)
 	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
 		['main_panel_topleft',     'main_panel_top',         'main_panel_topright',    ],
 		['main_panel_left',        'main_panel_middle',      'main_panel_right',       ],
 		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
 		]), size)
-	window_size = engine.get_window_size()
-
-	dialog = nanomyth.view.sdl.context.Context()
-	def exit_quest_list():
-		raise dialog.Finished()
-	dialog.bind_key('escape', exit_quest_list)
-	dialog.add_widget((0, 0), panel_widget)
 
 	caption_widget = nanomyth.view.sdl.widget.TextLineWidget(font, caption)
-	dialog.add_widget((4, 4), caption_widget)
 
-	text_rect = Rect((4, 12, window_size.width - 4, window_size.height - 4 - 12))
-	text = '\n'.join(items)
-	text_widget = nanomyth.view.sdl.widget.MultilineTextWidget(font, text_rect.size, text)
-	dialog.add_widget(text_rect.topleft, text_widget)
+	window_size = engine.get_window_size()
+	dialog = nanomyth.view.sdl.context.ItemList(engine, panel_widget, items,
+			caption_widget=caption_widget,
+			view_rect=Rect((4, 4, window_size.width - 4, window_size.height - 4 - 12)),
+			)
 
 	info_line = add_info_panel(dialog, engine, font)
 	return dialog
