@@ -3,6 +3,7 @@ SDL-based engine organize display output as a set of separate widgets.
 """
 import pygame
 from ...math import Point, Size, Matrix
+from ..utils import math
 
 class ImageWidget:
 	""" Displays full image.
@@ -52,16 +53,8 @@ class PanelWidget:
 		Size must be >= 2x2 so at least corners will be used.
 		If passed size is less, it is automatically adjusted so it will be no less than 2x2.
 		"""
-		assert tilemap.size == Size(3, 3)
-		size = Size(size)
-		self.size = Size(max(size.width, 2), max(size.height, 2))
-		panel_tiles = []
-		for row_index in range(size.height):
-			tilemap_y = 0 if row_index == 0 else (2 if row_index == size.height - 1 else 1)
-			panel_tiles.append([tilemap.cell((0 if col_index == 0 else (2 if col_index == size.width - 1 else 1), tilemap_y))
-				for col_index in range(size.width)
-				])
-		panel_tiles = Matrix.from_iterable(panel_tiles)
+		panel_tiles = math.tiled_panel(tilemap, size)
+		self.size = panel_tiles.size
 		self.tilemap_widget = TileMapWidget(panel_tiles)
 	def get_size(self, engine):
 		""" Returns bounding size of the panel. """
