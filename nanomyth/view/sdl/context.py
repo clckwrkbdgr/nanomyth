@@ -403,6 +403,7 @@ class ItemList(Context):
 		""" Creates item list screen.
 		Requires background widget (of any type) and list of items.
 		Each item is a standalone widget of any type.
+		Can be navigated, items can be selected and action can be performed on selected item.
 		Items will fit into given optional view_rect (defaults to the whole screen).
 		If total item set is larger than the given view_rect, list becomes scrollable.
 		Scroll buttons can be added manually using set_scroll_up_button()/set_scroll_down_button().
@@ -418,6 +419,9 @@ class ItemList(Context):
 
 		self.items = items
 		self.item_heights = [item.get_size(engine).height for item in self.items]
+		self.selected = 0
+		if self.items:
+			self.items[self.selected].make_highlighted(True)
 		self._current_top_item = 0
 
 		self.add_widget((0, 0), background_widget)
@@ -437,6 +441,17 @@ class ItemList(Context):
 			total_height += item_height
 			result += 1
 		return result or 1
+	def select_item(self, selected_index):
+		""" Selects item by index.
+		Highlights corresponding widget.
+		"""
+		self.selected = selected_index
+		for index, item in enumerate(self.items):
+			item.make_highlighted(index == selected_index)
+		if self.selected < self._current_top_item:
+			self._current_top_item = self.selected
+		elif self.selected >= self._current_top_item + self._get_visible_items_count():
+			self._current_top_item = self.selected - self._get_visible_items_count()
 	def can_scroll_up(self):
 		""" Returns True if list can be scrolled up. """
 		return self._current_top_item > 0
@@ -493,18 +508,33 @@ class ItemList(Context):
 				), self.items[item_index]))
 			top_pos += self.item_heights[item_index]
 		return widgets
+	def perform_action(self, action):
+		""" Programmatically perform action.
+		Action should be an action-like object (see Menu docstring).
+		"""
+		import types
+		if isinstance(action, Exception) or action is Exception or (isinstance(action, type) and issubclass(action, Exception)):
+			raise action()
+		elif callable(action):
+			return action()
+		return action # Treat as a new context.
 	def update(self, control_name):
 		""" Controls:
-		- <Enter>, <Space>, <Escape>: close dialog.
-		- <Up>: scroll list up.
-		- <Down>: scroll list down.
+		- <Escape>: close dialog.
+		- <Up>: select previous item.
+		- <Down>: select next item.
+		- <Enter>: pick currently selected item.
 		"""
-		if control_name in ['escape', 'space', 'return']:
+		if control_name in ['escape']:
 			raise self.Finished()
-		if control_name == 'up':
-			self._current_top_item = max(0, self._current_top_item - 1)
+		elif control_name == 'up':
+			self.select_item(max(0, self.selected - 1))
 		elif control_name == 'down':
-			self._current_top_item = min(len(self.items), self._current_top_item + 1)
+			self.select_item(min(len(self.items) - 1, self.selected + 1))
+		elif control_name == 'return':
+			if self.selected is not None:
+				action = self.items[self.selected].action
+				return self.perform_action(action)
 		if self._button_up:
 			self._button_up.make_highlighted(self.can_scroll_up())
 		if self._button_down:

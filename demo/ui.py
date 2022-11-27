@@ -98,13 +98,20 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			)
 	return dialog
 
-def item_list(engine, resources, font, caption, items):
+def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 	window_size = engine.get_window_size()
 
-	items = [nanomyth.view.sdl.widget.MultilineTextWidget(
-		font, (window_size.width, 0), item,
-		autoheight=True,
-		) for item in items]
+	items = [nanomyth.view.sdl.widget.HighlightableWidget(
+		nanomyth.view.sdl.widget.MultilineTextWidget(
+			normal_font, (window_size.width, 0), item,
+			autoheight=True,
+			),
+		nanomyth.view.sdl.widget.MultilineTextWidget(
+			highlighted_font, (window_size.width, 0), item,
+			autoheight=True,
+			),
+		action=action,
+		) for item, action in items]
 
 	size = Size(10, 7)
 	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
@@ -113,14 +120,14 @@ def item_list(engine, resources, font, caption, items):
 		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
 		]), size)
 
-	caption_widget = nanomyth.view.sdl.widget.TextLineWidget(font, caption)
+	caption_widget = nanomyth.view.sdl.widget.TextLineWidget(highlighted_font, caption)
 
 	dialog = nanomyth.view.sdl.context.ItemList(engine, panel_widget, items,
 			caption_widget=caption_widget,
 			view_rect=Rect((4, 4, window_size.width - 4, window_size.height - 4 - 12)),
 			)
 
-	info_line = add_info_panel(dialog, engine, font)
+	info_line = add_info_panel(dialog, engine, highlighted_font)
 	return dialog
 
 def conversation(engine, resources, text, font, on_ok=None):

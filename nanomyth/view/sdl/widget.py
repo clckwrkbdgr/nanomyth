@@ -122,6 +122,37 @@ class LevelMapWidget:
 			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 			engine.render_texture(image.get_texture(), topleft + image_pos)
 
+class HighlightableWidget:
+	""" Compound widget with two states: normal and highlighted (selected).
+	States can be any widgets.
+	Also supports custom action callback (usually performed on "selection" event).
+	It's up to the parent context to detect selection and perform action.
+	"""
+	def __init__(self, normal, highlighted, action=None):
+		""" Creates highlightable item widget from two states (widgets).
+		"""
+		self.widget_normal = normal
+		self.widget_highlighted = highlighted
+		self.action = action
+		self.highlighted = False
+	def get_size(self, engine):
+		""" Returns max size of the two sub-widgets.
+		"""
+		normal_size = self.widget_normal.get_size(engine)
+		highlighted_size = self.widget_highlighted.get_size(engine)
+		return Size(
+				max(normal_size.width, highlighted_size.width),
+				max(normal_size.height, highlighted_size.height),
+				)
+	def make_highlighted(self, value):
+		""" Makes current item highlighted. """
+		self.highlighted = bool(value)
+	def draw(self, engine, topleft):
+		if self.highlighted:
+			self.widget_highlighted.draw(engine, topleft)
+		else:
+			self.widget_normal.draw(engine, topleft)
+
 class MenuItem:
 	""" Menu item with text caption and two modes (normal/highlighted). """
 	def __init__(self, button, caption, button_highlighted=None, caption_highlighted=None, caption_shift=None):
@@ -185,6 +216,8 @@ class MultilineTextWidget:
 				if sum(line_width) + letter_width > self.size.width:
 					last_space_pos = current_line.rfind(' ')
 					last_space_pos = last_space_pos if last_space_pos > -1 else len(current_line)
+					total_height += line_height
+					line_height = 0
 					self.textlines.append(current_line[:last_space_pos].rstrip())
 					current_line = current_line[last_space_pos+1:]
 					line_width = line_width[last_space_pos+1:]

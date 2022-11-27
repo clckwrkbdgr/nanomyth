@@ -65,11 +65,11 @@ TODO
 	- [X] Standalone objects like characters, info posts etc.
 	- [X] Interactions with NPC.
 	- [X] Separate screen dialog for large scrollable texts.
-8. [ ] Quests.
+8. [X] Quests.
 	- [X] Triggers to start/stop quests (checkpoint tiles, talking with NPCs).
 	- [X] Quest steps, conditions on moving to the next step.
 	- [X] Displaying current quest state on HUD.
-	- [ ] List of quests, quest book dialog.
+	- [X] List of quests, quest book dialog.
 9. [ ] Items.
 	- [ ] Items laying on terrain.
 	- [ ] Slot for item, picking/dropping items.

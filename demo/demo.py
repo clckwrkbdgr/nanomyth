@@ -38,8 +38,8 @@ ui.load_menu_images(engine, resources)
 
 font_mapping = '~1234567890-+!@#$%^&*()_={}[]|\\:;"\'<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' + '\x7f'*(3+5*12+7) + ' '
 fixed_font = nanomyth.view.sdl.font.FixedWidthFont(engine.get_image('white_font'), font_mapping)
-grey_font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('grey_font'), font_mapping)
-font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('white_font'), font_mapping, space_width=3, transparent_color=255)
+grey_font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('grey_font'), font_mapping, space_width=1)
+font = nanomyth.view.sdl.font.ProportionalFont(engine.get_image('white_font'), font_mapping, space_width=4, transparent_color=255)
 
 rogue = engine.add_image('Rogue', nanomyth.view.sdl.image.TileSetImage(resources['tileset']/'Commissions'/'Rogue.png', (4, 4)))
 engine.add_image('rogue', rogue.get_tile((0, 0)))
@@ -156,9 +156,20 @@ main_game.add_widget(main_ui_panel_pos, main_ui_panel)
 main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
 update_active_quest_count()
 
+class ShowQuestDetails:
+	def __init__(self, quest):
+		self.quest = quest
+	def __call__(self):
+		text = self.quest.title + '\n\n'
+		text += '\n'.join('- {0}'.format(_) for _ in self.quest.get_history())
+		return ui.conversation(engine, resources, text, font)
+
 def show_quest_list():
-	items = ['* {0}\n    - {1}'.format(quest.title, quest.get_last_history_entry()) for quest in game.get_world().get_active_quests()]
-	return ui.item_list(engine, resources, font, 'Active quests:', items)
+	items = [(
+		'* {0}\n    - {1}'.format(quest.title, quest.get_last_history_entry()),
+		ShowQuestDetails(quest),
+		) for quest in game.get_world().get_active_quests()]
+	return ui.item_list(engine, resources, grey_font, font, 'Active quests:', items)
 main_game.bind_key('q', show_quest_list)
 
 info_line = ui.add_info_panel(main_game, engine, font)
