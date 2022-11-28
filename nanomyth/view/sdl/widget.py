@@ -102,18 +102,17 @@ class LevelMapWidget:
 	def set_map(self, new_level_map):
 		""" Switches displayed level map. """
 		self.level_map = new_level_map
+	def _render_tile(self, engine, image_name, pos, topleft):
+		image = engine.get_image(image_name)
+		tile_size = image.get_size()
+		image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
+		engine.render_texture(image.get_texture(), topleft + image_pos)
 	def draw(self, engine, topleft):
 		for pos, tile in self.level_map.iter_tiles():
 			for image_name in tile.get_images():
-				image = engine.get_image(image_name)
-				tile_size = image.get_size()
-				image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
-				engine.render_texture(image.get_texture(), topleft + image_pos)
+				self._render_tile(engine, image_name, pos, topleft)
 		for pos, actor in self.level_map.iter_actors():
-			image = engine.get_image(actor.get_sprite())
-			tile_size = image.get_size()
-			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
-			engine.render_texture(image.get_texture(), topleft + image_pos)
+			self._render_tile(engine, actor.get_sprite(), pos, topleft)
 
 class HighlightableWidget:
 	""" Compound widget with two states: normal and highlighted (selected).
