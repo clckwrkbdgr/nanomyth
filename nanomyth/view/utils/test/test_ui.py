@@ -1,7 +1,7 @@
 from .. import ui
 from ....math import Size
-from ..ui import TextWrapper
 from ....utils import unittest
+from ..ui import TextWrapper, Scroller
 
 class MockTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
@@ -55,3 +55,96 @@ class TestWrapping(unittest.TestCase):
 			'laborum.',
 			])
 		self.assertEqual(wrapper.total_height, len(wrapper.lines) * 8)
+
+class TestScrolling(unittest.TestCase):
+	def should_display_only_lines_that_fit_into_window(self):
+		scroller = Scroller(
+				total_items=10,
+				viewport_height=60,
+				item_height=8,
+				)
+		self.assertEqual(scroller.number_of_visible_items(), 7)
+		self.assertEqual(scroller.get_visible_range(), slice(0, 7))
+	def should_scroll_viewport(self):
+		scroller = Scroller(
+				total_items=10,
+				viewport_height=60,
+				item_height=8,
+				)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertFalse(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
+
+		scroller.set_top_item(-1)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertFalse(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
+
+		scroller.set_top_item(0)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertFalse(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
+
+		scroller.set_top_item(1)
+		self.assertEqual(scroller.get_top_item(), 1)
+		self.assertEqual(scroller.get_visible_range(), slice(1, 8))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
+
+		scroller.set_top_item(2)
+		self.assertEqual(scroller.get_top_item(), 2)
+		self.assertEqual(scroller.get_visible_range(), slice(2, 9))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
+
+		scroller.set_top_item(3)
+		self.assertEqual(scroller.get_top_item(), 3)
+		self.assertEqual(scroller.get_visible_range(), slice(3, 10))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+
+		scroller.set_top_item(4)
+		self.assertEqual(scroller.get_top_item(), 3)
+		self.assertEqual(scroller.get_visible_range(), slice(3, 10))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+	def should_rearrang_viewport_after_size_is_changed(self):
+		scroller = Scroller(
+				total_items=10,
+				viewport_height=60,
+				item_height=8,
+				)
+		scroller.set_top_item(4)
+		self.assertEqual(scroller.get_top_item(), 3)
+		self.assertEqual(scroller.get_visible_range(), slice(3, 10))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+
+		scroller.set_height(64)
+		self.assertEqual(scroller.get_top_item(), 2)
+		self.assertEqual(scroller.get_visible_range(), slice(2, 10))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+	def should_rearrang_viewport_after_item_count_is_changed(self):
+		scroller = Scroller(
+				total_items=10,
+				viewport_height=60,
+				item_height=8,
+				)
+		scroller.set_top_item(4)
+		self.assertEqual(scroller.get_top_item(), 3)
+		self.assertEqual(scroller.get_visible_range(), slice(3, 10))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+
+		scroller.set_total_items(5)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertEqual(scroller.get_visible_range(), slice(0, 5))
+		self.assertFalse(scroller.can_scroll_up())
+		self.assertFalse(scroller.can_scroll_down())
+
+		scroller.set_total_items(50)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertEqual(scroller.get_visible_range(), slice(0, 7))
+		self.assertFalse(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())

@@ -4,7 +4,7 @@ SDL-based engine organize display output as a set of separate widgets.
 import pygame
 from ...math import Point, Size, Matrix
 from ..utils import math
-from ..utils.ui import TextWrapper
+from ..utils.ui import TextWrapper, Scroller
 
 class ImageWidget:
 	""" Displays full image.
@@ -198,8 +198,12 @@ class MultilineTextWidget:
 		self.size = Size(size)
 		self.autoheight = autoheight
 		self.textlines = None
+		self.scroller = Scroller(
+				total_items=1,
+				viewport_height=self.size.height,
+				item_height=self.font.get_letter_image('W').get_size().height,
+				)
 		self.set_text(text)
-		self.top_line = 0
 	def get_size(self, engine):
 		return self.size
 	def set_text(self, new_text):
@@ -207,36 +211,31 @@ class MultilineTextWidget:
 		self.textlines = wrapper.lines
 		if self.autoheight:
 			self.size.height = wrapper.total_height
-	def _number_of_lines_that_fit_the_screen(self):
-		if self.autoheight:
-			return len(self.textlines)
-		font_height = self.font.get_letter_image('W').get_size().height
-		return self.size.height // font_height
+			self.scroller.set_height(wrapper.total_height)
+		self.scroller.set_total_items(len(self.textlines))
 	def get_top_line(self):
 		""" Returns current topmost line. """
-		return self.top_line
+		return self.scroller.get_top_item()
 	def set_top_line(self, new_top_line):
 		""" Set topmost line to display.
 		It should be in range [0; total_lines - number_of_lines_that_fit_the_screen].
 		"""
 		if self.autoheight: # pragma: no cover -- should not reach here actually.
 			return
-		new_top_line = max(0, new_top_line)
-		new_top_line = min(new_top_line, len(self.textlines) - self._number_of_lines_that_fit_the_screen())
-		self.top_line = new_top_line
+		self.scroller.set_top_item(new_top_line)
 	def can_scroll_up(self):
 		""" Returns True if there are line higher than current viewport can display
 		and it can be scrolled up.
 		"""
-		return self.top_line > 0
+		return self.scroller.can_scroll_up()
 	def can_scroll_down(self):
 		""" Returns True if there are line lower than current viewport can display
 		and it can be scrolled down.
 		"""
-		return self.top_line + self._number_of_lines_that_fit_the_screen() < len(self.textlines)
+		return self.scroller.can_scroll_down()
 	def get_visible_text_lines(self):
 		""" Returns set of text lines that fit into the current viewport. """
-		return self.textlines[self.top_line:self.top_line + self._number_of_lines_that_fit_the_screen()]
+		return self.textlines[self.scroller.get_visible_range()]
 	def draw(self, engine, topleft):
 		font_height = self.font.get_letter_image('W').get_size().height
 		for row, textline in enumerate(self.get_visible_text_lines()):
