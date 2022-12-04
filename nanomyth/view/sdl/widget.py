@@ -4,6 +4,7 @@ SDL-based engine organize display output as a set of separate widgets.
 import pygame
 from ...math import Point, Size, Matrix
 from ..utils import math
+from ..utils.text import TextWrapper
 
 class ImageWidget:
 	""" Displays full image.
@@ -176,6 +177,13 @@ class MenuItem:
 		if caption:
 			caption.draw(engine, topleft + self.caption_shift)
 
+class SDLTextWrapper(TextWrapper):
+	def __init__(self, *args, font=None, **kwargs):
+		self.font = font
+		super().__init__(*args, **kwargs)
+	def get_letter_size(self, letter):
+		return self.font.get_letter_image(letter).get_size()
+
 class MultilineTextWidget:
 	""" Displays multiline text using pixel font
 	with option to scroll if text is larger than the screen can fit.
@@ -195,30 +203,10 @@ class MultilineTextWidget:
 	def get_size(self, engine):
 		return self.size
 	def set_text(self, new_text):
-		self.textlines = []
-		total_height = 0
-		for line in new_text.splitlines():
-			line_width = []
-			line_height = 0
-			current_line = ''
-			for letter in line:
-				letter_size = self.font.get_letter_image(letter).get_size()
-				letter_width = letter_size.width
-				line_height = max(line_height, letter_size.height)
-				if sum(line_width) + letter_width > self.size.width:
-					last_space_pos = current_line.rfind(' ')
-					last_space_pos = last_space_pos if last_space_pos > -1 else len(current_line)
-					total_height += line_height
-					line_height = 0
-					self.textlines.append(current_line[:last_space_pos].rstrip())
-					current_line = current_line[last_space_pos+1:]
-					line_width = line_width[last_space_pos+1:]
-				current_line += letter
-				line_width.append(letter_width)
-			total_height += line_height
-			self.textlines.append(current_line)
+		wrapper = SDLTextWrapper(new_text, self.size.width, font=self.font)
+		self.textlines = wrapper.lines
 		if self.autoheight:
-			self.size.height = total_height
+			self.size.height = wrapper.total_height
 	def _number_of_lines_that_fit_the_screen(self):
 		if self.autoheight:
 			return len(self.textlines)
