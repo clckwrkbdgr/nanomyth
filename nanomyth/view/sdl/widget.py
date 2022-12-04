@@ -4,7 +4,7 @@ SDL-based engine organize display output as a set of separate widgets.
 import pygame
 from ...math import Point, Size, Matrix
 from ..utils import math
-from ..utils.text import TextWrapper
+from ..utils.ui import TextWrapper
 
 class ImageWidget:
 	""" Displays full image.

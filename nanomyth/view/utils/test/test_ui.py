@@ -1,6 +1,6 @@
-from .. import text
+from .. import ui
 from ....math import Size
-from ..text import TextWrapper
+from ..ui import TextWrapper
 from ....utils import unittest
 
 class MockTextWrapper(TextWrapper):
