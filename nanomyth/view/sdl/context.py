@@ -5,6 +5,7 @@ Main context operations are performed by the SDLEngine itself.
 """
 import pygame
 from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget, MultilineScrollableTextWidget
+from ..utils.ui import Scroller
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
 
@@ -422,25 +423,16 @@ class ItemList(Context):
 		self.selected = 0
 		if self.items:
 			self.items[self.selected].make_highlighted(True)
-		self._current_top_item = 0
+
+		self.scroller = Scroller(
+				total_items=len(self.items),
+				viewport_height=self.view_rect.height,
+				item_height=self.item_heights,
+				)
 
 		self.add_widget((0, 0), background_widget)
 		self._button_up = None
 		self._button_down = None
-	def _get_visible_items_count(self):
-		if not self.items:
-			return 0
-		result = 0
-		total_height = 0
-		if self._caption_widget:
-			total_height += self._caption_height
-		for item_index in range(self._current_top_item, len(self.items)):
-			item_height = self.item_heights[item_index]
-			if total_height + item_height > self.view_rect.height:
-				break
-			total_height += item_height
-			result += 1
-		return result or 1
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
@@ -448,16 +440,13 @@ class ItemList(Context):
 		self.selected = selected_index
 		for index, item in enumerate(self.items):
 			item.make_highlighted(index == selected_index)
-		if self.selected < self._current_top_item:
-			self._current_top_item = self.selected
-		elif self.selected >= self._current_top_item + self._get_visible_items_count():
-			self._current_top_item = self.selected - self._get_visible_items_count()
+		self.scroller.ensure_item_visible(self.selected)
 	def can_scroll_up(self):
 		""" Returns True if list can be scrolled up. """
-		return self._current_top_item > 0
+		return self.scroller.can_scroll_up()
 	def can_scroll_down(self):
 		""" Returns True if list can be scrolled down. """
-		return self._curret_top_item + self._get_visible_items_count() < len(self.items)
+		return self.scroller.can_scroll_down()
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the view rect topleft corner.
@@ -501,7 +490,7 @@ class ItemList(Context):
 				top_pos,
 				), self._caption_widget))
 			top_pos += self._caption_height
-		for item_index in range(self._current_top_item, self._current_top_item + self._get_visible_items_count()):
+		for item_index in self.scroller.get_visible_range():
 			widgets.append(WidgetAtPos((
 				self.view_rect.left,
 				top_pos,

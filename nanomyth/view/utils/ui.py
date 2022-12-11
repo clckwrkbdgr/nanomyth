@@ -44,34 +44,67 @@ class Scroller:
 		""" Create scrolling for given items of with specified height each
 		by fitting them into given viewport.
 		Starts with the first item as the current one.
+		If item_height as list or tuple, it should be a sequence of integers
+		which are heights of corresponding items. Extra items will take the height of the last specified item.
+		Otherwise it's the same height for every item.
 		"""
 		self.item_count = total_items
 		self.current_pos = 0
 		self.height = viewport_height
-		self.item_height = item_height
+		self._set_item_height(item_height)
+	def _set_item_height(self, item_height):
+		if isinstance(item_height, (list, tuple)):
+			self.item_height = None
+			self.item_heights = list(item_height[:self.item_count])
+			if self.item_count:
+				self.item_heights += [self.item_heights[-1]]*(self.item_count + len(self.item_heights))
+		else:
+			self.item_height = item_height
+			self.item_heights = None
 	def set_height(self, new_height):
 		""" Changes viewport height.
 		May update visible range and/or current item.
 		"""
 		self.height = new_height
 		self.set_top_item(self.current_pos)
-	def set_total_items(self, new_value):
+	def set_total_items(self, new_value, item_height=None):
 		""" Changes number of items.
 		May update visible range and/or current item.
+		Optional item_height for new sequence can be given.
 		"""
 		self.item_count = new_value
 		self.set_top_item(self.current_pos)
-	def number_of_visible_items(self):
+		self._set_item_height(item_height or self.item_height or self.item_heights)
+	def number_of_visible_items(self, custom_current_pos=None):
 		""" Returns number of items that fit into viewport.
 		"""
-		return min(self.height // self.item_height, self.item_count)
+		if self.item_height:
+			return min(self.height // self.item_height, self.item_count)
+		result = 0
+		total_height = 0
+		current_pos = custom_current_pos or self.current_pos
+		item_range = range(current_pos, self.item_count)
+		if current_pos < 0:
+			current_pos = -current_pos
+			item_range = reversed(range(0, current_pos + 1))
+		for item_index in item_range:
+			item_height = self.item_heights[item_index]
+			if total_height + item_height > self.height:
+				break
+			total_height += item_height
+			result += 1
+		return result
 	def get_top_item(self):
 		""" Returns the topmost visible item. """
 		return self.current_pos
-	def get_visible_range(self):
+	def get_visible_slice(self):
 		""" Returns slice object of items that fit into viewport.
 		"""
 		return slice(self.current_pos, self.current_pos + self.number_of_visible_items())
+	def get_visible_range(self):
+		""" Returns range object of items that fit into viewport.
+		"""
+		return range(self.current_pos, self.current_pos + self.number_of_visible_items())
 	def set_top_item(self, item_pos):
 		""" Tries to set new topmost visible item.
 		Rearranges actual position so that all items are fit into the viewport window.
@@ -79,6 +112,13 @@ class Scroller:
 		item_pos = max(0, item_pos)
 		item_pos = min(item_pos, self.item_count - self.number_of_visible_items())
 		self.current_pos = item_pos
+	def ensure_item_visible(self, item_pos):
+		""" Re-arranges range of visible items to make specified one visible.
+		"""
+		if item_pos < self.current_pos:
+			self.current_pos = item_pos
+		elif item_pos >= self.current_pos + self.number_of_visible_items():
+			self.current_pos = item_pos - self.number_of_visible_items(custom_current_pos=-item_pos)
 	def can_scroll_up(self):
 		""" Returns True if there are items higher than current viewport can display
 		and it can be scrolled up.

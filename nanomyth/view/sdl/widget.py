@@ -273,4 +273,4 @@ class MultilineScrollableTextWidget(BaseMultilineTextWidget):
 		return self.scroller.can_scroll_down()
 	def get_visible_text_lines(self):
 		""" Returns set of text lines that fit into the current viewport. """
-		return self.textlines[self.scroller.get_visible_range()]
+		return self.textlines[self.scroller.get_visible_slice()]
