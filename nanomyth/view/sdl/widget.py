@@ -184,34 +184,74 @@ class SDLTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
 		return self.font.get_letter_image(letter).get_size()
 
-class MultilineTextWidget:
-	""" Displays multiline text using pixel font
-	with option to scroll if text is larger than the screen can fit.
+class BaseMultilineTextWidget:
+	""" Base abstract class for multiline text widgets.
 	"""
-	def __init__(self, font, size, text="", autoheight=False):
+	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
-		Text will fit into given size, auto-wrapped with option to scroll.
-		If autoheight=True, widget auto-expands the height to fit the whole text, scrolling is not available.
-		Optional initial text can be provided; it can be changed at any moment using set_text().
+		Text will auto-wrap to fit into width and may adjust height.
 		"""
 		self.font = font
 		self.size = Size(size)
-		self.autoheight = autoheight
 		self.textlines = None
+	def get_size(self, engine):
+		return self.size
+	def set_text(self, new_text):
+		wrapper = SDLTextWrapper(new_text, self.size.width, font=self.font)
+		self.textlines = wrapper.lines
+		return wrapper
+	def get_visible_text_lines(self): # pragma: no cover
+		""" Should return set of text lines that fit into the current viewport. """
+		raise NotImplementedError()
+	def draw(self, engine, topleft):
+		font_height = self.font.get_letter_image('W').get_size().height
+		for row, textline in enumerate(self.get_visible_text_lines()):
+			image_pos = Point(0, row * font_height)
+			for pos, letter in enumerate(textline):
+				image = self.font.get_letter_image(letter)
+				engine.render_texture(image.get_texture(), topleft + image_pos)
+				tile_size = image.get_size()
+				image_pos.x += tile_size.width
+
+class MultilineTextWidget(BaseMultilineTextWidget):
+	""" Displays multiline text using pixel font.
+	Widget will auto-adjust height to the whole text.
+	"""
+	def __init__(self, font, size, text=""):
+		""" Creates widget to display text with Font object.
+		Text will auto-wrap to fit into width and may adjust height.
+		Optional initial text can be provided; it can be changed at any moment using set_text().
+		"""
+		super().__init__(font, size)
+		self.set_text(text)
+	def set_text(self, new_text):
+		wrapper = super().set_text(new_text)
+		self.size.height = wrapper.total_height
+	def get_visible_text_lines(self):
+		""" Returns set of text lines that fit into the current viewport. """
+		return self.textlines
+
+class MultilineScrollableTextWidget(BaseMultilineTextWidget):
+	""" Displays multiline text using pixel font
+	with option to scroll if text is larger than the screen can fit.
+
+	Scrolling functionality (get/set top line etc) can be accessed
+	via field .scroller (see nanomyth.view.utils.Scroller).
+	"""
+	def __init__(self, font, size, text=""):
+		""" Creates widget to display text with Font object.
+		Text will fit into given size, auto-wrapped with option to scroll.
+		Optional initial text can be provided; it can be changed at any moment using set_text().
+		"""
+		super().__init__(font, size)
 		self.scroller = Scroller(
 				total_items=1,
 				viewport_height=self.size.height,
 				item_height=self.font.get_letter_image('W').get_size().height,
 				)
 		self.set_text(text)
-	def get_size(self, engine):
-		return self.size
 	def set_text(self, new_text):
-		wrapper = SDLTextWrapper(new_text, self.size.width, font=self.font)
-		self.textlines = wrapper.lines
-		if self.autoheight:
-			self.size.height = wrapper.total_height
-			self.scroller.set_height(wrapper.total_height)
+		wrapper = super().set_text(new_text)
 		self.scroller.set_total_items(len(self.textlines))
 	def get_top_line(self):
 		""" Returns current topmost line. """
@@ -220,8 +260,6 @@ class MultilineTextWidget:
 		""" Set topmost line to display.
 		It should be in range [0; total_lines - number_of_lines_that_fit_the_screen].
 		"""
-		if self.autoheight: # pragma: no cover -- should not reach here actually.
-			return
 		self.scroller.set_top_item(new_top_line)
 	def can_scroll_up(self):
 		""" Returns True if there are line higher than current viewport can display
@@ -236,12 +274,3 @@ class MultilineTextWidget:
 	def get_visible_text_lines(self):
 		""" Returns set of text lines that fit into the current viewport. """
 		return self.textlines[self.scroller.get_visible_range()]
-	def draw(self, engine, topleft):
-		font_height = self.font.get_letter_image('W').get_size().height
-		for row, textline in enumerate(self.get_visible_text_lines()):
-			image_pos = Point(0, row * font_height)
-			for pos, letter in enumerate(textline):
-				image = self.font.get_letter_image(letter)
-				engine.render_texture(image.get_texture(), topleft + image_pos)
-				tile_size = image.get_size()
-				image_pos.x += tile_size.width

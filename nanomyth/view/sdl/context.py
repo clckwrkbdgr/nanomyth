@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget
+from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget, MultilineScrollableTextWidget
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
 
@@ -341,7 +341,7 @@ class TextScreen(Context):
 		self._panel_size = panel_widget.get_size(engine)
 
 		self.add_widget((0, 0), panel_widget)
-		self._text_widget = MultilineTextWidget(font, self.text_rect.size, text)
+		self._text_widget = MultilineScrollableTextWidget(font, self.text_rect.size, text)
 		self.add_widget(self.text_rect.topleft, self._text_widget)
 		self._button_up = None
 		self._button_down = None

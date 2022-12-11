@@ -104,11 +104,9 @@ def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 	items = [nanomyth.view.sdl.widget.HighlightableWidget(
 		nanomyth.view.sdl.widget.MultilineTextWidget(
 			normal_font, (window_size.width, 0), item,
-			autoheight=True,
 			),
 		nanomyth.view.sdl.widget.MultilineTextWidget(
 			highlighted_font, (window_size.width, 0), item,
-			autoheight=True,
 			),
 		action=action,
 		) for item, action in items]
