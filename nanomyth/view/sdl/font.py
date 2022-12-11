@@ -5,6 +5,7 @@ import itertools
 import pygame
 from ...math import Point, Rect
 from .image import ImageRegion
+from .. import utils
 
 class FixedWidthFont:
 	""" Pixel font with fixed width (monospace) glyphs.
@@ -49,26 +50,8 @@ class ProportionalFont:
 			for letter in self.letter_mapping.keys():
 				letter_image = self.tileset.get_tile(self.letter_mapping[letter])
 				letter_rect = letter_image.get_rect()
-
-				actual_left = None
-				for x in range(letter_rect.left, letter_rect.right + 1):
-					all_transparent = all(pixels[x, y] == transparent_color for y in range(letter_rect.top, letter_rect.bottom + 1))
-					if not all_transparent:
-						actual_left = x
-						break
-				actual_right = None
-				for x in reversed(range(letter_rect.left, letter_rect.right + 1)):
-					all_transparent = all(pixels[x, y] == transparent_color for y in range(letter_rect.top, letter_rect.bottom + 1))
-					if not all_transparent:
-						actual_right = x
-						break
-				if actual_left is None or actual_right is None:
-					actual_left = letter_rect.left
-					actual_right = letter_rect.left + (space_width or letter_rect.width) - 1
-				left_bound = actual_left - letter_rect.left
-				right_bound = actual_right - letter_rect.left
-				self.bound_rects[letter] = Rect((left_bound, 0), (right_bound - left_bound + 1, letter_rect.height))
+				self.bound_rects[letter] = utils.graphics.get_bounding_rect(letter_rect, lambda p: (pixels[p.x, p.y] == transparent_color), space_width=space_width)
 	def get_letter_image(self, letter):
 		""" Returns sub-image for given letter. """
 		assert len(letter) == 1
-		return ImageRegion(self.tileset.get_tile(self.letter_mapping[letter]), self.bound_rects[letter])
+		return ImageRegion(self.tileset, self.bound_rects[letter])
