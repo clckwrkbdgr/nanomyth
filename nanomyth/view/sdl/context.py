@@ -425,7 +425,7 @@ class ItemList(Context):
 		self.scroller = Scroller(
 				total_items=len(self.items),
 				viewport_height=self.view_rect.height,
-				item_height=self.item_heights,
+				item_height=lambda i: self.item_heights[i],
 				)
 
 		self.add_widget((0, 0), background_widget)

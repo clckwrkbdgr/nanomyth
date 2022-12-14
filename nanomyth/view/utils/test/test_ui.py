@@ -113,7 +113,7 @@ class TestScrolling(unittest.TestCase):
 		scroller = Scroller(
 				total_items=10,
 				viewport_height=60,
-				item_height=[8, 6, 5, 4, 5, 2, 10],
+				item_height=lambda i: [8, 6, 5, 4, 5, 2, 10, 10, 10, 10, 10][i],
 				)
 		self.assertEqual(scroller.get_top_item(), 0)
 		self.assertFalse(scroller.can_scroll_up())
@@ -146,6 +146,14 @@ class TestScrolling(unittest.TestCase):
 		self.assertEqual(scroller.get_visible_slice(), slice(2, 10))
 		self.assertTrue(scroller.can_scroll_up())
 		self.assertFalse(scroller.can_scroll_down())
+
+		scroller.set_total_items(50, item_height=10)
+
+		scroller.set_top_item(2)
+		self.assertEqual(scroller.get_top_item(), 2)
+		self.assertEqual(scroller.get_visible_slice(), slice(2, 8))
+		self.assertTrue(scroller.can_scroll_up())
+		self.assertTrue(scroller.can_scroll_down())
 	def should_rearrang_viewport_after_size_is_changed(self):
 		scroller = Scroller(
 				total_items=10,
@@ -190,7 +198,7 @@ class TestScrolling(unittest.TestCase):
 		scroller = Scroller(
 				total_items=10,
 				viewport_height=30,
-				item_height=[8, 6, 5, 4, 5, 2, 10],
+				item_height=lambda i: [8, 6, 5, 4, 5, 2, 10, 10, 10, 10][i],
 				)
 		self.assertEqual(scroller.get_top_item(), 0)
 		self.assertEqual(scroller.get_visible_slice(), slice(0, 6))
