@@ -129,3 +129,62 @@ class Scroller:
 		and it can be scrolled down.
 		"""
 		return self.current_pos + self.number_of_visible_items() < self.item_count
+
+class SelectionList:
+	""" Item list with option to set selected item.
+	"""
+	def __init__(self, items=None, on_selection=None):
+		""" Creates list from given items.
+		If on_selection is given, it should be callable of two parameters (item, is_selected),
+		which shall be triggered for each de-selected item (is_selected=False)
+		and selected item (is_selected=True).
+		"""
+		self.items = list(items or [])
+		self.selected = None
+		self.on_selection = on_selection
+	def __len__(self):
+		return len(self.items)
+	def __iter__(self):
+		return iter(self.items)
+	def __getitem__(self, item_index):
+		return self.items[item_index]
+	def select(self, item_index):
+		""" Selects item with given index,
+		or clears selection when None.
+		If on_selection callable was supplied, calls for de-selected item
+		and for selected one.
+		"""
+		if self.selected is not None:
+			if self.on_selection:
+				self.on_selection(self.items[self.selected], False)
+		self.selected = item_index
+		if self.selected is not None:
+			if self.on_selection:
+				self.on_selection(self.items[self.selected], True)
+	def has_selection(self):
+		""" Returns True if some item is selected. """
+		return self.selected is not None
+	def get_selected_index(self):
+		""" Returns index of selected item or None. """
+		return self.selected
+	def get_next_selected_index(self):
+		""" Returns index of the item that follows the selected one.
+		If current item is the last one, returns it's index again.
+		"""
+		if not self.items:
+			return None
+		if self.selected is None:
+			return 0
+		return min(len(self.items) - 1, self.selected + 1)
+	def get_prev_selected_index(self):
+		""" Returns index of the item that is followed by the selected one.
+		If current item is the first one, returns it's index again.
+		"""
+		if not self.items:
+			return None
+		if self.selected is None:
+			return len(self.items) - 1
+		return max(0, self.selected - 1)
+	def get_selected_item(self):
+		""" Returns value of the selected item. """
+		return self.items[self.selected]

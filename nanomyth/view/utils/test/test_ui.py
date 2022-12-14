@@ -1,7 +1,7 @@
 from .. import ui
 from ....math import Size
 from ....utils import unittest
-from ..ui import TextWrapper, Scroller
+from ..ui import TextWrapper, Scroller, SelectionList
 
 class MockTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
@@ -218,3 +218,74 @@ class TestScrolling(unittest.TestCase):
 		scroller.ensure_item_visible(1)
 		self.assertEqual(scroller.get_top_item(), 1)
 		self.assertEqual(scroller.get_visible_slice(), slice(1, 6))
+
+class TestSelectionList(unittest.TestCase):
+	def should_create_list_without_selection(self):
+		items = SelectionList(['foo', 'bar', 'baz'])
+		self.assertIsNone(items.get_selected_index())
+		self.assertFalse(items.has_selection())
+		self.assertEqual(len(items), 3)
+	def should_iterate_over_list(self):
+		items = SelectionList(['foo', 'bar', 'baz'])
+		self.assertEqual(list(items), ['foo', 'bar', 'baz'])
+	def should_get_items_directly(self):
+		items = SelectionList(['foo', 'bar', 'baz'])
+		self.assertEqual(items[0], 'foo')
+		self.assertEqual(items[1], 'bar')
+		self.assertEqual(items[2], 'baz')
+	def should_select_items(self):
+		class SelectionEvents:
+			def __init__(self): self.data = []
+			def __call__(self, item, value): self.data.append((item, value))
+		selection_events = SelectionEvents()
+
+		items = SelectionList(['foo', 'bar', 'baz'], on_selection=selection_events)
+
+		items.select(0)
+		self.assertTrue(items.has_selection())
+		self.assertEqual(items.get_selected_index(), 0)
+		self.assertEqual(items.get_selected_item(), 'foo')
+
+		items.select(1)
+		self.assertTrue(items.has_selection())
+		self.assertEqual(items.get_selected_index(), 1)
+		self.assertEqual(items.get_selected_item(), 'bar')
+
+		items.select(2)
+		self.assertTrue(items.has_selection())
+		self.assertEqual(items.get_selected_index(), 2)
+		self.assertEqual(items.get_selected_item(), 'baz')
+
+		items.select(None)
+		self.assertFalse(items.has_selection())
+
+		self.assertEqual(selection_events.data, [
+			('foo', True),
+			('foo', False), ('bar', True),
+			('bar', False), ('baz', True),
+			('baz', False),
+			])
+	def should_scroll_selection(self):
+		items = SelectionList([])
+		self.assertIsNone(items.get_next_selected_index())
+		self.assertIsNone(items.get_prev_selected_index())
+
+		items = SelectionList(['foo', 'bar', 'baz'])
+		self.assertEqual(items.get_next_selected_index(), 0)
+		self.assertEqual(items.get_prev_selected_index(), 2)
+
+		items.select(0)
+		self.assertEqual(items.get_next_selected_index(), 1)
+		self.assertEqual(items.get_prev_selected_index(), 0)
+
+		items.select(1)
+		self.assertEqual(items.get_next_selected_index(), 2)
+		self.assertEqual(items.get_prev_selected_index(), 0)
+
+		items.select(2)
+		self.assertEqual(items.get_next_selected_index(), 2)
+		self.assertEqual(items.get_prev_selected_index(), 1)
+
+		items.select(None)
+		self.assertEqual(items.get_next_selected_index(), 0)
+		self.assertEqual(items.get_prev_selected_index(), 2)

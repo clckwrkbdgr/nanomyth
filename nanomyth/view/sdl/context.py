@@ -5,7 +5,7 @@ Main context operations are performed by the SDLEngine itself.
 """
 import pygame
 from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget, MultilineScrollableTextWidget
-from ..utils.ui import Scroller
+from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
 
@@ -418,11 +418,9 @@ class ItemList(Context):
 		self._caption_widget = caption_widget
 		self._caption_height = self._caption_widget.get_size(engine).height if self._caption_widget else 0
 
-		self.items = items
+		self.items = SelectionList(items, on_selection=lambda item, value: item.make_highlighted(value))
+		self.items.select(self.items.get_next_selected_index())
 		self.item_heights = [item.get_size(engine).height for item in self.items]
-		self.selected = 0
-		if self.items:
-			self.items[self.selected].make_highlighted(True)
 
 		self.scroller = Scroller(
 				total_items=len(self.items),
@@ -437,10 +435,8 @@ class ItemList(Context):
 		""" Selects item by index.
 		Highlights corresponding widget.
 		"""
-		self.selected = selected_index
-		for index, item in enumerate(self.items):
-			item.make_highlighted(index == selected_index)
-		self.scroller.ensure_item_visible(self.selected)
+		self.items.select(selected_index)
+		self.scroller.ensure_item_visible(selected_index)
 	def can_scroll_up(self):
 		""" Returns True if list can be scrolled up. """
 		return self.scroller.can_scroll_up()
@@ -517,12 +513,12 @@ class ItemList(Context):
 		if control_name in ['escape']:
 			raise self.Finished()
 		elif control_name == 'up':
-			self.select_item(max(0, self.selected - 1))
+			self.select_item(self.items.get_prev_selected_index())
 		elif control_name == 'down':
-			self.select_item(min(len(self.items) - 1, self.selected + 1))
+			self.select_item(self.items.get_next_selected_index())
 		elif control_name == 'return':
-			if self.selected is not None:
-				action = self.items[self.selected].action
+			if self.items.has_selection():
+				action = self.items.get_selected_item().action
 				return self.perform_action(action)
 		if self._button_up:
 			self._button_up.make_highlighted(self.can_scroll_up())
