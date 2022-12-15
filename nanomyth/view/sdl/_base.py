@@ -4,6 +4,7 @@ from pathlib import Path
 import pygame
 from ...math import Size
 from . import context
+from ..utils import fs
 
 class SDLEngine:
 	"""
@@ -42,16 +43,7 @@ class SDLEngine:
 	def make_unique_image_name(self, image_path):
 		""" Tries to create unique short name for image path. """
 		image_path = Path(image_path).resolve()
-		path_parts = list(image_path.parent.parts) + [image_path.stem]
-
-		image_name = path_parts[-1]
-		path_parts.pop()
-		while path_parts and image_name in self.images: # pragma: no cover -- TODO move to utils and cover with unit test.
-			image_name = path_parts[-1] + '_' + image_name
-			path_parts.pop()
-		if image_name in self.images: # pragma: no cover -- TODO move to utils and cover with unit test.
-			return abs_image_path # Fallback to the full name.
-		return image_name
+		return fs.create_unique_name(image_path, self.images)
 	def get_image(self, name):
 		""" Returns image by name. """
 		return self.images[name]
