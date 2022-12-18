@@ -41,7 +41,7 @@ class TileMapWidget:
 			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 			engine.render_texture(image.get_texture(), topleft + image_pos)
 
-class PanelWidget:
+class PanelWidget(TileMapWidget):
 	""" Draws panel made from tiles.
 	"""
 	def __init__(self, tilemap, size):
@@ -54,14 +54,7 @@ class PanelWidget:
 		Size must be >= 2x2 so at least corners will be used.
 		If passed size is less, it is automatically adjusted so it will be no less than 2x2.
 		"""
-		panel_tiles = math.tiled_panel(tilemap, size)
-		self.size = panel_tiles.size
-		self.tilemap_widget = TileMapWidget(panel_tiles)
-	def get_size(self, engine):
-		""" Returns bounding size of the panel. """
-		return self.tilemap_widget.get_size(engine)
-	def draw(self, engine, topleft):
-		self.tilemap_widget.draw(engine, topleft)
+		super().__init__(math.tiled_panel(tilemap, size))
 
 class TextLineWidget:
 	""" Displays single-line text using pixel font. """
