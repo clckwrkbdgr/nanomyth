@@ -22,8 +22,11 @@ def load_graphml_quest(filename):
 	There should be only one point=start node, but could be more than one point=finish nodes.
 
 	Edges should have two required attributes:
-	- 'trigger': a name of the FSM action (the one that triggers transion).
-	- 'action': a name of the external action callback to execute upon triggering. It will be added using ExternalQuestAction wrapper.
+	- trigger: a name of the FSM action (the one that triggers transion).
+	- action: a name of the external action callback to execute upon triggering. It will be added using ExternalQuestAction wrapper.
+	Optional edge attributes:
+	- history: a text message for the quest's log, usually marking some important quest step.
+
 	All other attributes will be passed as keyword arguments to ExternalQuestAction callback.
 	WARNING: Some GraphML editors may add non-user attributes which will still be parsed by this loader,
 	so callbacks should have some double-star-unpack argument for these 'extra' parameters, e.g.:
