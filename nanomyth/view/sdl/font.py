@@ -7,10 +7,14 @@ from ...math import Point, Rect
 from .image import ImageRegion
 from .. import utils
 
-class FixedWidthFont:
-	""" Pixel font with fixed width (monospace) glyphs.
+class AbstractFont:
+	""" Abstract base for every Font class. """
+	def get_letter_image(self, letter): # pragma: no cover
+		""" Should return sub-image for given letter. """
+		raise NotImplementedError()
 
-	Should be loaded from font grid tileset where every letter has the same size.
+class TilesetFont(AbstractFont):
+	""" Abstract base for pixel fonts built on a tileset of pixel glyphs.
 	"""
 	def __init__(self, tileset, letter_mapping):
 		""" Creates font from tileset using given letter mapping.
@@ -20,21 +24,25 @@ class FixedWidthFont:
 		self.tileset = tileset
 		tile_grid = itertools.chain.from_iterable((Point(x, y) for x in range(tileset.size.width)) for y in range(tileset.size.height))
 		self.letter_mapping = dict(zip(letter_mapping, tile_grid))
+
+class FixedWidthFont(TilesetFont):
+	""" Pixel font with fixed width (monospace) glyphs.
+
+	Should be loaded from font grid tileset where every letter has the same size.
+	"""
 	def get_letter_image(self, letter):
 		""" Returns sub-image for given letter. """
 		assert len(letter) == 1
 		return self.tileset.get_tile(self.letter_mapping[letter])
 
-class ProportionalFont:
+class ProportionalFont(TilesetFont):
 	""" Pixel font with proportional glyphs.
 	Glyphs are squeezed horizontally from both sides to pack text more densily by skipping empty (transparent) columns in each grid tile.
 
 	Should be loaded from font grid tileset where every letter has the same size.
 	"""
 	def __init__(self, tileset, letter_mapping, space_width=None, transparent_color=0):
-		""" Creates font from tileset using given letter mapping.
-		Letter mapping is a string of letters that should match unwrapped grid (row by row) starting from the topleft corner.
-		Letter mapping could be shorter than overall size of the font tileset grid - unused tiles will be ignored.
+		""" Creates font from tileset using given letter mapping (see TilesetFont for details).
 
 		Space width is a min width for a completely empty tile (which normally represents space character, ' ').
 		If not specified, full tile width is used.
@@ -42,9 +50,7 @@ class ProportionalFont:
 		Uses given transparent color value to consider pixels "empty".
 		By default is 0 (fully transparent pixel).
 		"""
-		self.tileset = tileset
-		tile_grid = itertools.chain.from_iterable((Point(x, y) for x in range(tileset.size.width)) for y in range(tileset.size.height))
-		self.letter_mapping = dict(zip(letter_mapping, tile_grid))
+		super().__init__(tileset, letter_mapping)
 		self.bound_rects = {}
 		with pygame.PixelArray(self.tileset.get_texture()) as pixels:
 			for letter in self.letter_mapping.keys():
