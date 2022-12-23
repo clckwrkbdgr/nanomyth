@@ -6,7 +6,23 @@ from ...math import Point, Size, Matrix
 from ..utils import math
 from ..utils.ui import TextWrapper, Scroller
 
-class ImageWidget:
+class Widget:
+	""" Base interface for widgets.
+	"""
+	def get_size(self, engine): # pragma: no cover
+		""" Should return Size object that covers widgets area.
+		Engine is passed for operations that may require it to determine size.
+		"""
+		raise NotImplementedError()
+	def draw(self, engine, topleft): # pragma: no cover
+		""" Called by engine to draw widget
+		in given topleft position.
+
+		Use engine .render_* functions to draw.
+		"""
+		raise NotImplementedError()
+
+class ImageWidget(Widget):
 	""" Displays full image.
 	"""
 	def __init__(self, image):
@@ -19,7 +35,7 @@ class ImageWidget:
 			image = engine.get_image(self.image)
 		engine.render_texture(image.get_texture(), topleft)
 
-class TileMapWidget:
+class TileMapWidget(Widget):
 	""" Displays a map of tiles
 	"""
 	def __init__(self, tilemap):
@@ -56,7 +72,7 @@ class PanelWidget(TileMapWidget):
 		"""
 		super().__init__(math.tiled_panel(tilemap, size))
 
-class TextLineWidget:
+class TextLineWidget(Widget):
 	""" Displays single-line text using pixel font. """
 	def __init__(self, font, text=""):
 		""" Creates widget to display single text line with Font object.
@@ -83,7 +99,7 @@ class TextLineWidget:
 			tile_size = image.get_size()
 			image_pos.x += tile_size.width
 
-class LevelMapWidget:
+class LevelMapWidget(Widget):
 	""" Displays level map using static camera (viewport is not moving).
 
 	WARNING: As camera is static, map should fit within the screen,
@@ -108,7 +124,7 @@ class LevelMapWidget:
 		for pos, actor in self.level_map.iter_actors():
 			self._render_tile(engine, actor.get_sprite(), pos, topleft)
 
-class HighlightableWidget:
+class HighlightableWidget(Widget):
 	""" Compound widget with two states: normal and highlighted (selected).
 	States can be any widgets.
 	Also supports custom action callback (usually performed on "selection" event).
@@ -139,7 +155,7 @@ class HighlightableWidget:
 		else:
 			self.widget_normal.draw(engine, topleft)
 
-class MenuItem:
+class MenuItem(Widget):
 	""" Menu item with text caption and two modes (normal/highlighted). """
 	def __init__(self, button, caption, button_highlighted=None, caption_highlighted=None, caption_shift=None):
 		""" Creates selectable menu item widget.
@@ -177,7 +193,7 @@ class SDLTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
 		return self.font.get_letter_image(letter).get_size()
 
-class BaseMultilineTextWidget:
+class BaseMultilineTextWidget(Widget):
 	""" Base abstract class for multiline text widgets.
 	"""
 	def __init__(self, font, size, text=""):
