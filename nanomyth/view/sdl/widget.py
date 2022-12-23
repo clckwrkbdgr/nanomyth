@@ -72,7 +72,28 @@ class PanelWidget(TileMapWidget):
 		"""
 		super().__init__(math.tiled_panel(tilemap, size))
 
-class TextLineWidget(Widget):
+class ImageLineWidget(Widget):
+	""" Displays a horizontal sequence of images. """
+	def iter_images(self): # pragma: no cover
+		""" Should yield Image objects from left to right. """
+		raise NotImplementedError()
+	def _iter_items(self):
+		for image in self.iter_images():
+			yield image, image.get_size()
+	def get_size(self, engine):
+		""" Returns bounding size of the line. """
+		result = Size(0, 0)
+		for image, tile_size in self._iter_items():
+			result.width += tile_size.width
+			result.height = max(result.height, tile_size.height)
+		return result
+	def draw(self, engine, topleft):
+		image_pos = Point()
+		for image, tile_size in self._iter_items():
+			engine.render_texture(image.get_texture(), topleft + image_pos)
+			image_pos.x += tile_size.width
+
+class TextLineWidget(ImageLineWidget):
 	""" Displays single-line text using pixel font. """
 	def __init__(self, font, text=""):
 		""" Creates widget to display single text line with Font object.
@@ -80,24 +101,11 @@ class TextLineWidget(Widget):
 		"""
 		self.font = font
 		self.text = text
-	def get_size(self, engine):
-		""" Returns bounding size of the text line. """
-		height = self.font.get_letter_image('W').get_size().height
-		width = 0
-		for pos, letter in enumerate(self.text):
-			image = self.font.get_letter_image(letter)
-			tile_size = image.get_size()
-			width += tile_size.width
-		return Size(width, height)
+	def iter_images(self):
+		for letter in self.text:
+			yield self.font.get_letter_image(letter)
 	def set_text(self, new_text):
 		self.text = new_text
-	def draw(self, engine, topleft):
-		image_pos = Point()
-		for pos, letter in enumerate(self.text):
-			image = self.font.get_letter_image(letter)
-			engine.render_texture(image.get_texture(), topleft + image_pos)
-			tile_size = image.get_size()
-			image_pos.x += tile_size.width
 
 class LevelMapWidget(Widget):
 	""" Displays level map using static camera (viewport is not moving).
