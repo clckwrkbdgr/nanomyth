@@ -35,27 +35,50 @@ class ImageWidget(Widget):
 			image = engine.get_image(self.image)
 		engine.render_texture(image.get_texture(), topleft)
 
-class TileMapWidget(Widget):
-	""" Displays a map of tiles
+class AbstractGridWidget(Widget):
+	""" Base class for widgets that display a grid of image tiles.
+
+	Does not support scrolling in any direction.
+	"""
+	def get_grid_size(self, engine): # pragma: no cover
+		""" Should return maximum Size of grid. """
+		raise NotImplementedError()
+	def iter_tiles(self, engine): # pragma: no cover
+		""" Should yield pairs (Point, Image).
+		First item is a position within grid.
+		Real coordinates will be calculated automatically.
+		"""
+		raise NotImplementedError()
+	def get_size(self, engine):
+		""" Returns bounding pixel size of the grid.
+		Determines size of a single tile by picking first item from iter_tiles().
+		"""
+		_, image = next(self.iter_tiles(engine))
+		tile_size = image.get_size()
+		grid_size = self.get_grid_size(engine)
+		return Size(
+				grid_size.width * tile_size.width,
+				grid_size.height * tile_size.height,
+				)
+	def draw(self, engine, topleft):
+		for pos, image in self.iter_tiles(engine):
+			tile_size = image.get_size()
+			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
+			engine.render_texture(image.get_texture(), topleft + image_pos)
+
+class TileMapWidget(AbstractGridWidget):
+	""" Displays a Map of arbitrary tiles
 	"""
 	def __init__(self, tilemap):
 		""" Creates widget to display given Matrix of tiles.
 		Tiles are either Images or image names in engine's image list.
 		"""
 		self.tilemap = tilemap
-	def get_size(self, engine):
-		""" Returns bounding size of the tile grid. """
-		tile_size = engine.get_image(self.tilemap.cell((0, 0))).get_size()
-		return Size(
-				self.tilemap.width * tile_size.width, 
-				self.tilemap.height * tile_size.height,
-				)
-	def draw(self, engine, topleft):
+	def get_grid_size(self, engine):
+		return self.tilemap.size
+	def iter_tiles(self, engine):
 		for pos in self.tilemap:
-			image = engine.get_image(self.tilemap.cell(pos))
-			tile_size = image.get_size()
-			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
-			engine.render_texture(image.get_texture(), topleft + image_pos)
+			yield pos, engine.get_image(self.tilemap.cell(pos))
 
 class PanelWidget(TileMapWidget):
 	""" Draws panel made from tiles.
@@ -107,7 +130,7 @@ class TextLineWidget(ImageLineWidget):
 	def set_text(self, new_text):
 		self.text = new_text
 
-class LevelMapWidget(Widget):
+class LevelMapWidget(AbstractGridWidget):
 	""" Displays level map using static camera (viewport is not moving).
 
 	WARNING: As camera is static, map should fit within the screen,
@@ -120,17 +143,14 @@ class LevelMapWidget(Widget):
 	def set_map(self, new_level_map):
 		""" Switches displayed level map. """
 		self.level_map = new_level_map
-	def _render_tile(self, engine, image_name, pos, topleft):
-		image = engine.get_image(image_name)
-		tile_size = image.get_size()
-		image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
-		engine.render_texture(image.get_texture(), topleft + image_pos)
-	def draw(self, engine, topleft):
+	def get_grid_size(self, engine):
+		return self.level_map.tiles.size
+	def iter_tiles(self, engine):
 		for pos, tile in self.level_map.iter_tiles():
 			for image_name in tile.get_images():
-				self._render_tile(engine, image_name, pos, topleft)
+				yield pos, engine.get_image(image_name)
 		for pos, actor in self.level_map.iter_actors():
-			self._render_tile(engine, actor.get_sprite(), pos, topleft)
+			yield pos, engine.get_image(actor.get_sprite())
 
 class HighlightableWidget(Widget):
 	""" Compound widget with two states: normal and highlighted (selected).

@@ -90,6 +90,7 @@ quest.on_finish('update_active_quest_count')
 game.get_world().add_quest(quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
+main_game.map_widget.get_size(engine) # TODO not needed actually, just for coverage.
 foodcart_quest = manual_content.create_foodcart_quest(
 		game, main_game,
 		engine, resources, font,
