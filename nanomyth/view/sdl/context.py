@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import WidgetAtPos, LevelMapWidget, TextLineWidget, ImageWidget, Layout, Button, MultilineTextWidget, MultilineScrollableTextWidget
+from .widget import WidgetAtPos, LevelMap, TextLine, Image, Layout, Button, MultilineText, MultilineScrollableText
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
@@ -74,7 +74,7 @@ class Game(Context):
 		""" Creates visual context for the game object.
 		"""
 		super().__init__()
-		self.map_widget = LevelMapWidget(None)
+		self.map_widget = LevelMap(None)
 		self.add_widget((0, 0), self.map_widget)
 		self.game = game
 		self.game.on_change_map(self._update_map_widget)
@@ -122,7 +122,7 @@ class Menu(Context):
 		super().__init__()
 		self.items = []
 		self.background = None
-		self.caption = WidgetAtPos((0, 0), TextLineWidget(font))
+		self.caption = WidgetAtPos((0, 0), TextLine(font))
 		self.selected = None
 		self.on_escape = on_escape
 		self._button_group_topleft = Point(0, 0)
@@ -166,12 +166,12 @@ class Menu(Context):
 
 		normal = Layout()
 		normal.add_widget(button)
-		normal.add_widget(TextLineWidget(
+		normal.add_widget(TextLine(
 					self._button_caption_font, caption,
 					), self._button_caption_shift)
 		highlighted = Layout()
 		highlighted.add_widget(button_highlighted)
-		highlighted.add_widget(TextLineWidget(
+		highlighted.add_widget(TextLine(
 				self._button_caption_font_highlighted if caption_highlighted else self._button_caption_font,
 				caption_highlighted if caption_highlighted else caption,
 				), self._button_caption_shift)
@@ -192,11 +192,11 @@ class Menu(Context):
 			self.caption.widget.font = font
 	def set_background(self, image):
 		""" Set background image.
-		Can be either some ImageWidget, or name of the image in global image list -
+		Can be either some Image widget, or name of the image in global image list -
 		in this case image is locked to the topleft corner to fill the screen.
 		"""
 		if isinstance(image, str):
-			image = ImageWidget(image)
+			image = Image(image)
 		self.background = image
 	def set_button_group_topleft(self, pos):
 		""" Sets topleft position of menu buttons group.
@@ -296,7 +296,7 @@ class MessageBox(Context):
 				)
 
 		self.add_widget(self._panel_topleft, panel_widget)
-		self.add_widget(self._panel_topleft + (text_shift or Point(0, 0)), TextLineWidget(font, text))
+		self.add_widget(self._panel_topleft + (text_shift or Point(0, 0)), TextLine(font, text))
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
@@ -338,7 +338,7 @@ class TextScreen(Context):
 		self._panel_size = panel_widget.get_size(engine)
 
 		self.add_widget((0, 0), panel_widget)
-		self._text_widget = MultilineScrollableTextWidget(font, self.text_rect.size, text)
+		self._text_widget = MultilineScrollableText(font, self.text_rect.size, text)
 		self.add_widget(self.text_rect.topleft, self._text_widget)
 		self._button_up = None
 		self._button_down = None

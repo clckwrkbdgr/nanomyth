@@ -51,7 +51,7 @@ def load_menu_images(engine, resources):
 def panel(engine, resources, size):
 	size = Size(size)
 	size = Size(max(size.width, 2), max(size.height, 2))
-	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+	panel_widget = nanomyth.view.sdl.widget.Panel(Matrix.from_iterable([
 		['main_panel_topleft',     'main_panel_top',         'main_panel_topright',    ],
 		['main_panel_left',        'main_panel_middle',      'main_panel_right',       ],
 		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
@@ -63,10 +63,10 @@ def add_info_panel(parent_context, engine, font):
 			0,
 			engine.get_window_size().height - 8,
 			)
-	info_line_panel = nanomyth.view.sdl.widget.TileMapWidget(Matrix.from_iterable([
+	info_line_panel = nanomyth.view.sdl.widget.TileMap(Matrix.from_iterable([
 		['info_line_left'] + ['info_line_middle'] * 8 + ['info_line_right'],
 		]))
-	info_line = nanomyth.view.sdl.widget.TextLineWidget(font)
+	info_line = nanomyth.view.sdl.widget.TextLine(font)
 	parent_context.add_widget(info_line_pos, info_line_panel)
 	parent_context.add_widget(info_line_pos, info_line)
 	return info_line
@@ -74,7 +74,7 @@ def add_info_panel(parent_context, engine, font):
 def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=None):
 	size = Size(size)
 	size = Size(max(size.width, 2), max(size.height, 2))
-	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+	panel_widget = nanomyth.view.sdl.widget.Panel(Matrix.from_iterable([
 		['panel_topleft',     'panel_top',         'panel_topright',    ],
 		['panel_left',        'panel_middle',      'panel_right',       ],
 		['panel_bottomleft',  'panel_bottom',      'panel_bottomright', ],
@@ -88,13 +88,13 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 	dialog.add_button(engine, (
 		-tile_size.width * 2 - 2,
 		-tile_size.height,
-		), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')),
+		), nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')),
 		)
 	if on_cancel:
 		dialog.add_button(engine, (
 			-tile_size.width - 2,
 			-tile_size.height,
-			), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_cancel')),
+			), nanomyth.view.sdl.widget.Image(engine.get_image('button_cancel')),
 			)
 	return dialog
 
@@ -102,23 +102,23 @@ def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 	window_size = engine.get_window_size()
 
 	items = [nanomyth.view.sdl.widget.Button(
-		nanomyth.view.sdl.widget.MultilineTextWidget(
+		nanomyth.view.sdl.widget.MultilineText(
 			normal_font, (window_size.width, 0), item,
 			),
-		nanomyth.view.sdl.widget.MultilineTextWidget(
+		nanomyth.view.sdl.widget.MultilineText(
 			highlighted_font, (window_size.width, 0), item,
 			),
 		action=action,
 		) for item, action in items]
 
 	size = Size(10, 7)
-	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+	panel_widget = nanomyth.view.sdl.widget.Panel(Matrix.from_iterable([
 		['main_panel_topleft',     'main_panel_top',         'main_panel_topright',    ],
 		['main_panel_left',        'main_panel_middle',      'main_panel_right',       ],
 		['main_panel_bottomleft',  'main_panel_bottom',      'main_panel_bottomright', ],
 		]), size)
 
-	caption_widget = nanomyth.view.sdl.widget.TextLineWidget(highlighted_font, caption)
+	caption_widget = nanomyth.view.sdl.widget.TextLine(highlighted_font, caption)
 
 	dialog = nanomyth.view.sdl.context.ItemList(engine, panel_widget, items,
 			caption_widget=caption_widget,
@@ -130,7 +130,7 @@ def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 
 def conversation(engine, resources, text, font, on_ok=None):
 	size = Size(10, 7)
-	panel_widget = nanomyth.view.sdl.widget.PanelWidget(Matrix.from_iterable([
+	panel_widget = nanomyth.view.sdl.widget.Panel(Matrix.from_iterable([
 		['panel_topleft',     'panel_top',         'panel_topright',    ],
 		['panel_left',        'panel_middle',      'panel_right',       ],
 		['panel_bottomleft',  'panel_bottom',      'panel_bottomright', ],
@@ -144,8 +144,8 @@ def conversation(engine, resources, text, font, on_ok=None):
 		-tile_size.width * 2 - 2,
 		-tile_size.height - 2,
 		), nanomyth.view.sdl.widget.Button(
-			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up')),
-			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up_highlighted')),
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_up')),
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_up_highlighted')),
 			),
 		)
 	dialog._button_up.get_size(engine) # TODO not needed actually, just for coverage.
@@ -153,14 +153,14 @@ def conversation(engine, resources, text, font, on_ok=None):
 		2,
 		-tile_size.height - 2,
 		), nanomyth.view.sdl.widget.Button(
-			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down')),
-			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down_highlighted')),
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_down')),
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_down_highlighted')),
 			),
 		)
 	dialog.add_button(engine, (
 		-tile_size.width - 2,
 		-tile_size.height,
-		), nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_ok')),
+		), nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')),
 		)
 	info_line = add_info_panel(dialog, engine, font)
 	return dialog
@@ -170,7 +170,7 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 	main_menu.set_caption_pos((20, 4))
 	main_menu.set_caption_text('Nanomyth Demo', fixed_font)
 
-	main_menu_info = nanomyth.view.sdl.widget.TextLineWidget(font)
+	main_menu_info = nanomyth.view.sdl.widget.TextLine(font)
 	main_menu.add_widget((0, 100), main_menu_info)
 
 	button_off_tiles = Matrix.from_iterable([
@@ -182,8 +182,8 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 	main_menu.set_button_group_topleft((100, 20))
 	main_menu.set_button_height(20)
 	main_menu.set_button_caption_shift((4, 4))
-	main_menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_off_tiles, font=grey_font)
-	main_menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_on_tiles, font=font)
+	main_menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_off_tiles, font=grey_font)
+	main_menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_on_tiles, font=font)
 
 	main_menu.add_menu_item(('Play', '> Play'), main_game_context)
 	main_menu.add_menu_item(('Save', '> Save'), save_function)
@@ -207,8 +207,8 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	menu.set_button_group_topleft((50, 20))
 	menu.set_button_height(20)
 	menu.set_button_caption_shift((4, 4))
-	menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_off_tiles, font=grey_font)
-	menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMapWidget, button_on_tiles, font=font)
+	menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_off_tiles, font=grey_font)
+	menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_on_tiles, font=font)
 
 	if len(savefiles) == 4:
 		menu.add_menu_item(('Auto', '> Auto'), lambda: handler(savefiles[3]))
@@ -217,12 +217,12 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	menu.add_menu_item(('Slot 3', '> Slot 3'), lambda: handler(savefiles[2]))
 
 	normal = nanomyth.view.sdl.widget.Layout()
-	normal.add_widget(nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles))
-	normal.add_widget(nanomyth.view.sdl.widget.TextLineWidget(grey_font, 'Back'), (4, 4))
+	normal.add_widget(nanomyth.view.sdl.widget.TileMap(button_off_tiles))
+	normal.add_widget(nanomyth.view.sdl.widget.TextLine(grey_font, 'Back'), (4, 4))
 	normal.get_size(engine) # TODO not needed actually, just for coverage.
 	highlighted = nanomyth.view.sdl.widget.Layout()
-	highlighted.add_widget(nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles))
-	highlighted.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, '> Back'), (4, 4))
+	highlighted.add_widget(nanomyth.view.sdl.widget.TileMap(button_on_tiles))
+	highlighted.add_widget(nanomyth.view.sdl.widget.TextLine(font, '> Back'), (4, 4))
 
 	menu.add_menu_item(
 			nanomyth.view.sdl.widget.Button(normal, highlighted),

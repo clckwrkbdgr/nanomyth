@@ -149,7 +149,7 @@ main_ui_panel_pos = Point(
 main_ui_text = """\
 [Q]uests
 """
-main_ui_text = nanomyth.view.sdl.context.MultilineTextWidget(font,
+main_ui_text = nanomyth.view.sdl.context.MultilineText(font,
 		size=main_ui_panel.get_size(engine) - (4+4, 4+4),
 		text=main_ui_text,
 		)

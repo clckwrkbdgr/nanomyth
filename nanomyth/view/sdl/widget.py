@@ -27,7 +27,7 @@ class Widget:
 		"""
 		raise NotImplementedError(str(type(self)))
 
-class ImageWidget(Widget):
+class Image(Widget):
 	""" Displays full image.
 	"""
 	def __init__(self, image):
@@ -42,7 +42,7 @@ class ImageWidget(Widget):
 			image = engine.get_image(self.image)
 		engine.render_texture(image.get_texture(), topleft)
 
-class AbstractGridWidget(Widget):
+class AbstractGrid(Widget):
 	""" Base class for widgets that display a grid of image tiles.
 
 	Does not support scrolling in any direction.
@@ -73,7 +73,7 @@ class AbstractGridWidget(Widget):
 			image_pos = Point(pos.x * tile_size.width, pos.y * tile_size.height)
 			engine.render_texture(image.get_texture(), topleft + image_pos)
 
-class TileMapWidget(AbstractGridWidget):
+class TileMap(AbstractGrid):
 	""" Displays a Map of arbitrary tiles
 	"""
 	def __init__(self, tilemap):
@@ -87,7 +87,7 @@ class TileMapWidget(AbstractGridWidget):
 		for pos in self.tilemap:
 			yield pos, engine.get_image(self.tilemap.cell(pos))
 
-class PanelWidget(TileMapWidget):
+class Panel(TileMap):
 	""" Draws panel made from tiles.
 	"""
 	def __init__(self, tilemap, size):
@@ -102,7 +102,7 @@ class PanelWidget(TileMapWidget):
 		"""
 		super().__init__(math.tiled_panel(tilemap, size))
 
-class ImageLineWidget(Widget):
+class ImageLine(Widget):
 	""" Displays a horizontal sequence of images. """
 	def iter_images(self): # pragma: no cover
 		""" Should yield Image objects from left to right. """
@@ -123,7 +123,7 @@ class ImageLineWidget(Widget):
 			engine.render_texture(image.get_texture(), topleft + image_pos)
 			image_pos.x += tile_size.width
 
-class TextLineWidget(ImageLineWidget):
+class TextLine(ImageLine):
 	""" Displays single-line text using pixel font. """
 	def __init__(self, font, text=""):
 		""" Creates widget to display single text line with Font object.
@@ -137,7 +137,7 @@ class TextLineWidget(ImageLineWidget):
 	def set_text(self, new_text):
 		self.text = new_text
 
-class LevelMapWidget(AbstractGridWidget):
+class LevelMap(AbstractGrid):
 	""" Displays level map using static camera (viewport is not moving).
 
 	WARNING: As camera is static, map should fit within the screen,
@@ -238,7 +238,7 @@ class SDLTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
 		return self.font.get_letter_image(letter).get_size()
 
-class BaseMultilineTextWidget(Widget):
+class BaseMultilineText(Widget):
 	""" Base abstract class for multiline text widgets.
 	"""
 	def __init__(self, font, size, text=""):
@@ -267,7 +267,7 @@ class BaseMultilineTextWidget(Widget):
 				tile_size = image.get_size()
 				image_pos.x += tile_size.width
 
-class MultilineTextWidget(BaseMultilineTextWidget):
+class MultilineText(BaseMultilineText):
 	""" Displays multiline text using pixel font.
 	Widget will auto-adjust height to the whole text.
 	"""
@@ -285,7 +285,7 @@ class MultilineTextWidget(BaseMultilineTextWidget):
 		""" Returns set of text lines that fit into the current viewport. """
 		return self.textlines
 
-class MultilineScrollableTextWidget(BaseMultilineTextWidget):
+class MultilineScrollableText(BaseMultilineText):
 	""" Displays multiline text using pixel font
 	with option to scroll if text is larger than the screen can fit.
 
