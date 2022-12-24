@@ -6,6 +6,11 @@ from ...math import Point, Size, Matrix
 from ..utils import math
 from ..utils.ui import TextWrapper, Scroller
 
+class WidgetAtPos:
+	def __init__(self, topleft, widget):
+		self.topleft = Point(topleft)
+		self.widget = widget
+
 class Widget:
 	""" Base interface for widgets.
 	"""
@@ -13,14 +18,14 @@ class Widget:
 		""" Should return Size object that covers widgets area.
 		Engine is passed for operations that may require it to determine size.
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 	def draw(self, engine, topleft): # pragma: no cover
 		""" Called by engine to draw widget
 		in given topleft position.
 
 		Use engine .render_* functions to draw.
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 
 class ImageWidget(Widget):
 	""" Displays full image.
@@ -29,6 +34,8 @@ class ImageWidget(Widget):
 		""" Creates widget to display image.
 		"""
 		self.image = image
+	def get_size(self, engine):
+		return self.image.get_size()
 	def draw(self, engine, topleft):
 		image = self.image
 		if isinstance(self.image, str):
@@ -42,13 +49,13 @@ class AbstractGridWidget(Widget):
 	"""
 	def get_grid_size(self, engine): # pragma: no cover
 		""" Should return maximum Size of grid. """
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 	def iter_tiles(self, engine): # pragma: no cover
 		""" Should yield pairs (Point, Image).
 		First item is a position within grid.
 		Real coordinates will be calculated automatically.
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 	def get_size(self, engine):
 		""" Returns bounding pixel size of the grid.
 		Determines size of a single tile by picking first item from iter_tiles().
@@ -99,7 +106,7 @@ class ImageLineWidget(Widget):
 	""" Displays a horizontal sequence of images. """
 	def iter_images(self): # pragma: no cover
 		""" Should yield Image objects from left to right. """
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 	def _iter_items(self):
 		for image in self.iter_images():
 			yield image, image.get_size()
@@ -152,67 +159,77 @@ class LevelMapWidget(AbstractGridWidget):
 		for pos, actor in self.level_map.iter_actors():
 			yield pos, engine.get_image(actor.get_sprite())
 
-class HighlightableWidget(Widget):
-	""" Compound widget with two states: normal and highlighted (selected).
+class Layout(Widget):
+	""" Compound container widget that may display several sub-widgets at the same time. """
+	def __init__(self):
+		""" Creates empty container.
+		Fill it with add_widget().
+		"""
+		self.widgets = []
+	def add_widget(self, widget, topleft=None):
+		""" Adds new widget.
+		If topleft is specified, it is treated as relative shift from the topleft corner of the container itself.
+		Widgets will be displayed in the order of adding,
+		i.e. to make some widget background add it as the very first one.
+		"""
+		assert widget
+		self.widgets.append(WidgetAtPos(topleft or Point(0, 0), widget))
+	def get_size(self, engine):
+		""" Size of the bounding area for all widgets. """
+		result = Size(0, 0)
+		for item in self.widgets:
+			widget_size = item.widget.get_size(engine) + item.topleft
+			result.width = max(result.width, widget_size.width)
+			result.height = max(result.height, widget_size.height)
+		return result
+	def draw(self, engine, topleft):
+		for item in self.widgets:
+			item.widget.draw(engine, topleft + item.topleft)
+
+class Switch(Widget):
+	""" Compound widget that display different sub-widgets depending on controllable inner state.
+	"""
+	def __init__(self):
+		""" Creates empty widget.
+		Fill it with states using add_widget()
+		"""
+		self.states = {}
+		self.current = None
+	def add_widget(self, state, widget):
+		""" Adds new state with widget. """
+		self.states[state] = widget
+	def set_state(self, state):
+		""" Sets current state. """
+		self.current = state
+	def get_size(self, engine):
+		""" Returns max size of sub-widgets.
+		"""
+		widget_sizes = [_.get_size(engine) for _ in self.states.values()]
+		return Size(
+				max(_.width for _ in widget_sizes),
+				max(_.height for _ in widget_sizes),
+				)
+	def draw(self, engine, topleft):
+		current_widget = self.states[self.current]
+		current_widget.draw(engine, topleft)
+
+class Button(Switch):
+	""" Switch widget with two states: normal and highlighted (selected).
 	States can be any widgets.
-	Also supports custom action callback (usually performed on "selection" event).
+	Also supports optional custom action callback (usually to be performed on "selection" event).
 	It's up to the parent context to detect selection and perform action.
 	"""
 	def __init__(self, normal, highlighted, action=None):
-		""" Creates highlightable item widget from two states (widgets).
+		""" Creates button widget with two states (widgets).
 		"""
-		self.widget_normal = normal
-		self.widget_highlighted = highlighted
+		super().__init__()
+		self.add_widget(False, normal)
+		self.add_widget(True, highlighted)
+		self.set_state(False)
 		self.action = action
-		self.highlighted = False
-	def get_size(self, engine):
-		""" Returns max size of the two sub-widgets.
-		"""
-		normal_size = self.widget_normal.get_size(engine)
-		highlighted_size = self.widget_highlighted.get_size(engine)
-		return Size(
-				max(normal_size.width, highlighted_size.width),
-				max(normal_size.height, highlighted_size.height),
-				)
 	def make_highlighted(self, value):
 		""" Makes current item highlighted. """
-		self.highlighted = bool(value)
-	def draw(self, engine, topleft):
-		if self.highlighted:
-			self.widget_highlighted.draw(engine, topleft)
-		else:
-			self.widget_normal.draw(engine, topleft)
-
-class MenuItem(Widget):
-	""" Menu item with text caption and two modes (normal/highlighted). """
-	def __init__(self, button, caption, button_highlighted=None, caption_highlighted=None, caption_shift=None):
-		""" Creates selectable menu item widget.
-
-		Draws button using giving Widget (e.g. ImageWidget or TileMapWidget)
-		and overpaints with given caption widget (usually a TextLine).
-		Button and caption have additional "highlighted" variant which is used if menu item is highlighted via .make_highlighted(True)
-
-		Both captions and buttons can be None, missing widgets are simply skipped.
-
-		Buttons and captions are forced to the topleft position of the menu item.
-		If caption_shift (of Point or tuple type) is provided, caption in shifted relative to the topleft posision (and button widget).
-		"""
-		self.button = button
-		self.button_highlighted = button_highlighted or self.button
-		self.caption_shift = Point(caption_shift or (0, 0))
-		self.caption = caption
-		self.caption_highlighted = caption_highlighted or self.caption
-		self.highlighted = False
-	def make_highlighted(self, value):
-		""" Makes current item highlighted. """
-		self.highlighted = bool(value)
-	def draw(self, engine, topleft):
-		button = self.button_highlighted if self.highlighted else self.button
-		caption = self.caption_highlighted if self.highlighted else self.caption
-		if button:
-			button.draw(engine, topleft)
-		if caption:
-			caption.draw(engine, topleft + self.caption_shift)
+		self.set_state(bool(value))
 
 class SDLTextWrapper(TextWrapper):
 	def __init__(self, *args, font=None, **kwargs):
@@ -239,7 +256,7 @@ class BaseMultilineTextWidget(Widget):
 		return wrapper
 	def get_visible_text_lines(self): # pragma: no cover
 		""" Should return set of text lines that fit into the current viewport. """
-		raise NotImplementedError()
+		raise NotImplementedError(str(type(self)))
 	def draw(self, engine, topleft):
 		font_height = self.font.get_letter_image('W').get_size().height
 		for row, textline in enumerate(self.get_visible_text_lines()):

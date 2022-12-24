@@ -4,15 +4,10 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import LevelMapWidget, TextLineWidget, ImageWidget, MenuItem, MultilineTextWidget, MultilineScrollableTextWidget
+from .widget import WidgetAtPos, LevelMapWidget, TextLineWidget, ImageWidget, Layout, Button, MultilineTextWidget, MultilineScrollableTextWidget
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
-
-class WidgetAtPos:
-	def __init__(self, topleft, widget):
-		self.topleft = Point(topleft)
-		self.widget = widget
 
 class Context:
 	""" Basic game context.
@@ -108,7 +103,7 @@ class Game(Context):
 class Menu(Context):
 	""" Game context for menu screens.
 
-	Operates on set of MenuItem widgets with option to pick one and perform its action.
+	Operates on set of Button widgets with option to pick one and perform its action.
 	Available action options:
 	- Exception object or type, e.g. Context.Finished - to close current context and go back.
 	- Context object - to switch to the new context.
@@ -148,7 +143,7 @@ class Menu(Context):
 	def add_menu_item(self, new_menu_item, on_selection=None):
 		""" Adds new menu item with optional action on selection.
 
-		Item should be either MenuItem object, or string, or tuple of two strings.
+		Item should be either Button object, or string, or tuple of two strings.
 		In case of strings, they are treated as button caption (with optional normal/highlighted configuration)
 		and are created using templated method (see set_button_* functions).
 		WARNING: At least set_button_widget_template() is required for templated items.
@@ -156,7 +151,7 @@ class Menu(Context):
 		If action is specified, it should be an action-like object (see Menu docstring).
 		"""
 		button_pos = self._button_group_topleft + Point(0, self._button_height) * len(self.items)
-		if isinstance(new_menu_item, MenuItem):
+		if isinstance(new_menu_item, Button):
 			self.items.append((WidgetAtPos(button_pos, new_menu_item), on_selection))
 			return
 		caption, caption_highlighted = '', None
@@ -168,19 +163,20 @@ class Menu(Context):
 		button_highlighted = None
 		if self._button_template_highlighted:
 			button_highlighted = self._button_template_highlighted[0](*(self._button_template_highlighted[1]))
-		self.items.append((WidgetAtPos(button_pos,
-			MenuItem(
-				button,
-				TextLineWidget(
+
+		normal = Layout()
+		normal.add_widget(button)
+		normal.add_widget(TextLineWidget(
 					self._button_caption_font, caption,
-					),
-				button_highlighted=button_highlighted,
-				caption_highlighted=TextLineWidget(
-					self._button_caption_font_highlighted, caption_highlighted,
-					) if caption_highlighted else None,
-				caption_shift=self._button_caption_shift,
-				)),
-			on_selection))
+					), self._button_caption_shift)
+		highlighted = Layout()
+		highlighted.add_widget(button_highlighted)
+		highlighted.add_widget(TextLineWidget(
+				self._button_caption_font_highlighted if caption_highlighted else self._button_caption_font,
+				caption_highlighted if caption_highlighted else caption,
+				), self._button_caption_shift)
+
+		self.items.append((WidgetAtPos(button_pos, Button(normal, highlighted)), on_selection))
 	def set_caption_pos(self, pos):
 		""" Moves caption.
 		Default position is topleft corner of the screen.
@@ -348,7 +344,7 @@ class TextScreen(Context):
 		self._button_down = None
 	def set_scroll_up_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling up.
-		It should be of MenuItem class so it can be highlighted when scrolling up is available
+		It should be of Button class so it can be highlighted when scrolling up is available
 		and display as normal (inactive) when it's not.
 		Position is relative to the message box topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
@@ -358,7 +354,7 @@ class TextScreen(Context):
 		self.add_button(engine, pos, button_widget)
 	def set_scroll_down_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling down.
-		It should be of MenuItem class so it can be highlighted when scrolling down is available
+		It should be of Button class so it can be highlighted when scrolling down is available
 		and display as normal (inactive) when it's not.
 		Position is relative to the message box topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
@@ -457,7 +453,7 @@ class ItemList(Context):
 		self.add_widget(pos, button_widget)
 	def set_scroll_up_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling up.
-		It should be of MenuItem class so it can be highlighted when scrolling up is available
+		It should be of Button class so it can be highlighted when scrolling up is available
 		and display as normal (inactive) when it's not.
 		Position is relative to the view rect topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
@@ -467,7 +463,7 @@ class ItemList(Context):
 		self.add_button(engine, pos, button_widget)
 	def set_scroll_down_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling down.
-		It should be of MenuItem class so it can be highlighted when scrolling down is available
+		It should be of Button class so it can be highlighted when scrolling down is available
 		and display as normal (inactive) when it's not.
 		Position is relative to the view rect topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).

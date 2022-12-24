@@ -101,7 +101,7 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 	window_size = engine.get_window_size()
 
-	items = [nanomyth.view.sdl.widget.HighlightableWidget(
+	items = [nanomyth.view.sdl.widget.Button(
 		nanomyth.view.sdl.widget.MultilineTextWidget(
 			normal_font, (window_size.width, 0), item,
 			),
@@ -143,18 +143,17 @@ def conversation(engine, resources, text, font, on_ok=None):
 	dialog.set_scroll_up_button(engine, (
 		-tile_size.width * 2 - 2,
 		-tile_size.height - 2,
-		), nanomyth.view.sdl.widget.MenuItem(
+		), nanomyth.view.sdl.widget.Button(
 			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up')),
-			None,
 			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_up_highlighted')),
 			),
 		)
+	dialog._button_up.get_size(engine) # TODO not needed actually, just for coverage.
 	dialog.set_scroll_down_button(engine, (
 		2,
 		-tile_size.height - 2,
-		), nanomyth.view.sdl.widget.MenuItem(
+		), nanomyth.view.sdl.widget.Button(
 			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down')),
-			None,
 			nanomyth.view.sdl.widget.ImageWidget(engine.get_image('button_scroll_down_highlighted')),
 			),
 		)
@@ -216,13 +215,18 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	menu.add_menu_item(('Slot 1', '> Slot 1'), lambda: handler(savefiles[0]))
 	menu.add_menu_item(('Slot 2', '> Slot 2'), lambda: handler(savefiles[1]))
 	menu.add_menu_item(('Slot 3', '> Slot 3'), lambda: handler(savefiles[2]))
+
+	normal = nanomyth.view.sdl.widget.Layout()
+	normal.add_widget(nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles))
+	normal.add_widget(nanomyth.view.sdl.widget.TextLineWidget(grey_font, 'Back'), (4, 4))
+	normal.get_size(engine) # TODO not needed actually, just for coverage.
+	highlighted = nanomyth.view.sdl.widget.Layout()
+	highlighted.add_widget(nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles))
+	highlighted.add_widget(nanomyth.view.sdl.widget.TextLineWidget(font, '> Back'), (4, 4))
+
 	menu.add_menu_item(
-			nanomyth.view.sdl.widget.MenuItem(
-				nanomyth.view.sdl.widget.TileMapWidget(button_off_tiles),
-				nanomyth.view.sdl.widget.TextLineWidget(grey_font, 'Back'),
-				button_highlighted=nanomyth.view.sdl.widget.TileMapWidget(button_on_tiles),
-				caption_highlighted=nanomyth.view.sdl.widget.TextLineWidget(font, '> Back'),
-				caption_shift=(4, 4),
-				), nanomyth.view.sdl.context.Context.Finished)
+			nanomyth.view.sdl.widget.Button(normal, highlighted),
+			nanomyth.view.sdl.context.Context.Finished,
+			)
 
 	menu.select_item(0)
