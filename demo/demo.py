@@ -135,10 +135,10 @@ def load_game(savefile):
 	info_line.set_text('Game loaded')
 	raise nanomyth.view.sdl.context.Menu.Finished
 
-save_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
+save_game_menu = nanomyth.view.sdl.context.Menu()
 ui.fill_savegame_menu(engine, resources, save_game_menu, 'Save game', save_game, savefiles, font, fixed_font, grey_font)
 
-load_game_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
+load_game_menu = nanomyth.view.sdl.context.Menu()
 ui.fill_savegame_menu(engine, resources, load_game_menu, 'Load game', load_game, savefiles + [autosavefile], font, fixed_font, grey_font)
 
 main_ui_panel = ui.panel(engine, resources, (3, 7))
@@ -175,7 +175,7 @@ main_game.bind_key('q', show_quest_list)
 
 info_line = ui.add_info_panel(main_game, engine, font)
 
-main_menu = nanomyth.view.sdl.context.Menu(font, on_escape=nanomyth.view.sdl.context.Menu.Finished)
+main_menu = nanomyth.view.sdl.context.Menu()
 main_menu_info = ui.fill_main_menu(engine, resources, main_menu, main_game,
 		save_game_menu, load_game_menu, font, fixed_font, grey_font)
 engine.init_context(main_menu)

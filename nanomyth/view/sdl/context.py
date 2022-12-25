@@ -112,25 +112,27 @@ class Menu(Context):
 
 	As this class is a Context, any other widgets (e.g. background image or title text) can be added via usual .add_widget()
 	"""
-	def __init__(self, font, on_escape=None):
+	def __init__(self, on_escape=None):
 		""" Creates menu context.
 		Items can be added later via .add_menu_item().
 
 		If on_escape is specified, it should be an action-like object (see Menu docstring)
 		and it will performed when <ESC> is pressed.
+		Default value is raise Context.Finished
 		"""
 		super().__init__()
 		self.items = ButtonGroup()
 		self.background = None
-		self.caption = WidgetAtPos((0, 0), TextLine(font))
-		self.on_escape = on_escape
+		self.caption = None
+		self.on_escape = on_escape or self.Finished
 		self._button_group_topleft = Point(0, 0)
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
 		if self.background:
 			widgets.append(WidgetAtPos((0, 0), self.background))
 		widgets.append(WidgetAtPos(self._button_group_topleft, self.items))
-		widgets.append(self.caption)
+		if self.caption:
+			widgets.append(self.caption)
 		widgets.extend(self.widgets)
 		return widgets
 	def set_button_spacing(self, height):
@@ -142,19 +144,9 @@ class Menu(Context):
 		Item should be a Button object.
 		"""
 		self.items.add_button(new_menu_item)
-	def set_caption_pos(self, pos):
-		""" Moves caption.
-		Default position is topleft corner of the screen.
-		"""
-		self.caption.topleft = Point(pos)
-	def set_caption_text(self, text, font=None):
-		""" Changes caption text.
-		Default value is empty string (no caption).
-		Optionally changes caption's font.
-		"""
-		self.caption.widget.set_text(text)
-		if font:
-			self.caption.widget.font = font
+	def set_caption(self, pos, caption_widget):
+		""" Adds caption widget. """
+		self.caption = WidgetAtPos(Point(pos), caption_widget)
 	def set_background(self, image):
 		""" Set background image.
 		Can be either some Image widget, or name of the image in global image list -

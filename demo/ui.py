@@ -181,8 +181,7 @@ class MenuButtonTemplate:
 
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):
 	main_menu.set_background('main_menu_background')
-	main_menu.set_caption_pos((20, 4))
-	main_menu.set_caption_text('Nanomyth Demo', fixed_font)
+	main_menu.set_caption((20, 4), nanomyth.view.sdl.widget.TextLine(fixed_font, 'Nanomyth Demo'))
 	main_menu.set_button_spacing(4)
 
 	main_menu_info = nanomyth.view.sdl.widget.TextLine(font)
@@ -212,8 +211,7 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 
 def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font, fixed_font, grey_font):
 	menu.set_background('main_menu_background')
-	menu.set_caption_pos((50, 10))
-	menu.set_caption_text(title)
+	menu.set_caption((50, 10), nanomyth.view.sdl.widget.TextLine(font, title))
 	menu.set_button_spacing(4)
 
 	button_off_tiles = Matrix.from_iterable([
