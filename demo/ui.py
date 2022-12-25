@@ -171,10 +171,10 @@ class MenuButtonTemplate:
 		self.tiles_off, self.tiles_on = tiles_off, tiles_on
 		self.font_off, self.font_on = font_off, font_on
 	def make(self, text_off, text_on, action):
-		normal = nanomyth.view.sdl.widget.Layout()
+		normal = nanomyth.view.sdl.widget.Compound()
 		normal.add_widget(nanomyth.view.sdl.widget.TileMap(self.tiles_off))
 		normal.add_widget(nanomyth.view.sdl.widget.TextLine(self.font_off, text_off), (4, 4))
-		highlighted = nanomyth.view.sdl.widget.Layout()
+		highlighted = nanomyth.view.sdl.widget.Compound()
 		highlighted.add_widget(nanomyth.view.sdl.widget.TileMap(self.tiles_on))
 		highlighted.add_widget(nanomyth.view.sdl.widget.TextLine(self.font_on, text_on), (4, 4))
 		return nanomyth.view.sdl.widget.Button(normal, highlighted, action)

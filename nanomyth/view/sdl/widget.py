@@ -173,7 +173,7 @@ class LevelMap(AbstractGrid):
 		for pos, actor in self.level_map.iter_actors():
 			yield pos, engine.get_image(actor.get_sprite())
 
-class Layout(Widget):
+class Compound(Widget):
 	""" Compound container widget that may display several sub-widgets at the same time. """
 	def __init__(self):
 		""" Creates empty container.

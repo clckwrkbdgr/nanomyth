@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import WidgetAtPos, LevelMap, TextLine, Image, Layout, Button, MultilineText, MultilineScrollableText, ButtonGroup
+from .widget import WidgetAtPos, LevelMap, TextLine, Image, Button, MultilineText, MultilineScrollableText, ButtonGroup
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
