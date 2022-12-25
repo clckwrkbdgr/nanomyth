@@ -102,28 +102,42 @@ class Panel(TileMap):
 		"""
 		super().__init__(math.tiled_panel(tilemap, size))
 
-class ImageLine(Widget):
-	""" Displays a horizontal sequence of images. """
-	def iter_images(self): # pragma: no cover
-		""" Should yield Image objects from left to right. """
+class ImageRowSet(Widget):
+	""" Displays a vertical set of horizontal left-aligned sequences of images. """
+	def _iter_image_rows(self): # pragma: no cover
+		""" Should yield image rows from top to bottom.
+		Each image row should yield Image objects from left to right.
+		"""
 		raise NotImplementedError(str(type(self)))
-	def _iter_items(self):
-		for image in self.iter_images():
+	def _empty_line_height(self): # pragma: no cover
+		""" Should return default height for lines with no elements. """
+		raise NotImplementedError(str(type(self)))
+	def __iter_items(self, row):
+		for image in row:
 			yield image, image.get_size()
 	def get_size(self, engine):
-		""" Returns bounding size of the line. """
+		""" Returns total bounding size of the row set. """
 		result = Size(0, 0)
-		for image, tile_size in self._iter_items():
-			result.width += tile_size.width
-			result.height = max(result.height, tile_size.height)
+		for row in self._iter_image_rows():
+			row_size = Size(0, 0)
+			for image, tile_size in self.__iter_items(row):
+				row_size.width += tile_size.width
+				row_size.height = max(row_size.height, tile_size.height)
+			result.width = max(result.width, row_size.width)
+			result.height += row_size.height
 		return result
 	def draw(self, engine, topleft):
 		image_pos = Point()
-		for image, tile_size in self._iter_items():
-			engine.render_texture(image.get_texture(), topleft + image_pos)
-			image_pos.x += tile_size.width
+		for row in self._iter_image_rows():
+			row_height = 0
+			for image, tile_size in self.__iter_items(row):
+				engine.render_texture(image.get_texture(), topleft + image_pos)
+				image_pos.x += tile_size.width
+				row_height = max(row_height, tile_size.height)
+			image_pos.x = 0
+			image_pos.y += row_height or self._empty_line_height()
 
-class TextLine(ImageLine):
+class TextLine(ImageRowSet):
 	""" Displays single-line text using pixel font. """
 	def __init__(self, font, text=""):
 		""" Creates widget to display single text line with Font object.
@@ -131,9 +145,10 @@ class TextLine(ImageLine):
 		"""
 		self.font = font
 		self.text = text
-	def iter_images(self):
-		for letter in self.text:
-			yield self.font.get_letter_image(letter)
+	def _empty_line_height(self):
+		return self.font.get_letter_image(' ').get_size().height
+	def _iter_image_rows(self):
+		yield (self.font.get_letter_image(letter) for letter in self.text)
 	def set_text(self, new_text):
 		self.text = new_text
 
@@ -238,7 +253,7 @@ class SDLTextWrapper(TextWrapper):
 	def get_letter_size(self, letter):
 		return self.font.get_letter_image(letter).get_size()
 
-class BaseMultilineText(Widget):
+class BaseMultilineText(ImageRowSet):
 	""" Base abstract class for multiline text widgets.
 	"""
 	def __init__(self, font, size, text=""):
@@ -248,8 +263,6 @@ class BaseMultilineText(Widget):
 		self.font = font
 		self.size = Size(size)
 		self.textlines = None
-	def get_size(self, engine):
-		return self.size
 	def set_text(self, new_text):
 		wrapper = SDLTextWrapper(new_text, self.size.width, font=self.font)
 		self.textlines = wrapper.lines
@@ -257,15 +270,11 @@ class BaseMultilineText(Widget):
 	def get_visible_text_lines(self): # pragma: no cover
 		""" Should return set of text lines that fit into the current viewport. """
 		raise NotImplementedError(str(type(self)))
-	def draw(self, engine, topleft):
-		font_height = self.font.get_letter_image('W').get_size().height
-		for row, textline in enumerate(self.get_visible_text_lines()):
-			image_pos = Point(0, row * font_height)
-			for pos, letter in enumerate(textline):
-				image = self.font.get_letter_image(letter)
-				engine.render_texture(image.get_texture(), topleft + image_pos)
-				tile_size = image.get_size()
-				image_pos.x += tile_size.width
+	def _iter_image_rows(self):
+		for textline in self.get_visible_text_lines():
+			yield (self.font.get_letter_image(letter) for letter in textline)
+	def _empty_line_height(self):
+		return self.font.get_letter_image(' ').get_size().height
 
 class MultilineText(BaseMultilineText):
 	""" Displays multiline text using pixel font.
