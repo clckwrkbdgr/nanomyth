@@ -278,7 +278,9 @@ class TestSelectionList(unittest.TestCase):
 		self.assertIsNone(items.get_next_selected_index())
 		self.assertIsNone(items.get_prev_selected_index())
 
-		items = SelectionList(['foo', 'bar', 'baz'])
+		items.append('foo')
+		items.append('bar')
+		items.append('baz')
 		self.assertEqual(items.get_next_selected_index(), 0)
 		self.assertEqual(items.get_prev_selected_index(), 2)
 

@@ -4,7 +4,7 @@ SDL-based engine organize display output as a set of separate widgets.
 import pygame
 from ...math import Point, Size, Rect, Matrix
 from ..utils import math
-from ..utils.ui import TextWrapper, Scroller
+from ..utils.ui import TextWrapper, Scroller, SelectionList
 
 class WidgetAtPos:
 	def __init__(self, topleft, widget):
@@ -248,9 +248,8 @@ class Button(Switch):
 class ButtonGroup(Widget):
 	""" Vertical button group. """
 	def __init__(self):
-		self.buttons = []
+		self.buttons = SelectionList(on_selection=lambda item, value: item.make_highlighted(value))
 		self._spacing = 0
-		self.selected = None
 	def set_spacing(self, height):
 		""" Sets padding space between menu buttons.
 		Default is 0.
@@ -262,17 +261,18 @@ class ButtonGroup(Widget):
 		""" Selects item by index.
 		Highlights corresponding widget, resets all others.
 		"""
-		self.selected = selected_index
-		for index, button in enumerate(self.buttons):
-			button.make_highlighted(index == selected_index)
+		self.buttons.select(selected_index)
 	def select_prev(self):
 		""" Selects previous item if possible. """
-		self.select(max(0, self.selected - 1))
+		self.buttons.select(self.buttons.get_prev_selected_index())
 	def select_next(self):
 		""" Selects next item if possible. """
-		self.select(min(len(self.buttons) - 1, self.selected + 1))
-	def get_selected_button(self):
-		return self.buttons[self.selected]
+		self.buttons.select(self.buttons.get_next_selected_index())
+	def get_selected_action(self):
+		""" Returns action property of the selected button,
+		or None if nothing is selected.
+		"""
+		return self.buttons.get_selected_item().action if self.buttons.has_selection() else None
 	def get_size(self, engine):
 		""" Returns total bounding size of the button group. """
 		result = Size(0, self._spacing * (len(self.buttons) - 1))

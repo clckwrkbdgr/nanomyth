@@ -198,9 +198,9 @@ class Menu(Context):
 		elif control_name == 'down':
 			self.items.select_next()
 		elif control_name == 'return':
-			selected = self.items.get_selected_button()
-			if selected:
-				return self.perform_action(selected.action)
+			selected_action = self.items.get_selected_action()
+			if selected_action:
+				return self.perform_action(selected_action)
 		return super().update(control_name)
 
 class MessageBox(Context):

@@ -138,6 +138,8 @@ class SelectionList:
 		return iter(self.items)
 	def __getitem__(self, item_index):
 		return self.items[item_index]
+	def append(self, new_item):
+		self.items.append(new_item)
 	def select(self, item_index):
 		""" Selects item with given index,
 		or clears selection when None.
