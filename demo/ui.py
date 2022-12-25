@@ -165,10 +165,25 @@ def conversation(engine, resources, text, font, on_ok=None):
 	info_line = add_info_panel(dialog, engine, font)
 	return dialog
 
+class MenuButtonTemplate:
+	def __init__(self, engine, tiles_off, tiles_on, font_off, font_on):
+		self.engine = engine
+		self.tiles_off, self.tiles_on = tiles_off, tiles_on
+		self.font_off, self.font_on = font_off, font_on
+	def make(self, text_off, text_on, action):
+		normal = nanomyth.view.sdl.widget.Layout()
+		normal.add_widget(nanomyth.view.sdl.widget.TileMap(self.tiles_off))
+		normal.add_widget(nanomyth.view.sdl.widget.TextLine(self.font_off, text_off), (4, 4))
+		highlighted = nanomyth.view.sdl.widget.Layout()
+		highlighted.add_widget(nanomyth.view.sdl.widget.TileMap(self.tiles_on))
+		highlighted.add_widget(nanomyth.view.sdl.widget.TextLine(self.font_on, text_on), (4, 4))
+		return nanomyth.view.sdl.widget.Button(normal, highlighted, action)
+
 def fill_main_menu(engine, resources, main_menu, main_game_context, save_function, load_function, font, fixed_font, grey_font):
 	main_menu.set_background('main_menu_background')
 	main_menu.set_caption_pos((20, 4))
 	main_menu.set_caption_text('Nanomyth Demo', fixed_font)
+	main_menu.set_button_spacing(4)
 
 	main_menu_info = nanomyth.view.sdl.widget.TextLine(font)
 	main_menu.add_widget((0, 100), main_menu_info)
@@ -180,15 +195,17 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 		['button_on_left', 'button_on_middle', 'button_on_right'],
 		])
 	main_menu.set_button_group_topleft((100, 20))
-	main_menu.set_button_height(20)
-	main_menu.set_button_caption_shift((4, 4))
-	main_menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_off_tiles, font=grey_font)
-	main_menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_on_tiles, font=font)
 
-	main_menu.add_menu_item(('Play', '> Play'), main_game_context)
-	main_menu.add_menu_item(('Save', '> Save'), save_function)
-	main_menu.add_menu_item(('Load', '> Load'), load_function)
-	main_menu.add_menu_item('Exit', nanomyth.view.sdl.context.Context.Finished)
+	button = MenuButtonTemplate(engine, 
+			button_off_tiles, button_on_tiles,
+			grey_font, font,
+			)
+
+	main_menu.add_menu_item(button.make('Play', '> Play', main_game_context))
+	main_menu.add_menu_item(button.make('Save', '> Save', save_function))
+	main_menu.add_menu_item(button.make('Load', '> Load', load_function))
+	main_menu.add_menu_item(button.make('Exit', '> Exit', nanomyth.view.sdl.context.Context.Finished))
+	main_menu.items.get_size(engine) # TODO not needed actually, just for coverage.
 
 	main_menu.select_item(0)
 	return main_menu_info
@@ -197,6 +214,7 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 	menu.set_background('main_menu_background')
 	menu.set_caption_pos((50, 10))
 	menu.set_caption_text(title)
+	menu.set_button_spacing(4)
 
 	button_off_tiles = Matrix.from_iterable([
 		['button_off_left', 'button_off_middle', 'button_off_middle', 'button_off_right'],
@@ -205,28 +223,21 @@ def fill_savegame_menu(engine, resources, menu, title, handler, savefiles, font,
 		['button_on_left', 'button_on_middle', 'button_on_middle', 'button_on_right'],
 		])
 	menu.set_button_group_topleft((50, 20))
-	menu.set_button_height(20)
-	menu.set_button_caption_shift((4, 4))
-	menu.set_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_off_tiles, font=grey_font)
-	menu.set_highlighted_button_widget_template(nanomyth.view.sdl.widget.TileMap, button_on_tiles, font=font)
+
+	button = MenuButtonTemplate(engine, 
+			button_off_tiles, button_on_tiles,
+			grey_font, font,
+			)
 
 	if len(savefiles) == 4:
-		menu.add_menu_item(('Auto', '> Auto'), lambda: handler(savefiles[3]))
-	menu.add_menu_item(('Slot 1', '> Slot 1'), lambda: handler(savefiles[0]))
-	menu.add_menu_item(('Slot 2', '> Slot 2'), lambda: handler(savefiles[1]))
-	menu.add_menu_item(('Slot 3', '> Slot 3'), lambda: handler(savefiles[2]))
-
-	normal = nanomyth.view.sdl.widget.Layout()
-	normal.add_widget(nanomyth.view.sdl.widget.TileMap(button_off_tiles))
-	normal.add_widget(nanomyth.view.sdl.widget.TextLine(grey_font, 'Back'), (4, 4))
-	normal.get_size(engine) # TODO not needed actually, just for coverage.
-	highlighted = nanomyth.view.sdl.widget.Layout()
-	highlighted.add_widget(nanomyth.view.sdl.widget.TileMap(button_on_tiles))
-	highlighted.add_widget(nanomyth.view.sdl.widget.TextLine(font, '> Back'), (4, 4))
+		menu.add_menu_item(button.make('Auto', '> Auto', lambda: handler(savefiles[3])))
+	menu.add_menu_item(button.make('Slot 1', '> Slot 1', lambda: handler(savefiles[0])))
+	menu.add_menu_item(button.make('Slot 2', '> Slot 2', lambda: handler(savefiles[1])))
+	menu.add_menu_item(button.make('Slot 3', '> Slot 3', lambda: handler(savefiles[2])))
 
 	menu.add_menu_item(
-			nanomyth.view.sdl.widget.Button(normal, highlighted),
+			button.make('Back', '> Back',
 			nanomyth.view.sdl.context.Context.Finished,
-			)
+			))
 
 	menu.select_item(0)

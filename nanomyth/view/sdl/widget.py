@@ -245,6 +245,49 @@ class Button(Switch):
 		""" Makes current item highlighted. """
 		self.set_state(bool(value))
 
+class ButtonGroup(Widget):
+	""" Vertical button group. """
+	def __init__(self):
+		self.buttons = []
+		self._spacing = 0
+		self.selected = None
+	def set_spacing(self, height):
+		""" Sets padding space between menu buttons.
+		Default is 0.
+		"""
+		self._spacing = height
+	def add_button(self, button):
+		self.buttons.append(button)
+	def select(self, selected_index):
+		""" Selects item by index.
+		Highlights corresponding widget, resets all others.
+		"""
+		self.selected = selected_index
+		for index, button in enumerate(self.buttons):
+			button.make_highlighted(index == selected_index)
+	def select_prev(self):
+		""" Selects previous item if possible. """
+		self.select(max(0, self.selected - 1))
+	def select_next(self):
+		""" Selects next item if possible. """
+		self.select(min(len(self.buttons) - 1, self.selected + 1))
+	def get_selected_button(self):
+		return self.buttons[self.selected]
+	def get_size(self, engine):
+		""" Returns total bounding size of the button group. """
+		result = Size(0, self._spacing * (len(self.buttons) - 1))
+		for button in self.buttons:
+			button_size = button.get_size(engine)
+			result.width = max(result.width, button_size.width)
+			result.height += button_size.height
+		return result
+	def draw(self, engine, topleft):
+		button_pos = Point(0, 0)
+		for button in self.buttons:
+			button.draw(engine, topleft + button_pos)
+			button_size = button.get_size(engine)
+			button_pos.y += button_size.height + self._spacing
+
 class SDLTextWrapper(TextWrapper):
 	def __init__(self, *args, font=None, **kwargs):
 		self.font = font

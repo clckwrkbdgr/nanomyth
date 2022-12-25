@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import WidgetAtPos, LevelMap, TextLine, Image, Layout, Button, MultilineText, MultilineScrollableText
+from .widget import WidgetAtPos, LevelMap, TextLine, Image, Layout, Button, MultilineText, MultilineScrollableText, ButtonGroup
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
@@ -120,63 +120,28 @@ class Menu(Context):
 		and it will performed when <ESC> is pressed.
 		"""
 		super().__init__()
-		self.items = []
+		self.items = ButtonGroup()
 		self.background = None
 		self.caption = WidgetAtPos((0, 0), TextLine(font))
-		self.selected = None
 		self.on_escape = on_escape
 		self._button_group_topleft = Point(0, 0)
-		self._button_height = 8
-		self._button_caption_shift = Point(0, 0)
-		self._button_template = None
-		self._button_template_highlighted = None
-		self._button_caption_font = font
-		self._button_caption_font_highlighted = font
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
 		if self.background:
 			widgets.append(WidgetAtPos((0, 0), self.background))
-		widgets.extend(widget for widget, _ in self.items)
+		widgets.append(WidgetAtPos(self._button_group_topleft, self.items))
 		widgets.append(self.caption)
 		widgets.extend(self.widgets)
 		return widgets
-	def add_menu_item(self, new_menu_item, on_selection=None):
-		""" Adds new menu item with optional action on selection.
+	def set_button_spacing(self, height):
+		""" Sets padding space between menu buttons. """
+		self.items.set_spacing(height)
+	def add_menu_item(self, new_menu_item):
+		""" Adds new menu item.
 
-		Item should be either Button object, or string, or tuple of two strings.
-		In case of strings, they are treated as button caption (with optional normal/highlighted configuration)
-		and are created using templated method (see set_button_* functions).
-		WARNING: At least set_button_widget_template() is required for templated items.
-
-		If action is specified, it should be an action-like object (see Menu docstring).
+		Item should be a Button object.
 		"""
-		button_pos = self._button_group_topleft + Point(0, self._button_height) * len(self.items)
-		if isinstance(new_menu_item, Button):
-			self.items.append((WidgetAtPos(button_pos, new_menu_item), on_selection))
-			return
-		caption, caption_highlighted = '', None
-		if isinstance(new_menu_item, str):
-			caption = new_menu_item
-		else:
-			caption, caption_highlighted = new_menu_item
-		button = self._button_template[0](*(self._button_template[1]))
-		button_highlighted = None
-		if self._button_template_highlighted:
-			button_highlighted = self._button_template_highlighted[0](*(self._button_template_highlighted[1]))
-
-		normal = Layout()
-		normal.add_widget(button)
-		normal.add_widget(TextLine(
-					self._button_caption_font, caption,
-					), self._button_caption_shift)
-		highlighted = Layout()
-		highlighted.add_widget(button_highlighted)
-		highlighted.add_widget(TextLine(
-				self._button_caption_font_highlighted if caption_highlighted else self._button_caption_font,
-				caption_highlighted if caption_highlighted else caption,
-				), self._button_caption_shift)
-
-		self.items.append((WidgetAtPos(button_pos, Button(normal, highlighted)), on_selection))
+		self.items.add_button(new_menu_item)
 	def set_caption_pos(self, pos):
 		""" Moves caption.
 		Default position is topleft corner of the screen.
@@ -203,43 +168,11 @@ class Menu(Context):
 		Default is (0, 0)
 		"""
 		self._button_group_topleft = Point(pos)
-	def set_button_height(self, height):
-		""" Sets height of a menu button (including padding space to the next button).
-		Default is 8.
-		"""
-		self._button_height = height
-	def set_button_caption_shift(self, shift):
-		""" Sets shift for menu button's caption relative to the topleft position of a button.
-		Default is (0, 0).
-		"""
-		self._button_caption_shift = Point(shift)
-	def set_button_widget_template(self, widget_type, *params, font=None):
-		""" Sets template for menu button widget.
-		It will be placed automatically (using params set by set_button_group_topleft()/set_button_height().
-		Params should not include topleft position (the last param), it will be calculated automatically anyway.
-		Required when using templated menu items.
-		If font is specified, it is used for button captions instead of default menu font.
-		"""
-		self._button_template = (widget_type, params)
-		if font:
-			self._button_caption_font = font
-	def set_highlighted_button_widget_template(self, widget_type, *params, font=None):
-		""" Sets template for highlighted menu button widget.
-		It will be placed automatically (using params set by set_button_group_topleft()/set_button_height().
-		Params should not include topleft position (the last param), it will be calculated automatically anyway.
-		By default uses normal widget button template.
-		If font is specified, it is used for highlighted button captions instead of default menu font.
-		"""
-		self._button_template_highlighted = (widget_type, params)
-		if font:
-			self._button_caption_font_highlighted = font
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
 		"""
-		self.selected = selected_index
-		for index, item in enumerate(self.items):
-			item[0].widget.make_highlighted(index == selected_index)
+		self.items.select(selected_index)
 	def perform_action(self, action):
 		""" Programmatically perform action.
 		Action should be an action-like object (see Menu docstring).
@@ -261,13 +194,13 @@ class Menu(Context):
 			if self.on_escape:
 				return self.perform_action(self.on_escape)
 		elif control_name == 'up':
-			self.select_item(max(0, self.selected - 1))
+			self.items.select_prev()
 		elif control_name == 'down':
-			self.select_item(min(len(self.items) - 1, self.selected + 1))
+			self.items.select_next()
 		elif control_name == 'return':
-			if self.selected is not None:
-				action = self.items[self.selected][1]
-				return self.perform_action(action)
+			selected = self.items.get_selected_button()
+			if selected:
+				return self.perform_action(selected.action)
 		return super().update(control_name)
 
 class MessageBox(Context):
