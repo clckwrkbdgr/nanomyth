@@ -2,24 +2,14 @@
 # Keypress sequence for auto-demo mode.
 # Format: <key>[ <key> ...] [# comment]
 
-up # Test menu.
-down
-down
-down
-down
-up up up # Navigate back to the "Play"
 return # Play.
 
 ###########################################################################
 ### OBSTACLES AND SAVEFILES
 
-up up # Test obstacles.
-left # Test movement and direction.
-left # Obstacle.
-down down # To the basement.
+left down # To the basement.
 
-up down # Stuck on stairs.
-left left up down left # Wandering around the basement.
+left . . . # Wandering around the basement.
 escape # To main menu.
 down return return # Save game on existing slot.
 . . . # Just a pause.
@@ -30,18 +20,12 @@ return # Again confirmation...
 return # Now overwrite save.
 . . . # Just a pause.
 return escape up return # Back to playing.
-right # Go up.
+. . . right # Go up.
 
 right right right right # Right into the wall.
 up up up . . . return # Autosave.
 down down down
 down # Exit home and into the yard.
-
-left up # Stuck in doorway.
-down up # Re-entering doorway...
-up down # and back to the yard.
-down down down right right down down down left left up # Go to the portal.
-. . . # Just a pause.
 
 escape # To main menu.
 down down return # Load game screen.
@@ -77,19 +61,7 @@ right right right right right right # To the farm.
 
 right right # Talk to the farmer.
 down down down down down # Scrolling text...
-down down down down down # Scrolling text...
-down down down down down # Scrolling text...
-down down down down down # Scrolling text...
-down down down down down # Scrolling text...
-down down down down down # Scrolling text...
-down # Scrolling text...
 up up up up up # Scrolling text back...
-up up up up up # Scrolling text back...
-up up up up up # Scrolling text back...
-up up up up up # Scrolling text back...
-up up up up up # Scrolling text back...
-up up up up up # Scrolling text back...
-up # Scrolling text back...
 . . .
 return # Close the message.
 left # Leave the farm.
