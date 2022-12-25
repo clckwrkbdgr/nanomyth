@@ -2,7 +2,7 @@
 SDL-based engine organize display output as a set of separate widgets.
 """
 import pygame
-from ...math import Point, Size, Matrix
+from ...math import Point, Size, Rect, Matrix
 from ..utils import math
 from ..utils.ui import TextWrapper, Scroller
 
@@ -112,26 +112,25 @@ class ImageRowSet(Widget):
 	def _empty_line_height(self): # pragma: no cover
 		""" Should return default height for lines with no elements. """
 		raise NotImplementedError(str(type(self)))
-	def __iter_items(self, row):
+	def __iter_row_items(self, row):
 		for image in row:
 			yield image, image.get_size()
 	def get_size(self, engine):
 		""" Returns total bounding size of the row set. """
 		result = Size(0, 0)
-		for row in self._iter_image_rows():
-			row_size = Size(0, 0)
-			for image, tile_size in self.__iter_items(row):
-				row_size.width += tile_size.width
-				row_size.height = max(row_size.height, tile_size.height)
-			result.width = max(result.width, row_size.width)
-			result.height += row_size.height
+		for image, image_rect in self.__iter_items():
+			result.width = max(result.width, image_rect.right)
+			result.height = max(result.height, image_rect.bottom)
 		return result
 	def draw(self, engine, topleft):
+		for image, image_rect in self.__iter_items():
+			engine.render_texture(image.get_texture(), topleft + image_rect.topleft)
+	def __iter_items(self):
 		image_pos = Point()
 		for row in self._iter_image_rows():
 			row_height = 0
-			for image, tile_size in self.__iter_items(row):
-				engine.render_texture(image.get_texture(), topleft + image_pos)
+			for image, tile_size in self.__iter_row_items(row):
+				yield image, Rect(image_pos, tile_size)
 				image_pos.x += tile_size.width
 				row_height = max(row_height, tile_size.height)
 			image_pos.x = 0
