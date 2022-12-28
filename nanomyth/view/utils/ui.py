@@ -153,6 +153,12 @@ class SelectionList:
 		if self.selected is not None:
 			if self.on_selection:
 				self.on_selection(self.items[self.selected], True)
+	def select_prev(self):
+		""" Selects previous item if possible. """
+		self.select(self.get_prev_selected_index())
+	def select_next(self):
+		""" Selects next item if possible. """
+		self.select(self.get_next_selected_index())
 	def has_selection(self):
 		""" Returns True if some item is selected. """
 		return self.selected is not None
