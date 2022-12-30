@@ -2,6 +2,7 @@
 SDL-based engine organize display output as a set of separate widgets.
 """
 import pygame
+from ...utils.meta import Delegate
 from ...math import Point, Size, Rect, Matrix
 from ..utils import math
 from ..utils.ui import TextWrapper, Scroller, SelectionList
@@ -247,6 +248,11 @@ class Button(Switch):
 
 class ButtonGroup(Widget):
 	""" Vertical button group. """
+	add_button = Delegate('buttons', SelectionList.append)
+	select = Delegate('buttons', SelectionList.select)
+	select_prev = Delegate('buttons', SelectionList.select_prev)
+	select_next = Delegate('buttons', SelectionList.select_next)
+
 	def __init__(self):
 		self.buttons = SelectionList(on_selection=lambda item, value: item.make_highlighted(value))
 		self._spacing = 0
@@ -255,19 +261,6 @@ class ButtonGroup(Widget):
 		Default is 0.
 		"""
 		self._spacing = height
-	def add_button(self, button):
-		self.buttons.append(button)
-	def select(self, selected_index):
-		""" Selects item by index.
-		Highlights corresponding widget, resets all others.
-		"""
-		self.buttons.select(selected_index)
-	def select_prev(self):
-		""" Selects previous item if possible. """
-		self.buttons.select(self.buttons.get_prev_selected_index())
-	def select_next(self):
-		""" Selects next item if possible. """
-		self.buttons.select(self.buttons.get_next_selected_index())
 	def get_selected_action(self):
 		""" Returns action property of the selected button,
 		or None if nothing is selected.
@@ -343,6 +336,11 @@ class MultilineScrollableText(BaseMultilineText):
 	Scrolling functionality (get/set top line etc) can be accessed
 	via field .scroller (see nanomyth.view.utils.Scroller).
 	"""
+	get_top_line = Delegate('scroller', Scroller.get_top_item)
+	set_top_line = Delegate('scroller', Scroller.set_top_item)
+	can_scroll_up = Delegate('scroller', Scroller.can_scroll_up)
+	can_scroll_down = Delegate('scroller', Scroller.can_scroll_down)
+
 	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
 		Text will fit into given size, auto-wrapped with option to scroll.
@@ -358,24 +356,6 @@ class MultilineScrollableText(BaseMultilineText):
 	def set_text(self, new_text):
 		wrapper = super().set_text(new_text)
 		self.scroller.set_total_items(len(self.textlines))
-	def get_top_line(self):
-		""" Returns current topmost line. """
-		return self.scroller.get_top_item()
-	def set_top_line(self, new_top_line):
-		""" Set topmost line to display.
-		It should be in range [0; total_lines - number_of_lines_that_fit_the_screen].
-		"""
-		self.scroller.set_top_item(new_top_line)
-	def can_scroll_up(self):
-		""" Returns True if there are line higher than current viewport can display
-		and it can be scrolled up.
-		"""
-		return self.scroller.can_scroll_up()
-	def can_scroll_down(self):
-		""" Returns True if there are line lower than current viewport can display
-		and it can be scrolled down.
-		"""
-		return self.scroller.can_scroll_down()
 	def get_visible_text_lines(self):
 		""" Returns set of text lines that fit into the current viewport. """
 		return self.textlines[self.scroller.get_visible_slice()]

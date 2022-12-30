@@ -5,6 +5,7 @@ Main context operations are performed by the SDLEngine itself.
 """
 import pygame
 from .widget import WidgetAtPos, LevelMap, TextLine, Image, Button, MultilineText, MultilineScrollableText, ButtonGroup
+from ...utils.meta import Delegate
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
@@ -112,6 +113,10 @@ class Menu(Context):
 
 	As this class is a Context, any other widgets (e.g. background image or title text) can be added via usual .add_widget()
 	"""
+	set_button_spacing = Delegate('items', ButtonGroup.set_spacing)
+	add_menu_item = Delegate('items', ButtonGroup.add_button)
+	select_item = Delegate('items', ButtonGroup.select)
+
 	def __init__(self, on_escape=None):
 		""" Creates menu context.
 		Items can be added later via .add_menu_item().
@@ -135,15 +140,6 @@ class Menu(Context):
 			widgets.append(self.caption)
 		widgets.extend(self.widgets)
 		return widgets
-	def set_button_spacing(self, height):
-		""" Sets padding space between menu buttons. """
-		self.items.set_spacing(height)
-	def add_menu_item(self, new_menu_item):
-		""" Adds new menu item.
-
-		Item should be a Button object.
-		"""
-		self.items.add_button(new_menu_item)
 	def set_caption(self, pos, caption_widget):
 		""" Adds caption widget. """
 		self.caption = WidgetAtPos(Point(pos), caption_widget)
@@ -160,11 +156,6 @@ class Menu(Context):
 		Default is (0, 0)
 		"""
 		self._button_group_topleft = Point(pos)
-	def select_item(self, selected_index):
-		""" Selects item by index.
-		Highlights corresponding widget.
-		"""
-		self.items.select(selected_index)
 	def perform_action(self, action):
 		""" Programmatically perform action.
 		Action should be an action-like object (see Menu docstring).
@@ -321,6 +312,8 @@ class ItemList(Context):
 	""" Displays list of items with option to scroll up/down.
 	Each item is a standalone widget of any type.
 	"""
+	can_scroll_up = Delegate('scroller', Scroller.can_scroll_up)
+	can_scroll_down = Delegate('scroller', Scroller.can_scroll_down)
 	def __init__(self, engine, background_widget, items, caption_widget=None, view_rect=None):
 		""" Creates item list screen.
 		Requires background widget (of any type) and list of items.
@@ -358,12 +351,6 @@ class ItemList(Context):
 		"""
 		self.items.select(selected_index)
 		self.scroller.ensure_item_visible(selected_index)
-	def can_scroll_up(self):
-		""" Returns True if list can be scrolled up. """
-		return self.scroller.can_scroll_up()
-	def can_scroll_down(self):
-		""" Returns True if list can be scrolled down. """
-		return self.scroller.can_scroll_down()
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the view rect topleft corner.
