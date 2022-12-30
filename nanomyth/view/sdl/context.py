@@ -247,15 +247,18 @@ class TextScreen(Context):
 		Text will fit into given text_rect with automatic wrapping and automatic scrolling.
 		"""
 		super().__init__(transparent=False)
+		self.panel = Compound()
+		self.panel.add_widget(panel_widget)
+		self.add_widget((0, 0), self.panel)
+
 		window_size = engine.get_window_size()
 		self.text_rect = Rect(text_rect or (0, 0, window_size.width, window_size.height))
-		self._panel_size = panel_widget.get_size(engine)
-
-		self.add_widget((0, 0), panel_widget)
 		self._text_widget = MultilineScrollableText(font, self.text_rect.size, text)
-		self.add_widget(self.text_rect.topleft, self._text_widget)
+		self.panel.add_widget(self._text_widget, self.text_rect.topleft)
+
 		self._button_up = None
 		self._button_down = None
+
 	def set_scroll_up_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling up.
 		It should be of Button class so it can be highlighted when scrolling up is available
@@ -265,7 +268,7 @@ class TextScreen(Context):
 		"""
 		self._button_up = button_widget
 		self._button_up.make_highlighted(self._text_widget.can_scroll_up())
-		self.add_button(engine, pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def set_scroll_down_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling down.
 		It should be of Button class so it can be highlighted when scrolling down is available
@@ -275,19 +278,13 @@ class TextScreen(Context):
 		"""
 		self._button_down = button_widget
 		self._button_down.make_highlighted(self._text_widget.can_scroll_down())
-		self.add_button(engine, pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
 		"""
-		pos = Point(pos)
-		if pos.x < 0 or pos.y < 0:
-			if pos.x < 0:
-				pos.x = self._panel_size.width + pos.x
-			if pos.y < 0:
-				pos.y = self._panel_size.height + pos.y
-		self.add_widget(pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>, <Escape>: close dialog.
