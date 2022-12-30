@@ -138,7 +138,7 @@ def conversation(engine, resources, text, font, on_ok=None):
 			text_rect=(4, 4, window_size.width - 4, window_size.height - 8 - 4 - 16),
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
-	dialog.set_scroll_up_button(engine, (
+	dialog.set_scroll_up_button((
 		-tile_size.width * 2 - 2,
 		-tile_size.height - 2,
 		), nanomyth.view.sdl.widget.Button(
@@ -147,7 +147,7 @@ def conversation(engine, resources, text, font, on_ok=None):
 			),
 		)
 	dialog._button_up.get_size(engine) # TODO not needed actually, just for coverage.
-	dialog.set_scroll_down_button(engine, (
+	dialog.set_scroll_down_button((
 		2,
 		-tile_size.height - 2,
 		), nanomyth.view.sdl.widget.Button(

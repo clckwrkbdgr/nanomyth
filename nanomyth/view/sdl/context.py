@@ -233,9 +233,56 @@ class MessageBox(Context):
 			raise self.Finished()
 		return super().update(control_name)
 
-class TextScreen(Context):
+class ScrollableContext(Context):
+	""" Base class for context that allow scrolling.
+	Supports two buttons: scrolling up and down.
+	Derived classes should support:
+	- methods can_scroll_up() and can_scroll_down()
+	"""
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._button_up = None
+		self._button_down = None
+	def _get_panel_widget(self): # pragma: no cover
+		""" Should return the main panel widget
+		where scroll buttons will be added.
+		"""
+		raise NotImplementedError()
+	def set_scroll_up_button(self, pos, button_widget):
+		""" Adds button for scrolling up.
+		It should be of Button class so it can be highlighted when scrolling up is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the view rect topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_up = button_widget
+		self._button_up.make_highlighted(self.can_scroll_up())
+		self._get_panel_widget().add_widget(button_widget, pos)
+	def set_scroll_down_button(self, pos, button_widget):
+		""" Adds button for scrolling down.
+		It should be of Button class so it can be highlighted when scrolling down is available
+		and display as normal (inactive) when it's not.
+		Position is relative to the view rect topleft corner.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right).
+		"""
+		self._button_down = button_widget
+		self._button_down.make_highlighted(self.can_scroll_down())
+		self.panel.add_widget(button_widget, pos)
+	def _update_scroll_buttons(self):
+		if self._button_up:
+			self._button_up.make_highlighted(self.can_scroll_up())
+		if self._button_down:
+			self._button_down.make_highlighted(self.can_scroll_down())
+	def update(self, control_name):
+		""" Updates highlighted status for scroll buttons. """
+		self._update_scroll_buttons()
+		return super().update(control_name)
+
+class TextScreen(ScrollableContext):
 	""" Displays multiline (scrollablle) text screen.
 	"""
+	can_scroll_up = Delegate('_text_widget', MultilineScrollableText.can_scroll_up)
+	can_scroll_down = Delegate('_text_widget', MultilineScrollableText.can_scroll_down)
 	add_button = Delegate('panel', Compound.add_widget)
 	def __init__(self, text, font, panel_widget, engine, text_rect=None):
 		""" Creates text screen with given text and font (required).
@@ -251,30 +298,8 @@ class TextScreen(Context):
 		self.text_rect = Rect(text_rect or (0, 0, window_size.width, window_size.height))
 		self._text_widget = MultilineScrollableText(font, self.text_rect.size, text)
 		self.panel.add_widget(self._text_widget, self.text_rect.topleft)
-
-		self._button_up = None
-		self._button_down = None
-
-	def set_scroll_up_button(self, engine, pos, button_widget):
-		""" Adds button for scrolling up.
-		It should be of Button class so it can be highlighted when scrolling up is available
-		and display as normal (inactive) when it's not.
-		Position is relative to the message box topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self._button_up = button_widget
-		self._button_up.make_highlighted(self._text_widget.can_scroll_up())
-		self.panel.add_widget(button_widget, pos)
-	def set_scroll_down_button(self, engine, pos, button_widget):
-		""" Adds button for scrolling down.
-		It should be of Button class so it can be highlighted when scrolling down is available
-		and display as normal (inactive) when it's not.
-		Position is relative to the message box topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self._button_down = button_widget
-		self._button_down.make_highlighted(self._text_widget.can_scroll_down())
-		self.panel.add_widget(button_widget, pos)
+	def _get_panel_widget(self):
+		return self.panel
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>, <Escape>: close dialog.
@@ -287,13 +312,9 @@ class TextScreen(Context):
 			self._text_widget.set_top_line(self._text_widget.get_top_line() - 1)
 		elif control_name == 'down':
 			self._text_widget.set_top_line(self._text_widget.get_top_line() + 1)
-		if self._button_up:
-			self._button_up.make_highlighted(self._text_widget.can_scroll_up())
-		if self._button_down:
-			self._button_down.make_highlighted(self._text_widget.can_scroll_down())
 		return super().update(control_name)
 
-class ItemList(Context):
+class ItemList(ScrollableContext):
 	""" Displays list of items with option to scroll up/down.
 	Each item is a standalone widget of any type.
 	"""
@@ -331,34 +352,14 @@ class ItemList(Context):
 				)
 
 		self.add_widget((0, 0), self.panel)
-		self._button_up = None
-		self._button_down = None
+	def _get_panel_widget(self):
+		return self.panel
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
 		"""
 		self.items.select(selected_index)
 		self.scroller.ensure_item_visible(selected_index)
-	def set_scroll_up_button(self, engine, pos, button_widget):
-		""" Adds button for scrolling up.
-		It should be of Button class so it can be highlighted when scrolling up is available
-		and display as normal (inactive) when it's not.
-		Position is relative to the view rect topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self._button_up = button_widget
-		self._button_up.make_highlighted(self.can_scroll_up())
-		self.panel.add_widget(button_widget, pos)
-	def set_scroll_down_button(self, engine, pos, button_widget):
-		""" Adds button for scrolling down.
-		It should be of Button class so it can be highlighted when scrolling down is available
-		and display as normal (inactive) when it's not.
-		Position is relative to the view rect topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self._button_down = button_widget
-		self._button_down.make_highlighted(self.can_scroll_down())
-		self.panel.add_widget(button_widget, pos)
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
 		widgets.extend(self.widgets)
@@ -404,8 +405,4 @@ class ItemList(Context):
 			if self.items.has_selection():
 				action = self.items.get_selected_item().action
 				return self.perform_action(action)
-		if self._button_up:
-			self._button_up.make_highlighted(self.can_scroll_up())
-		if self._button_down:
-			self._button_down.make_highlighted(self.can_scroll_down())
 		return super().update(control_name)
