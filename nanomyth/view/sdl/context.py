@@ -321,9 +321,11 @@ class ItemList(Context):
 		Optional caption widget will be placed at the top of the list (always shown).
 		"""
 		super().__init__(transparent=False)
+		self.panel = Compound()
+		self.panel.add_widget(background_widget)
+
 		window_size = engine.get_window_size()
 		self.view_rect = Rect(view_rect or (0, 0, window_size.width, window_size.height))
-		self._panel_size = background_widget.get_size(engine)
 		self._caption_widget = caption_widget
 		self._caption_height = self._caption_widget.get_size(engine).height if self._caption_widget else 0
 
@@ -337,7 +339,7 @@ class ItemList(Context):
 				item_height=lambda i: self.item_heights[i],
 				)
 
-		self.add_widget((0, 0), background_widget)
+		self.add_widget((0, 0), self.panel)
 		self._button_up = None
 		self._button_down = None
 	def select_item(self, selected_index):
@@ -351,13 +353,7 @@ class ItemList(Context):
 		Position is relative to the view rect topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
 		"""
-		pos = Point(pos)
-		if pos.x < 0 or pos.y < 0:
-			if pos.x < 0:
-				pos.x = self._panel_size.width + pos.x
-			if pos.y < 0:
-				pos.y = self._panel_size.height + pos.y
-		self.add_widget(pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def set_scroll_up_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling up.
 		It should be of Button class so it can be highlighted when scrolling up is available
