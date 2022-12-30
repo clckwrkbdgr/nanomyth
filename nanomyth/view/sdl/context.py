@@ -55,6 +55,16 @@ class Context:
 		"""
 		if control_name in self.key_bindings:
 			return self.key_bindings[control_name]()
+	def perform_action(self, action):
+		""" Programmatically perform action.
+		Action should be an action-like object (see Menu docstring).
+		"""
+		import types
+		if isinstance(action, Exception) or action is Exception or (isinstance(action, type) and issubclass(action, Exception)):
+			raise action()
+		elif callable(action):
+			return action()
+		return action # Treat as a new context.
 	def _get_widgets_to_draw(self, engine):
 		""" Override this function to change widgets to draw.
 		Widgets are drawn in the given order, from bottom to top.
@@ -156,16 +166,6 @@ class Menu(Context):
 		Default is (0, 0)
 		"""
 		self._button_group_topleft = Point(pos)
-	def perform_action(self, action):
-		""" Programmatically perform action.
-		Action should be an action-like object (see Menu docstring).
-		"""
-		import types
-		if isinstance(action, Exception) or action is Exception or (isinstance(action, type) and issubclass(action, Exception)):
-			raise action()
-		elif callable(action):
-			return action()
-		return action # Treat as a new context.
 	def update(self, control_name):
 		""" Controls:
 		- <Up>: select previous item.
@@ -378,16 +378,6 @@ class ItemList(ScrollableContext):
 				), self.items[item_index]))
 			top_pos += self.item_heights[item_index]
 		return widgets
-	def perform_action(self, action):
-		""" Programmatically perform action.
-		Action should be an action-like object (see Menu docstring).
-		"""
-		import types
-		if isinstance(action, Exception) or action is Exception or (isinstance(action, type) and issubclass(action, Exception)):
-			raise action()
-		elif callable(action):
-			return action()
-		return action # Treat as a new context.
 	def update(self, control_name):
 		""" Controls:
 		- <Escape>: close dialog.
