@@ -4,7 +4,7 @@ which are organized in a stack and can be switched back and forth.
 Main context operations are performed by the SDLEngine itself.
 """
 import pygame
-from .widget import WidgetAtPos, LevelMap, TextLine, Image, Button, MultilineText, MultilineScrollableText, ButtonGroup
+from .widget import WidgetAtPos, LevelMap, TextLine, Image, Button, MultilineText, MultilineScrollableText, ButtonGroup, Compound
 from ...utils.meta import Delegate
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
@@ -204,27 +204,25 @@ class MessageBox(Context):
 		self.on_ok = on_ok
 		self.on_cancel = on_cancel
 
-		self._panel_size = panel_widget.get_size(engine)
-		window_size = engine.get_window_size()
-		self._panel_topleft = Point(
-				(window_size.width - self._panel_size.width) // 2,
-				(window_size.height - self._panel_size.height) // 2,
-				)
+		self.panel = Compound()
+		self.panel.add_widget(panel_widget)
 
-		self.add_widget(self._panel_topleft, panel_widget)
-		self.add_widget(self._panel_topleft + (text_shift or Point(0, 0)), TextLine(font, text))
+		_panel_size = panel_widget.get_size(engine)
+		window_size = engine.get_window_size()
+		_panel_topleft = Point(
+				(window_size.width - _panel_size.width) // 2,
+				(window_size.height - _panel_size.height) // 2,
+				)
+		self.add_widget(_panel_topleft, self.panel)
+
+		self.panel.add_widget(panel_widget)
+		self.panel.add_widget(TextLine(font, text), (text_shift or Point(0, 0)))
 	def add_button(self, engine, pos, button_widget):
 		""" Adds button (non-functional decorative widget actually).
 		Position is relative to the message box topleft corner.
 		If any dimension of position is negative, it is counting back from the other side (bottom/right).
 		"""
-		pos = Point(pos)
-		if pos.x < 0 or pos.y < 0:
-			if pos.x < 0:
-				pos.x = self._panel_size.width + pos.x
-			if pos.y < 0:
-				pos.y = self._panel_size.height + pos.y
-		self.add_widget(self._panel_topleft + pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK

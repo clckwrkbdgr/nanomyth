@@ -184,22 +184,33 @@ class Compound(Widget):
 	def add_widget(self, widget, topleft=None):
 		""" Adds new widget.
 		If topleft is specified, it is treated as relative shift from the topleft corner of the container itself.
+		If any dimension of position is negative, it is counting back from the other side (bottom/right) instead,
+		considering _full_ size of the compound widget.
 		Widgets will be displayed in the order of adding,
 		i.e. to make some widget background add it as the very first one.
 		"""
 		assert widget
-		self.widgets.append(WidgetAtPos(topleft or Point(0, 0), widget))
+		self.widgets.append(WidgetAtPos(Point(topleft or (0, 0)), widget))
 	def get_size(self, engine):
 		""" Size of the bounding area for all widgets. """
 		result = Size(0, 0)
 		for item in self.widgets:
+			if item.topleft.x < 0 or item.topleft.y < 0: # pragma: no cover -- TODO cannot correctly auto-adjust size with negative placements yet.
+				continue
 			widget_size = item.widget.get_size(engine) + item.topleft
 			result.width = max(result.width, widget_size.width)
 			result.height = max(result.height, widget_size.height)
 		return result
 	def draw(self, engine, topleft):
+		full_size = self.get_size(engine)
 		for item in self.widgets:
-			item.widget.draw(engine, topleft + item.topleft)
+			pos = item.topleft
+			if pos.x < 0 or pos.y < 0:
+				if pos.x < 0:
+					pos.x = full_size.width + pos.x
+				if pos.y < 0:
+					pos.y = full_size.height + pos.y
+			item.widget.draw(engine, topleft + pos)
 
 class Switch(Widget):
 	""" Compound widget that display different sub-widgets depending on controllable inner state.
