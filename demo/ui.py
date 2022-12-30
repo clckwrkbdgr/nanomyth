@@ -85,17 +85,15 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			on_cancel=on_cancel,
 			)
 	tile_size = engine.get_image('panel_middle').get_size()
-	dialog.add_button(engine, (
+	dialog.add_button(nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')), (
 		-tile_size.width * 2 - 2,
 		-tile_size.height,
-		), nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')),
-		)
+		))
 	if on_cancel:
-		dialog.add_button(engine, (
+		dialog.add_button(nanomyth.view.sdl.widget.Image(engine.get_image('button_cancel')), (
 			-tile_size.width - 2,
 			-tile_size.height,
-			), nanomyth.view.sdl.widget.Image(engine.get_image('button_cancel')),
-			)
+			))
 	return dialog
 
 def item_list(engine, resources, normal_font, highlighted_font, caption, items):
@@ -157,11 +155,10 @@ def conversation(engine, resources, text, font, on_ok=None):
 			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_down_highlighted')),
 			),
 		)
-	dialog.add_button(engine, (
+	dialog.add_button(nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')), (
 		-tile_size.width - 2,
 		-tile_size.height,
-		), nanomyth.view.sdl.widget.Image(engine.get_image('button_ok')),
-		)
+		))
 	info_line = add_info_panel(dialog, engine, font)
 	return dialog
 

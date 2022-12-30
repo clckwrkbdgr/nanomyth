@@ -189,6 +189,7 @@ class Menu(Context):
 class MessageBox(Context):
 	""" Displays message and requires answer or confirmation.
 	"""
+	add_button = Delegate('panel', Compound.add_widget)
 	def __init__(self, text, font, panel_widget, engine, text_shift=None, on_ok=None, on_cancel=None):
 		""" Creates message box with given text and font (required).
 		Panel widget will be draw under the text
@@ -217,12 +218,6 @@ class MessageBox(Context):
 
 		self.panel.add_widget(panel_widget)
 		self.panel.add_widget(TextLine(font, text), (text_shift or Point(0, 0)))
-	def add_button(self, engine, pos, button_widget):
-		""" Adds button (non-functional decorative widget actually).
-		Position is relative to the message box topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self.panel.add_widget(button_widget, pos)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK
@@ -241,6 +236,7 @@ class MessageBox(Context):
 class TextScreen(Context):
 	""" Displays multiline (scrollablle) text screen.
 	"""
+	add_button = Delegate('panel', Compound.add_widget)
 	def __init__(self, text, font, panel_widget, engine, text_rect=None):
 		""" Creates text screen with given text and font (required).
 		Panel widget will be draw under the text and should fit the whole screen.
@@ -279,12 +275,6 @@ class TextScreen(Context):
 		self._button_down = button_widget
 		self._button_down.make_highlighted(self._text_widget.can_scroll_down())
 		self.panel.add_widget(button_widget, pos)
-	def add_button(self, engine, pos, button_widget):
-		""" Adds button (non-functional decorative widget actually).
-		Position is relative to the message box topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self.panel.add_widget(button_widget, pos)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>, <Escape>: close dialog.
@@ -309,6 +299,7 @@ class ItemList(Context):
 	"""
 	can_scroll_up = Delegate('scroller', Scroller.can_scroll_up)
 	can_scroll_down = Delegate('scroller', Scroller.can_scroll_down)
+	add_button = Delegate('panel', Compound.add_widget)
 	def __init__(self, engine, background_widget, items, caption_widget=None, view_rect=None):
 		""" Creates item list screen.
 		Requires background widget (of any type) and list of items.
@@ -348,12 +339,6 @@ class ItemList(Context):
 		"""
 		self.items.select(selected_index)
 		self.scroller.ensure_item_visible(selected_index)
-	def add_button(self, engine, pos, button_widget):
-		""" Adds button (non-functional decorative widget actually).
-		Position is relative to the view rect topleft corner.
-		If any dimension of position is negative, it is counting back from the other side (bottom/right).
-		"""
-		self.panel.add_widget(button_widget, pos)
 	def set_scroll_up_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling up.
 		It should be of Button class so it can be highlighted when scrolling up is available
@@ -363,7 +348,7 @@ class ItemList(Context):
 		"""
 		self._button_up = button_widget
 		self._button_up.make_highlighted(self.can_scroll_up())
-		self.add_button(engine, pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def set_scroll_down_button(self, engine, pos, button_widget):
 		""" Adds button for scrolling down.
 		It should be of Button class so it can be highlighted when scrolling down is available
@@ -373,7 +358,7 @@ class ItemList(Context):
 		"""
 		self._button_down = button_widget
 		self._button_down.make_highlighted(self.can_scroll_down())
-		self.add_button(engine, pos, button_widget)
+		self.panel.add_widget(button_widget, pos)
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
 		widgets.extend(self.widgets)
