@@ -17,6 +17,11 @@ class Delegator:
 		self.member = MockOriginalClass()
 		self.member.value = 'baz'
 
+class SuperDelegator:
+	foo = meta.Delegate('member', Delegator.foo)
+	def __init__(self):
+		self.member = Delegator()
+
 class TestDelegatedMethods(unittest.TestCase):
 	def should_adjust_docstsring_for_delegated_methods(self):
 		self.assertEqual(inspect.getdoc(Delegator.foo), 'Description of foo. \n\nNote: See MockOriginalClass.foo for details.')
@@ -26,3 +31,6 @@ class TestDelegatedMethods(unittest.TestCase):
 		self.assertEqual(delegator.foo(), 'foo called')
 		self.assertEqual(delegator.foo(), 'foo called')
 		self.assertEqual(delegator.bar(), 'bar called: baz')
+	def should_delegate_method_through(self):
+		delegator = SuperDelegator()
+		self.assertEqual(delegator.foo(), 'foo called')
