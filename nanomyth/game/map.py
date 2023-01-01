@@ -50,6 +50,11 @@ class ObjectOnMap:
 		self.pos = Point(pos)
 		self.obj = obj
 
+class ItemOnMap:
+	def __init__(self, pos, item):
+		self.pos = Point(pos)
+		self.item = item
+
 class ActorOnMap:
 	def __init__(self, pos, actor):
 		self.pos = Point(pos)
@@ -71,6 +76,7 @@ class Map:
 		"""
 		self.tiles = Matrix(size, Terrain([]))
 		self.actors = []
+		self.items = []
 		self.portals = []
 		self.triggers = []
 	def set_tile(self, pos, tile):
@@ -100,6 +106,9 @@ class Map:
 	def add_trigger(self, pos, trigger):
 		""" Places a trigger at the specified position. """
 		self.triggers.append(ObjectOnMap(pos, trigger))
+	def add_item(self, pos, item):
+		""" Places item on specified position. """
+		self.items.append(ItemOnMap(pos, item))
 	def shift_player(self, shift, trigger_registry=None, quest_registry=None):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),

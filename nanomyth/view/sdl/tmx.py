@@ -6,6 +6,7 @@ from pathlib import Path
 import pytmx
 from ...math import Matrix, Point, Size
 from ...game.actor import NPC
+from ...game.items import Item
 from ...game.map import Map, Terrain, Portal, Trigger
 from ...game.quest import QuestStateChange
 from .image import TileSetImage
@@ -90,6 +91,11 @@ def load_tmx_map(filename, engine):
 	for pos in real_map.tiles.keys():
 		passable = True
 		for obj in (objects[pos] if pos in objects else []):
+			if obj.type == 'item':
+				sprite_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
+				item = Item(obj.name, sprite_name)
+				real_map.add_item(pos, item)
+				continue
 			if obj.type == 'npc':
 				sprite_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
 				trigger = None

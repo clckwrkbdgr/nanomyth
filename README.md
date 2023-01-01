@@ -71,7 +71,7 @@ TODO
 	- [X] Displaying current quest state on HUD.
 	- [X] List of quests, quest book dialog.
 9. [ ] Items.
-	- [ ] Items laying on terrain.
+	- [X] Items laying on terrain.
 	- [ ] Slot for item, picking/dropping items.
 	- [ ] Character's inventory, inventory screen dialog.
 	- [ ] Displaying inventory status on HUD.

@@ -4,6 +4,7 @@ from ..game import Game
 from ..world import World
 from ..map import Map, Terrain, Portal, Trigger
 from ..actor import Player, Direction
+from ..items import Item
 from ..quest import Quest
 from .. import savegame
 
@@ -16,6 +17,7 @@ def _create_game():
 	game.get_world().add_map('home', home)
 	game.get_world().add_map('desert', desert)
 	home.add_actor((2, 2), Player('Wanderer', 'rogue'))
+	home.add_item((2, 1), Item('knife', 'knife'))
 	home.add_portal((2, 1), Portal('desert', (1, 2)))
 	home.add_trigger((1, 2), Trigger('trigger'))
 	quest = Quest('my_quest', 'MyQuest', ['foo'], ['a'])
