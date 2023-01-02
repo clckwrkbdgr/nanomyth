@@ -171,6 +171,8 @@ class LevelMap(AbstractGrid):
 		for pos, tile in self.level_map.iter_tiles():
 			for image_name in tile.get_images():
 				yield pos, engine.get_image(image_name)
+		for pos, item in self.level_map.iter_items():
+			yield pos, engine.get_image(item.get_sprite())
 		for pos, actor in self.level_map.iter_actors():
 			yield pos, engine.get_image(actor.get_sprite())
 

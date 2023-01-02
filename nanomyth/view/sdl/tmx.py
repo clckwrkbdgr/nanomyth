@@ -83,7 +83,7 @@ def load_tmx_map(filename, engine):
 				int(obj.y // obj.height),
 				)
 			objects[pos].append(obj)
-			if obj.type != 'npc':
+			if obj.type not in ['npc', 'item']:
 				tile_name = _load_tmx_image_tile(obj.image, engine, tileset_sizes)
 				tiles.cell(pos).append(tile_name)
 
