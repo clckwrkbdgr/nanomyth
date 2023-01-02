@@ -96,7 +96,7 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			))
 	return dialog
 
-def item_list(engine, resources, normal_font, highlighted_font, caption, items):
+def item_list(engine, resources, normal_font, highlighted_font, caption, items, exit_key=None):
 	window_size = engine.get_window_size()
 
 	items = [nanomyth.view.sdl.widget.Button(
@@ -122,6 +122,10 @@ def item_list(engine, resources, normal_font, highlighted_font, caption, items):
 			caption_widget=caption_widget,
 			view_rect=Rect((4, 4, window_size.width - 4, window_size.height - 4 - 12)),
 			)
+	if exit_key:
+		def exit_dialog():
+			raise nanomyth.view.sdl.context.Context.Finished()
+		dialog.bind_key(exit_key, exit_dialog)
 
 	info_line = add_info_panel(dialog, engine, highlighted_font)
 	return dialog

@@ -152,7 +152,9 @@ def update_ui_text():
 	lines = ['[Q]uests']
 	player = game.get_world().get_current_map().find_actor('Wanderer')
 	if player.inventory:
-		lines.append('Has items: {0}'.format(', '.join(_.name for _ in player.inventory)))
+		lines.append('[I]nv:{0}'.format(len(player.inventory)))
+	else:
+		lines.append('[I]nv')
 	main_ui_text.set_text('\n'.join(lines))
 main_ui_text = nanomyth.view.sdl.widget.MultilineText(font,
 		size=main_ui_panel.get_size(engine) - (4+4, 4+4),
@@ -175,8 +177,18 @@ def show_quest_list():
 		'* {0}\n    - {1}'.format(quest.title, quest.get_last_history_entry()),
 		ShowQuestDetails(quest),
 		) for quest in game.get_world().get_active_quests()]
-	return ui.item_list(engine, resources, grey_font, font, 'Active quests:', items)
+	return ui.item_list(engine, resources, grey_font, font, 'Active quests:', items, exit_key='q')
 main_game.bind_key('q', show_quest_list)
+
+def show_inventory():
+	current_map = game.get_world().get_current_map()
+	player = current_map.find_actor('Wanderer')
+	items = [(
+		'* {0}'.format(item.name),
+		None,
+		) for item in player.inventory]
+	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')
+main_game.bind_key('i', show_inventory)
 
 def grab_item():
 	current_map = game.get_world().get_current_map()
