@@ -86,12 +86,12 @@ class Map:
 	def add_actor(self, pos, actor):
 		""" Places actor on specified position. """
 		self.actors.append(ActorOnMap(pos, actor))
-	def remove_actor(self, name):
-		""" Removes actor with given name from the map.
+	def remove_actor(self, actor):
+		""" Removes specified actor from the map.
 		Returns actor object.
 		Returns None if no such actor is found.
 		"""
-		actor_index, actor = next(((i, other.actor) for i, other in enumerate(self.actors) if other.actor.name == name), None)
+		actor_index = next((i for i, other in enumerate(self.actors) if other.actor == actor), None)
 		if actor_index is not None:
 			del self.actors[actor_index]
 		return actor
@@ -100,6 +100,11 @@ class Map:
 		Returns None if no such actor is found.
 		"""
 		return next((other.actor for other in self.actors if other.actor.name == name), None)
+	def find_actor_pos(self, name):
+		""" Returns location of actor with given name.
+		Returns None if no such actor is found.
+		"""
+		return next((other.pos for other in self.actors if other.actor.name == name), None)
 	def add_portal(self, pos, portal):
 		""" Places a portal at the specified position. """
 		self.portals.append(ObjectOnMap(pos, portal))
@@ -109,6 +114,18 @@ class Map:
 	def add_item(self, pos, item):
 		""" Places item on specified position. """
 		self.items.append(ItemOnMap(pos, item))
+	def items_at_pos(self, pos):
+		""" Returns list of items at specified location. """
+		return [_.item for _ in self.items if _.pos == pos]
+	def remove_item(self, item):
+		""" Removes specified item from the map.
+		Returns item object.
+		Returns None if no such item is found.
+		"""
+		item_index = next((i for i, other in enumerate(self.items) if other.item == item), None)
+		if item_index is not None:
+			del self.items[item_index]
+		return item
 	def shift_player(self, shift, trigger_registry=None, quest_registry=None):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),
@@ -159,3 +176,8 @@ class Map:
 		Yields pairs (pos, actor).
 		"""
 		return ((_.pos, _.actor) for _ in self.actors)
+	def iter_items(self):
+		""" Iterate over placed items.
+		Yields pairs (pos, item).
+		"""
+		return ((_.pos, _.item) for _ in self.items)

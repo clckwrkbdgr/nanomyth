@@ -69,7 +69,8 @@ def show_dialog(dialog_message, **params):
 			)
 
 def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
-	Smoke = game.get_world().get_current_map().remove_actor(actor)
+	Smoke = game.get_world().get_current_map().find_actor(actor)
+	Smoke = game.get_world().get_current_map().remove_actor(Smoke)
 	farm = game.get_world().get_map(dest_map)
 	farm.add_actor((int(dest_map_x), int(dest_map_y)), Smoke)
 
@@ -146,13 +147,16 @@ main_ui_panel_pos = Point(
 		engine.get_window_size().width - main_ui_panel.get_size(engine).width,
 		0,
 		)
-main_ui_text = """\
-[Q]uests
-"""
-main_ui_text = nanomyth.view.sdl.context.MultilineText(font,
+def update_ui_text():
+	lines = ['[Q]uests']
+	player = game.get_world().get_current_map().find_actor('Wanderer')
+	if player.inventory:
+		lines.append('Has items: {0}'.format(', '.join(_.name for _ in player.inventory)))
+	main_ui_text.set_text('\n'.join(lines))
+main_ui_text = nanomyth.view.sdl.widget.MultilineText(font,
 		size=main_ui_panel.get_size(engine) - (4+4, 4+4),
-		text=main_ui_text,
 		)
+update_ui_text()
 main_game.add_widget(main_ui_panel_pos, main_ui_panel)
 main_game.add_widget(main_ui_panel_pos + (4, 4), main_ui_text)
 update_active_quest_count()
@@ -172,6 +176,20 @@ def show_quest_list():
 		) for quest in game.get_world().get_active_quests()]
 	return ui.item_list(engine, resources, grey_font, font, 'Active quests:', items)
 main_game.bind_key('q', show_quest_list)
+
+def grab_item():
+	current_map = game.get_world().get_current_map()
+	player = current_map.find_actor('Wanderer')
+	player_pos = current_map.find_actor_pos('Wanderer')
+	items = current_map.items_at_pos(player_pos)
+	if not items:
+		info_line.set_text('No items here.')
+		return
+	item = current_map.remove_item(items[0])
+	player.inventory.append(item)
+	update_ui_text()
+	info_line.set_text('Grabbed {0}.'.format(item.name))
+main_game.bind_key('g', grab_item)
 
 info_line = ui.add_info_panel(main_game, engine, font)
 

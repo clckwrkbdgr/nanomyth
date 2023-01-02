@@ -58,6 +58,7 @@ class Player:
 		self.default_sprite = default_sprite
 		self.directional_sprites = directional_sprites or {}
 		self.direction = Direction.DOWN
+		self.inventory = []
 	def get_sprite(self):
 		return self.directional_sprites.get(self.direction, self.default_sprite)
 	def face_direction(self, new_direction):

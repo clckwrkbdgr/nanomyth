@@ -49,6 +49,17 @@ up right right down . . . return # Talking to Trader.
 q . . . escape # Check quest list.
 
 ###########################################################################
+### GRABBING ITEM (KNIFE)
+
+up right up # Back home.
+up up up left # Knife is close.
+g . . . . # Nothing to grab here.
+left # Here's the knife.
+g . . . . # Grab it
+right right down down down # Exiting back.
+down left down # As we were.
+
+###########################################################################
 ### QUEST FARMER SMOKE (START)
 
 left left left # To the cave.

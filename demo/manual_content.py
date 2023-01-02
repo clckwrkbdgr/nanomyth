@@ -80,8 +80,8 @@ def create_foodcart_quest(game, main_game, engine, resources, font):
 		main_game.set_pending_context(
 				ui.conversation(engine, resources, trader_thanks, font)
 				)
-		game.get_world().get_current_map().remove_actor('foodcart')
-		game.get_world().get_current_map().remove_actor('Trader')
+		game.get_world().get_current_map().remove_actor(game.get_world().get_current_map().find_actor('foodcart'))
+		game.get_world().get_current_map().remove_actor(game.get_world().get_current_map().find_actor('Trader'))
 	foodcart_quest.on_state('cart is free', 'trader', 'trader is gone')
 	foodcart_quest.on_state('cart is free', 'trader', ExternalQuestAction('cart_is_free'))
 

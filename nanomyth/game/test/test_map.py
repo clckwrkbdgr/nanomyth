@@ -1,6 +1,7 @@
 import itertools
 from ...utils import unittest
 from ..map import Map, Terrain, Trigger
+from ..items import Item
 from ..actor import Player, Direction, NPC
 from ..quest import QuestStateChange
 from ...math import Point
@@ -26,6 +27,20 @@ class TestMap(unittest.TestCase):
 		positions, actual_images = zip(*tiles)
 		self.assertEqual(list(actual_images), expected)
 		self.assertEqual(list(positions), expected)
+	def should_place_items(self):
+		level_map = Map((5, 5))
+		level_map.add_item((2, 2), Item('knife', 'knife'))
+		self.assertEqual([(pos, item.get_sprite()) for pos, item in level_map.iter_items()], [(Point(2, 2), 'knife')])
+	def should_find_items_by_location(self):
+		level_map = Map((5, 5))
+		level_map.add_item((2, 2), Item('knife', 'knife'))
+		self.assertEqual(level_map.items_at_pos((2, 2))[0].get_sprite(), 'knife')
+		self.assertFalse(level_map.items_at_pos((1, 1)))
+	def should_remove_items(self):
+		level_map = Map((5, 5))
+		level_map.add_item((2, 2), Item('knife', 'knife'))
+		level_map.remove_item(level_map.items_at_pos((2, 2))[0])
+		self.assertFalse(level_map.items_at_pos((2, 2)))
 	def should_place_actors(self):
 		level_map = Map((5, 5))
 		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
@@ -35,10 +50,12 @@ class TestMap(unittest.TestCase):
 		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
 		self.assertEqual(level_map.find_actor('Wanderer').get_sprite(), 'rogue')
 		self.assertIsNone(level_map.find_actor('Absent'))
+		self.assertEqual(level_map.find_actor_pos('Wanderer'), Point(2, 2))
+		self.assertIsNone(level_map.find_actor_pos('Absent'))
 	def should_remove_actors(self):
 		level_map = Map((5, 5))
 		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
-		level_map.remove_actor('Wanderer')
+		level_map.remove_actor(level_map.find_actor('Wanderer'))
 		self.assertIsNone(level_map.find_actor('Wanderer'))
 	def should_shift_player(self):
 		level_map = Map((5, 5))
