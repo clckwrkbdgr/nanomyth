@@ -75,12 +75,10 @@ def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
 	farm.add_actor((int(dest_map_x), int(dest_map_y)), Smoke)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
-basement_map = manual_content.create_basement_map(engine, resources)
 yard_map = load_tmx_map(DEMO_ROOTDIR/'yard.tmx', engine)
 
 game = Game()
 game.get_world().add_map('main', main_map)
-game.get_world().add_map('basement', basement_map)
 game.get_world().add_map('yard', yard_map)
 game.get_world().add_map('farm', load_tmx_map(DEMO_ROOTDIR/'farm.tmx', engine))
 game.get_world().add_map('cave_entrance', load_tmx_map(DEMO_ROOTDIR/'cave_entrance.tmx', engine))

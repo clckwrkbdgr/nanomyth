@@ -62,6 +62,8 @@ class TestManualContent(unittest.TestCase):
 		game = self.create_game()
 
 		# Exit lab.
+		game.shift_player(Direction.UP) # Bump.
+		game.shift_player(Direction.LEFT) # Bump.
 		game.shift_player(Direction.RIGHT)
 		game.shift_player(Direction.DOWN)
 		self.assertEqual(game.get_world().current_map, 'warehouse')
