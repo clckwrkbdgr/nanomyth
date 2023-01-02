@@ -185,7 +185,7 @@ def show_inventory(item_action=None):
 	player = current_map.find_actor('Wanderer')
 	items = [ui.ItemListRow(
 		'{0}'.format(item.name),
-		lambda: item_action(item),
+		item_action and (lambda _item=item: item_action(_item)),
 		item.sprite,
 		) for item in player.inventory]
 	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')

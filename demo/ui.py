@@ -148,6 +148,25 @@ def item_list(engine, resources, normal_font, highlighted_font, caption, items, 
 			raise nanomyth.view.sdl.context.Context.Finished()
 		dialog.bind_key(exit_key, exit_dialog)
 
+	button_up_icon = nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_up_highlighted'))
+	dialog.set_scroll_up_button((
+		-button_up_icon.get_size(engine).width - 2,
+		2,
+		), nanomyth.view.sdl.widget.Button(
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_up')),
+			button_up_icon,
+			),
+		)
+	button_down_icon = nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_down_highlighted'))
+	dialog.set_scroll_down_button((
+		-button_down_icon.get_size(engine).width - 2,
+		-button_down_icon.get_size(engine).height - 2,
+		), nanomyth.view.sdl.widget.Button(
+			nanomyth.view.sdl.widget.Image(engine.get_image('button_scroll_down')),
+			button_down_icon,
+			),
+		)
+
 	info_line = add_info_panel(dialog, engine, highlighted_font)
 	return dialog
 

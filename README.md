@@ -73,8 +73,8 @@ TODO
 9. [ ] Items.
 	- [X] Items laying on terrain.
 	- [X] Slot for item, picking/dropping items.
-	- [ ] Character's inventory, inventory screen dialog.
-	- [ ] Displaying inventory status on HUD.
+	- [X] Character's inventory, inventory screen dialog.
+	- [X] Displaying inventory status on HUD.
 	- [ ] Stackable items, non-stackable unique items.
 	- [ ] Usable items, using items on target (NPC, object).
 	- [ ] Triggers for items (for NPC/quests, opening terrain etc).
