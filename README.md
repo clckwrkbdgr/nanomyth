@@ -72,7 +72,7 @@ TODO
 	- [X] List of quests, quest book dialog.
 9. [ ] Items.
 	- [X] Items laying on terrain.
-	- [ ] Slot for item, picking/dropping items.
+	- [X] Slot for item, picking/dropping items.
 	- [ ] Character's inventory, inventory screen dialog.
 	- [ ] Displaying inventory status on HUD.
 	- [ ] Stackable items, non-stackable unique items.

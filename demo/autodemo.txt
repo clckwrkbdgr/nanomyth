@@ -56,7 +56,13 @@ up up up left # Knife is close.
 g . . . . # Nothing to grab here.
 left # Here's the knife.
 g . . . . # Grab it
-right right down down down # Exiting back.
+right
+d . . . . # Drop it.
+right . .
+d . . # Nothing to drop.
+left
+g . . . . # Grab it again.
+right down down down # Exiting back.
 down left down # As we were.
 
 ###########################################################################

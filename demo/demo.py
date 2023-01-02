@@ -133,6 +133,7 @@ def load_game(savefile):
 	else:
 		main_menu_info.set_text('')
 		return ui.message_box(engine, resources, 'No such savefile.', font, size=(6, 2))
+	update_ui_text()
 	info_line.set_text('Game loaded')
 	raise nanomyth.view.sdl.context.Menu.Finished
 
@@ -190,6 +191,20 @@ def grab_item():
 	update_ui_text()
 	info_line.set_text('Grabbed {0}.'.format(item.name))
 main_game.bind_key('g', grab_item)
+
+def drop_item():
+	current_map = game.get_world().get_current_map()
+	player = current_map.find_actor('Wanderer')
+	player_pos = current_map.find_actor_pos('Wanderer')
+	items = player.inventory
+	if not items:
+		info_line.set_text('Have no items to drop.')
+		return
+	item = items.pop()
+	current_map.add_item(player_pos, item)
+	update_ui_text()
+	info_line.set_text('Dropped {0}.'.format(item.name))
+main_game.bind_key('d', drop_item)
 
 info_line = ui.add_info_panel(main_game, engine, font)
 
