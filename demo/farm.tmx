@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="26">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="7" height="7" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="49">
  <tileset firstgid="1" name="Ground0" tilewidth="16" tileheight="16" tilecount="56" columns="8">
   <image source="DawnLike/Objects/Ground0.png" width="128" height="112"/>
  </tileset>
@@ -14,6 +14,9 @@
  </tileset>
  <tileset firstgid="1992" name="Humanoid0" tilewidth="16" tileheight="16" tilecount="216" columns="8">
   <image source="DawnLike/Characters/Humanoid0.png" width="128" height="432"/>
+ </tileset>
+ <tileset firstgid="2208" name="Food" tilewidth="16" tileheight="16" tilecount="48" columns="8">
+  <image source="DawnLike/Items/Food.png" width="128" height="96"/>
  </tileset>
  <layer id="1" name="Terrain" width="7" height="7">
   <data encoding="csv">
@@ -165,5 +168,24 @@
     <property name="quest" value="smoke"/>
    </properties>
   </object>
+  <object id="29" name="corn" type="item" gid="2238" x="64" y="80" width="16" height="16"/>
+  <object id="31" name="beet" type="item" gid="2233" x="48" y="48" width="16" height="16"/>
+  <object id="32" name="carrot" type="item" gid="2232" x="48" y="80" width="16" height="16"/>
+  <object id="33" name="asparagus" type="item" gid="2235" x="48" y="64" width="16" height="16"/>
+  <object id="34" name="berries" type="item" gid="2231" x="64" y="64" width="16" height="16"/>
+  <object id="35" name="watermelon" type="item" gid="2227" x="16" y="32" width="16" height="16"/>
+  <object id="36" name="orange" type="item" gid="2225" x="32" y="32" width="16" height="16"/>
+  <object id="37" name="melon" type="item" gid="2229" x="48" y="32" width="16" height="16"/>
+  <object id="38" name="banana" type="item" gid="2228" x="64" y="32" width="16" height="16"/>
+  <object id="39" name="apple" type="item" gid="2224" x="80" y="32" width="16" height="16"/>
+  <object id="40" name="tomato" type="item" gid="2230" x="64" y="48" width="16" height="16"/>
+  <object id="41" name="cabbage" type="item" gid="2237" x="16" y="96" width="16" height="16"/>
+  <object id="42" name="shroom" type="item" gid="2208" x="32" y="96" width="16" height="16"/>
+  <object id="43" name="banana" type="item" gid="2228" x="48" y="96" width="16" height="16"/>
+  <object id="44" name="apple" type="item" gid="2224" x="64" y="96" width="16" height="16"/>
+  <object id="45" name="watermelon" type="item" gid="2227" x="80" y="96" width="16" height="16"/>
+  <object id="46" name="shroom" type="item" gid="2208" x="80" y="80" width="16" height="16"/>
+  <object id="47" name="orange" type="item" gid="2225" x="80" y="64" width="16" height="16"/>
+  <object id="48" name="melon" type="item" gid="2229" x="80" y="48" width="16" height="16"/>
  </objectgroup>
 </map>
