@@ -108,7 +108,7 @@ class Scroller:
 		if item_pos < self.current_pos:
 			self.current_pos = item_pos
 		elif item_pos >= self.current_pos + self.number_of_visible_items():
-			self.current_pos = item_pos - self.number_of_visible_items(custom_current_pos=-item_pos)
+			self.current_pos = item_pos - self.number_of_visible_items(custom_current_pos=-item_pos) + 1
 	def can_scroll_up(self):
 		""" Returns True if there are items higher than current viewport can display
 		and it can be scrolled up.

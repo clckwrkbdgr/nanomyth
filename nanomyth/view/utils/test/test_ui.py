@@ -197,6 +197,45 @@ class TestScrolling(unittest.TestCase):
 	def should_move_viewing_range_to_ensure_visibility_of_specific_item(self):
 		scroller = Scroller(
 				total_items=10,
+				viewport_height=16*6,
+				item_height=16,
+				)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertEqual(scroller.get_visible_slice(), slice(0, 6))
+
+		scroller.ensure_item_visible(0)
+		self.assertEqual(scroller.get_top_item(), 0)
+		scroller.ensure_item_visible(1)
+		self.assertEqual(scroller.get_top_item(), 0)
+		scroller.ensure_item_visible(2)
+		self.assertEqual(scroller.get_top_item(), 0)
+		scroller.ensure_item_visible(3)
+		self.assertEqual(scroller.get_top_item(), 0)
+		scroller.ensure_item_visible(4)
+		self.assertEqual(scroller.get_top_item(), 0)
+		scroller.ensure_item_visible(5)
+		self.assertEqual(scroller.get_top_item(), 0)
+
+		scroller.ensure_item_visible(6)
+		self.assertEqual(scroller.get_top_item(), 1)
+		self.assertEqual(scroller.get_visible_slice(), slice(1, 7))
+
+		scroller.ensure_item_visible(5)
+		self.assertEqual(scroller.get_top_item(), 1)
+		scroller.ensure_item_visible(4)
+		self.assertEqual(scroller.get_top_item(), 1)
+		scroller.ensure_item_visible(3)
+		self.assertEqual(scroller.get_top_item(), 1)
+		scroller.ensure_item_visible(2)
+		self.assertEqual(scroller.get_top_item(), 1)
+		scroller.ensure_item_visible(1)
+		self.assertEqual(scroller.get_top_item(), 1)
+		scroller.ensure_item_visible(0)
+		self.assertEqual(scroller.get_top_item(), 0)
+		self.assertEqual(scroller.get_visible_slice(), slice(0, 6))
+	def should_move_viewing_range_to_ensure_visibility_of_specific_item_of_different_sizes(self):
+		scroller = Scroller(
+				total_items=10,
 				viewport_height=30,
 				item_height=lambda i: [8, 6, 5, 4, 5, 2, 10, 10, 10, 10][i],
 				)
@@ -204,12 +243,12 @@ class TestScrolling(unittest.TestCase):
 		self.assertEqual(scroller.get_visible_slice(), slice(0, 6))
 
 		scroller.ensure_item_visible(9)
-		self.assertEqual(scroller.get_top_item(), 6)
-		self.assertEqual(scroller.get_visible_slice(), slice(6, 9))
+		self.assertEqual(scroller.get_top_item(), 7)
+		self.assertEqual(scroller.get_visible_slice(), slice(7, 10))
 
 		scroller.ensure_item_visible(8)
-		self.assertEqual(scroller.get_top_item(), 6)
-		self.assertEqual(scroller.get_visible_slice(), slice(6, 9))
+		self.assertEqual(scroller.get_top_item(), 7)
+		self.assertEqual(scroller.get_visible_slice(), slice(7, 10))
 
 		scroller.ensure_item_visible(6)
 		self.assertEqual(scroller.get_top_item(), 6)
