@@ -180,18 +180,18 @@ def show_quest_list():
 	return ui.item_list(engine, resources, grey_font, font, 'Active quests:', items, exit_key='q')
 main_game.bind_key('q', show_quest_list)
 
-def show_inventory():
+def show_inventory(item_action=None):
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
 	items = [ui.ItemListRow(
 		'{0}'.format(item.name),
-		None,
+		lambda: item_action(item),
 		item.sprite,
 		) for item in player.inventory]
 	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')
 main_game.bind_key('i', show_inventory)
 
-def grab_item():
+def grab_item_here():
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
 	player_pos = current_map.find_actor_pos('Wanderer')
@@ -203,21 +203,22 @@ def grab_item():
 	player.inventory.append(item)
 	update_ui_text()
 	info_line.set_text('Grabbed {0}.'.format(item.name))
-main_game.bind_key('g', grab_item)
+main_game.bind_key('g', grab_item_here)
 
-def drop_item():
+def drop_item_screen():
+	main_game.set_pending_context(show_inventory(item_action=drop_item))
+
+def drop_item(item):
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
 	player_pos = current_map.find_actor_pos('Wanderer')
-	items = player.inventory
-	if not items:
-		info_line.set_text('Have no items to drop.')
-		return
-	item = items.pop()
+	player.inventory.remove(item)
 	current_map.add_item(player_pos, item)
 	update_ui_text()
 	info_line.set_text('Dropped {0}.'.format(item.name))
-main_game.bind_key('d', drop_item)
+	raise nanomyth.view.sdl.context.Menu.Finished()
+
+main_game.bind_key('d', drop_item_screen)
 
 info_line = ui.add_info_panel(main_game, engine, font)
 

@@ -58,10 +58,10 @@ left # Here's the knife.
 g . . . . # Grab it
 i . . . . i # Check inventory.
 right
-d . . . . # Drop it.
+d . . return . . # Drop it.
 i . . . . i # Check empty inventory.
 right . .
-d . . # Nothing to drop.
+d . . . . escape # Nothing to drop.
 left
 g . . . . # Grab it again.
 i . . . . i # Check inventory. Again.
