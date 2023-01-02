@@ -96,18 +96,39 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 			))
 	return dialog
 
+class ItemListRow:
+	def __init__(self, text, action, icon=None):
+		self.text = text
+		self.action = action
+		self.icon = icon
+	def make_button(self, engine, normal_font, highlighted_font, window_size):
+		return nanomyth.view.sdl.widget.Button(
+				self.make_widget(engine, normal_font, window_size.width),
+				self.make_widget(engine, highlighted_font, window_size.width),
+				action=self.action,
+				)
+	def make_widget(self, engine, font, width):
+		result = nanomyth.view.sdl.widget.Compound()
+		pos = Point(0, 0)
+		if self.icon:
+			icon = nanomyth.view.sdl.widget.Image(engine.get_image(self.icon))
+			result.add_widget(icon, pos)
+			icon_size = icon.get_size(engine)
+			width -= icon_size.width
+			pos.x += icon_size.width
+			letter_height = font.get_letter_image('W').get_size().height
+			pos.y += (icon_size.height - letter_height) // 2
+		result.add_widget(nanomyth.view.sdl.widget.MultilineText(
+			font, (width, 0), self.text,
+			), pos)
+		return result
+
 def item_list(engine, resources, normal_font, highlighted_font, caption, items, exit_key=None):
 	window_size = engine.get_window_size()
 
-	items = [nanomyth.view.sdl.widget.Button(
-		nanomyth.view.sdl.widget.MultilineText(
-			normal_font, (window_size.width, 0), item,
-			),
-		nanomyth.view.sdl.widget.MultilineText(
-			highlighted_font, (window_size.width, 0), item,
-			),
-		action=action,
-		) for item, action in items]
+	items = [item_row.make_button(engine,
+		normal_font, highlighted_font, window_size,
+		) for item_row in items]
 
 	size = Size(10, 7)
 	panel_widget = nanomyth.view.sdl.widget.Panel(Matrix.from_iterable([

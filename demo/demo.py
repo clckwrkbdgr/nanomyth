@@ -173,7 +173,7 @@ class ShowQuestDetails:
 		return ui.conversation(engine, resources, text, font)
 
 def show_quest_list():
-	items = [(
+	items = [ui.ItemListRow(
 		'* {0}\n    - {1}'.format(quest.title, quest.get_last_history_entry()),
 		ShowQuestDetails(quest),
 		) for quest in game.get_world().get_active_quests()]
@@ -183,9 +183,10 @@ main_game.bind_key('q', show_quest_list)
 def show_inventory():
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
-	items = [(
-		'* {0}'.format(item.name),
+	items = [ui.ItemListRow(
+		'{0}'.format(item.name),
 		None,
+		item.sprite,
 		) for item in player.inventory]
 	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')
 main_game.bind_key('i', show_inventory)
