@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="comment" attr.name="comment" for="graph" attr.type="string">
+        <default></default>
+    </key>
+    <key id="creator" attr.name="creator" for="graph" attr.type="string">
+        <default>Qt Visual Graph Editor 0.7.0</default>
+    </key>
+    <key id="id" attr.name="id" for="graph" attr.type="string">
+        <default>foodcart</default>
+    </key>
+    <key id="labels.policy" attr.name="labels.policy" for="graph" attr.type="integer">
+        <default>0</default>
+    </key>
+    <key id="title" attr.name="title" for="graph" attr.type="string">
+        <default>All flesh is grass</default>
+    </key>
+    <key id="color" attr.name="color" for="edge" attr.type="string">
+        <default>#a0a0a4</default>
+    </key>
+    <key id="direction" attr.name="direction" for="edge" attr.type="string">
+        <default>directed</default>
+    </key>
+    <key id="labels.visibleIds" attr.name="labels.visibleIds" for="edge" attr.type="string">
+        <default>id|label</default>
+    </key>
+    <key id="points" attr.name="points" for="edge" attr.type="string"/>
+    <key id="style" attr.name="style" for="edge" attr.type="string">
+        <default>solid</default>
+    </key>
+    <key id="weight" attr.name="weight" for="edge" attr.type="double">
+        <default>1</default>
+    </key>
+    <key id="color" attr.name="color" for="node" attr.type="string">
+        <default>#ff00ff</default>
+    </key>
+    <key id="label.position" attr.name="label.position" for="node" attr.type="integer">
+        <default>0</default>
+    </key>
+    <key id="labels.visibleIds" attr.name="labels.visibleIds" for="node" attr.type="string">
+        <default>id|label</default>
+    </key>
+    <key id="shape" attr.name="shape" for="node" attr.type="string">
+        <default>disc</default>
+    </key>
+    <key id="stroke.color" attr.name="stroke.color" for="node" attr.type="string">
+        <default>#000000</default>
+    </key>
+    <key id="stroke.size" attr.name="stroke.size" for="node" attr.type="double">
+        <default>1</default>
+    </key>
+    <key id="stroke.style" attr.name="stroke.style" for="node" attr.type="string">
+        <default>solid</default>
+    </key>
+    <key id="x" attr.name="x" for="node" attr.type="float"/>
+    <key id="y" attr.name="y" for="node" attr.type="float"/>
+    <graph edgedefault="directed">
+        <node id="cart is free">
+            <data key="color">#ffffff</data>
+            <data key="height">40</data>
+            <data key="shape">square</data>
+            <data key="width">100</data>
+            <data key="x">-100</data>
+            <data key="y">25</data>
+        </node>
+        <node id="pushing cart">
+            <data key="color">#ffffff</data>
+            <data key="height">40</data>
+            <data key="shape">square</data>
+            <data key="width">100</data>
+            <data key="x">0</data>
+            <data key="y">-150</data>
+        </node>
+        <node id="trader is gone">
+            <data key="color">#ffffff</data>
+            <data key="height">40</data>
+            <data key="point">finish</data>
+            <data key="shape">square</data>
+            <data key="width">100</data>
+            <data key="x">125</data>
+            <data key="y">100</data>
+        </node>
+        <node id="start">
+            <data key="color">#000000</data>
+            <data key="height">40</data>
+            <data key="label.color">#ffffff</data>
+            <data key="point">start</data>
+            <data key="stroke.color">#ffffff</data>
+            <data key="width">40</data>
+            <data key="x">-250</data>
+            <data key="y">-225</data>
+        </node>
+        <edge id="pushing_cart" source="pushing cart" target="cart is free">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">You are trying to push cart with all the strength when you notice that one of the wheels is entangled in a grass knot.
+
+You cut the grass and the wheel is free.</data>
+            <data key="history">The cart is free. You should tell this to trader.</data>
+            <data key="trigger">grass</data>
+        </edge>
+        <edge id="trader_asks_for_help" source="start" target="pushing cart">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">My food cart is stuck in this grass. Could you push from the back?</data>
+            <data key="history">Trader asks to help him move the cart.</data>
+            <data key="trigger">Trader</data>
+        </edge>
+        <edge id="trader_is_gone" source="cart is free" target="trader is gone">
+            <data key="action">remove_actor</data>
+            <data key="actor">Trader</data>
+            <data key="trigger">Trader</data>
+        </edge>
+        <edge id="cart_is_gone" source="cart is free" target="trader is gone">
+            <data key="action">remove_actor</data>
+            <data key="actor">foodcart</data>
+            <data key="trigger">Trader</data>
+        </edge>
+        <edge id="trader_still_asks_for_help" source="pushing cart" target="pushing cart">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">My food cart is stuck in this grass. Could you push from the back?</data>
+            <data key="trigger">Trader</data>
+        </edge>
+        <edge id="cart is free" source="cart is free" target="trader is gone">
+            <data key="action">show_dialog</data>
+            <data key="dialog_message">Thanks!
+
+I'm going to the market to sell these crops from the farm that's east from here.
+
+Farmer there could use your help too.</data>
+            <data key="trigger">Trader</data>
+        </edge>
+    </graph>
+</graphml>

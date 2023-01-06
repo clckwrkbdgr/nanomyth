@@ -20,7 +20,7 @@ import nanomyth.view.sdl
 from nanomyth.view.sdl.tmx import load_tmx_map
 from nanomyth.view.sdl.graphml import load_graphml_quest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
-import graphics, manual_content, ui
+import graphics, ui
 
 resources = graphics.download_resources()
 DEMO_ROOTDIR = Path(__file__).parent
@@ -69,10 +69,13 @@ def show_dialog(dialog_message, **params):
 			)
 
 def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
-	Smoke = game.get_world().get_current_map().find_actor(actor)
-	Smoke = game.get_world().get_current_map().remove_actor(Smoke)
-	farm = game.get_world().get_map(dest_map)
-	farm.add_actor((int(dest_map_x), int(dest_map_y)), Smoke)
+	actor = game.get_world().get_current_map().find_actor(actor)
+	dest_map = game.get_world().get_map(dest_map)
+	dest_map.add_actor((int(dest_map_x), int(dest_map_y)), actor)
+
+def remove_actor(actor, **params):
+	actor = game.get_world().get_current_map().find_actor(actor)
+	game.get_world().get_current_map().remove_actor(actor)
 
 main_map = load_tmx_map(DEMO_ROOTDIR/'home.tmx', engine)
 yard_map = load_tmx_map(DEMO_ROOTDIR/'yard.tmx', engine)
@@ -87,16 +90,15 @@ quest = load_graphml_quest(DEMO_ROOTDIR/'smoke.graphml')
 quest.on_start('update_active_quest_count')
 quest.on_finish('update_active_quest_count')
 game.get_world().add_quest(quest)
+quest = load_graphml_quest(DEMO_ROOTDIR/'foodcart.graphml')
+quest.on_start('update_active_quest_count')
+quest.on_finish('update_active_quest_count')
+game.get_world().add_quest(quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
 main_game.map_widget.get_size(engine) # TODO not needed actually, just for coverage.
-foodcart_quest = manual_content.create_foodcart_quest(
-		game, main_game,
-		engine, resources, font,
-		)
-foodcart_quest.on_start('update_active_quest_count')
-foodcart_quest.on_finish('update_active_quest_count')
-game.get_world().add_quest(foodcart_quest)
+
+
 game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
 	Direction.UP : 'rogue_up',
 	Direction.DOWN : 'rogue_down',
@@ -106,6 +108,7 @@ game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rog
 game.register_trigger_action('autosave', autosave)
 game.register_trigger_action('show_dialog', show_dialog)
 game.register_trigger_action('portal_actor', portal_actor)
+game.register_trigger_action('remove_actor', remove_actor)
 game.register_trigger_action('update_active_quest_count', update_active_quest_count)
 
 savefiles = [
@@ -232,5 +235,5 @@ if sys.argv[1:2] == ['auto']:
 	save3 = DEMO_ROOTDIR/'game3.sav'
 	if save3.exists(): # pragma: no cover -- We need slot 3 to be free.
 		os.unlink(str(save3))
-	auto_sequence = autodemo.AutoSequence(0.2 if 'slow' in args else 0.05, DEMO_ROOTDIR/'autodemo.txt')
+	auto_sequence = autodemo.AutoSequence(0.1, DEMO_ROOTDIR/'autodemo.txt')
 engine.run(custom_update=auto_sequence)

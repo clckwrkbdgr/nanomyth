@@ -63,7 +63,7 @@ class Graph:
 		result = cls()
 
 		def _get_element_content(_element):
-			if _element.firstChild:
+			if _element and _element.firstChild:
 				return _element.firstChild.data
 			return None
 
@@ -79,7 +79,7 @@ class Graph:
 		for attr in root.getElementsByTagName("key"):
 			attr_name = attr.getAttribute('attr.name')
 			attr_type = attr.getAttribute('attr.type')
-			default_value = next(iter(attr.getElementsByTagName("default")))
+			default_value = next(iter(attr.getElementsByTagName("default")), None)
 			value = _convert_attr_value(_get_element_content(default_value), attr_type)
 
 			entity_type = attr.getAttribute('for')

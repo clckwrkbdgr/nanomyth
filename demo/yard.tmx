@@ -109,12 +109,12 @@
   <object id="25" name="foodcart" type="npc" gid="2072" x="32" y="64" width="16" height="16"/>
   <object id="26" name="Trader" type="npc" gid="2170" x="48" y="64" width="16" height="16">
    <properties>
-    <property name="trigger" value="talking_to_trader"/>
+    <property name="quest" value="foodcart"/>
    </properties>
   </object>
   <object id="27" name="grass" gid="1920" x="16" y="64" width="16" height="16">
    <properties>
-    <property name="trigger" value="push_foodcart"/>
+    <property name="quest" value="foodcart"/>
    </properties>
   </object>
  </objectgroup>
