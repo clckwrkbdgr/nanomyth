@@ -110,6 +110,9 @@ game.register_trigger_action('autosave', autosave)
 game.register_trigger_action('show_dialog', show_dialog)
 game.register_trigger_action('portal_actor', portal_actor)
 game.register_trigger_action('remove_actor', remove_actor)
+def explain_portal(*params):
+	show_dialog('Go through the portal to teleport back home')
+game.register_trigger_action('explain_portal', explain_portal)
 game.register_trigger_action('update_active_quest_count', update_active_quest_count)
 
 savefiles = [

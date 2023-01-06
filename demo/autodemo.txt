@@ -124,13 +124,14 @@ q . . . escape # Check quest list.
 ### BACK HOME
 
 left # Back to the yard.
-left left up up up # To the house.
-up left # Back to the original spawn point.
+down down left left left left down down right right # Shiny!
+right . . . return # Keeper talking.
+up # Portal to the house.
 
 ###########################################################################
 ### END
 
-. . . # Just a pause.
+up down . . . . . . . . # Just a pause.
 escape # To main menu.
 escape # Exit game.
 
