@@ -70,6 +70,7 @@ def show_dialog(dialog_message, **params):
 
 def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
 	actor = game.get_world().get_current_map().find_actor(actor)
+	game.get_world().get_current_map().remove_actor(actor)
 	dest_map = game.get_world().get_map(dest_map)
 	dest_map.add_actor((int(dest_map_x), int(dest_map_y)), actor)
 
@@ -235,5 +236,5 @@ if sys.argv[1:2] == ['auto']:
 	save3 = DEMO_ROOTDIR/'game3.sav'
 	if save3.exists(): # pragma: no cover -- We need slot 3 to be free.
 		os.unlink(str(save3))
-	auto_sequence = autodemo.AutoSequence(0.1, DEMO_ROOTDIR/'autodemo.txt')
+	auto_sequence = autodemo.AutoSequence(0.2 if 'slow' in args else 0.07, DEMO_ROOTDIR/'autodemo.txt')
 engine.run(custom_update=auto_sequence)
