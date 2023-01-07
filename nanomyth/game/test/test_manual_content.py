@@ -52,6 +52,8 @@ class TestManualContent(unittest.TestCase):
 		warehouse.add_trigger((5, 2), Trigger('robot platform'))
 		warehouse.set_tile((7, 1), Terrain(['floor', 'storage']))
 		warehouse.add_trigger((7, 1), Trigger('using_gear_storage'))
+
+		warehouse.add_item((6, 5), Item('wrench', 'wrench'))
 		return warehouse
 	def create_robot_quest(self):
 		quest = Quest('robot', "Fix robot", [
@@ -124,6 +126,8 @@ class TestManualContent(unittest.TestCase):
 
 	def _player_pos(self):
 		return self.game.get_world().get_current_map().find_actor_pos('You')
+	def _player(self):
+		return self.game.get_world().get_current_map().find_actor('You')
 	def setUp(self):
 		self.game = self.create_game()
 		self.log = []
@@ -200,3 +204,14 @@ class TestManualContent(unittest.TestCase):
 		self.assertFalse(self.game.get_world().get_quest('robot').is_active())
 		self.assertFalse(self.game.get_world().get_active_quests())
 		self.assertIsNone(self.game.get_world().get_current_map().find_actor('robot'))
+
+		self.game.shift_player(Direction.DOWN)
+		self.assertEqual(self._player_pos(), (6, 4))
+		self.assertIsNone(self.game.get_world().get_current_map().pick_item(self._player()))
+		self.game.shift_player(Direction.DOWN)
+		self.assertEqual(self._player_pos(), (6, 5))
+		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'wrench')
+		self.assertEqual(self.game.get_world().get_current_map().drop_item(self._player(), self._player().inventory[0]).name, 'wrench')
+		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'wrench')
+		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 4)))
+		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 5)))

@@ -126,6 +126,34 @@ class Map:
 		if item_index is not None:
 			del self.items[item_index]
 		return item
+	def pick_item(self, actor, item=None, at_pos=None):
+		""" Makes actor pick item and store in their inventory.
+		Actor object should have member .inventory.
+		If item is not specified, first available item from at_pos is picked.
+		If at_pos is not specified, actor's position is used.
+		If there were not items at the position, returns None.
+		Otherwise transfers item to the inventory and returns picked item object.
+		"""
+		if not item:
+			if not at_pos:
+				at_pos = self.find_actor_pos(actor.name)
+			items = self.items_at_pos(at_pos)
+			if not items:
+				return None
+			item = items[-1]
+		item = self.remove_item(item)
+		actor.inventory.append(item)
+		return item
+	def drop_item(self, actor, item, at_pos=None):
+		""" Drops item from actor's inventory at specified pos.
+		If pos is not specified, actor's position is used.
+		Returns dropped item object.
+		"""
+		if not at_pos:
+			at_pos = self.find_actor_pos(actor.name)
+		actor.inventory.remove(item)
+		self.add_item(at_pos, item)
+		return item
 	def shift_player(self, shift, trigger_registry=None, quest_registry=None):
 		""" Moves player character by given shift.
 		Shift could be either Point object (relative to the current position),

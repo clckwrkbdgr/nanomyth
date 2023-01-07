@@ -198,3 +198,46 @@ class TestMap(unittest.TestCase):
 		level_map.shift_player(Direction.LEFT, trigger_registry=trigger_registry, quest_registry=quest_registry)
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 2))
 		self.assertTrue(quest_trigger_callback.talk)
+	def should_pick_items(self):
+		level_map = Map((5, 5))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		player = level_map.find_actor('Wanderer')
+		level_map.add_item((2, 2), Item('sword', 'sword'))
+		level_map.add_item((2, 2), Item('shield', 'shield'))
+		sword, shield = level_map.items_at_pos((2, 2))
+		level_map.add_item((2, 3), Item('bag of gold', 'bag'))
+		bag_of_gold = level_map.items_at_pos((2, 3))[0]
+		level_map.add_item((2, 1), Item('golden key', 'key'))
+		golden_key = level_map.items_at_pos((2, 1))[0]
+
+		self.assertEqual(level_map.pick_item(player, item=bag_of_gold), bag_of_gold)
+		self.assertEqual(player.inventory, [bag_of_gold])
+		self.assertFalse(level_map.items_at_pos((2, 3)))
+
+		self.assertEqual(level_map.pick_item(player, at_pos=(2, 1)), golden_key)
+		self.assertEqual(player.inventory, [bag_of_gold, golden_key])
+		self.assertFalse(level_map.items_at_pos((2, 1)))
+
+		self.assertEqual(level_map.pick_item(player), shield)
+		self.assertEqual(player.inventory, [bag_of_gold, golden_key, shield])
+		self.assertEqual(level_map.pick_item(player), sword)
+		self.assertEqual(player.inventory, [bag_of_gold, golden_key, shield, sword])
+		self.assertEqual([_.name for _ in player.inventory], ['bag of gold', 'golden key', 'shield', 'sword'])
+		self.assertFalse(level_map.items_at_pos((2, 2)))
+
+		self.assertIsNone(level_map.pick_item(player))
+	def should_drop_items(self):
+		level_map = Map((5, 5))
+		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		player = level_map.find_actor('Wanderer')
+		bag_of_gold = Item('bag of gold', 'bag')
+		golden_key = Item('golden key', 'key')
+		player.inventory += [bag_of_gold, golden_key]
+		level_map.add_item((2, 2), Item('sword', 'sword'))
+
+		self.assertEqual(level_map.drop_item(player, golden_key, at_pos=(2, 1)), golden_key)
+		self.assertEqual([_.name for _ in level_map.items_at_pos((2, 1))], ['golden key'])
+		self.assertEqual(player.inventory, [bag_of_gold])
+		self.assertEqual(level_map.drop_item(player, bag_of_gold), bag_of_gold)
+		self.assertEqual([_.name for _ in level_map.items_at_pos((2, 2))], ['sword', 'bag of gold'])
+		self.assertEqual(player.inventory, [])

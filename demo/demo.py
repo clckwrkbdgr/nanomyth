@@ -200,13 +200,10 @@ main_game.bind_key('i', show_inventory)
 def grab_item_here():
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
-	player_pos = current_map.find_actor_pos('Wanderer')
-	items = current_map.items_at_pos(player_pos)
-	if not items:
+	item = current_map.pick_item(player)
+	if not item:
 		info_line.set_text('No items here.')
 		return
-	item = current_map.remove_item(items[0])
-	player.inventory.append(item)
 	update_ui_text()
 	info_line.set_text('Grabbed {0}.'.format(item.name))
 main_game.bind_key('g', grab_item_here)
@@ -217,9 +214,7 @@ def drop_item_screen():
 def drop_item(item):
 	current_map = game.get_world().get_current_map()
 	player = current_map.find_actor('Wanderer')
-	player_pos = current_map.find_actor_pos('Wanderer')
-	player.inventory.remove(item)
-	current_map.add_item(player_pos, item)
+	current_map.drop_item(player, item)
 	update_ui_text()
 	info_line.set_text('Dropped {0}.'.format(item.name))
 	raise nanomyth.view.sdl.context.Menu.Finished()
