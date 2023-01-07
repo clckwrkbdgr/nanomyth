@@ -63,9 +63,9 @@ class ActorOnMap:
 class Portalling(Exception):
 	""" Represents portalling event.
 	"""
-	def __init__(self, portal, player):
+	def __init__(self, portal, actor):
 		self.portal = portal
-		self.player = player
+		self.actor = actor
 
 class Map:
 	""" Rectangle level map.
@@ -156,7 +156,6 @@ class Map:
 			return
 		portal = next((portal.obj for portal in self.portals if portal.pos == new_pos), None)
 		if portal:
-			self.actors.remove(player)
 			raise Portalling(portal, player.actor)
 		player.pos = new_pos
 

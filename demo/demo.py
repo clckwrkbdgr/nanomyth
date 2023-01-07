@@ -69,10 +69,11 @@ def show_dialog(dialog_message, **params):
 			)
 
 def portal_actor(actor, dest_map, dest_map_x, dest_map_y, **params):
-	actor = game.get_world().get_current_map().find_actor(actor)
-	game.get_world().get_current_map().remove_actor(actor)
-	dest_map = game.get_world().get_map(dest_map)
-	dest_map.add_actor((int(dest_map_x), int(dest_map_y)), actor)
+	game.get_world().transfer_actor(
+			game.get_world().get_current_map().find_actor(actor),
+			game.get_world().get_map(dest_map),
+			(int(dest_map_x), int(dest_map_y)),
+			)
 
 def remove_actor(actor, **params):
 	actor = game.get_world().get_current_map().find_actor(actor)

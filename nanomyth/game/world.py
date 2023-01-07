@@ -38,6 +38,14 @@ class World:
 	def get_active_quests(self):
 		""" Returns list of all the active quests. """
 		return [quest for quest in self.quests.values() if quest.is_active()]
+	def transfer_actor(self, actor, dest_map, dest_pos, source_map=None):
+		""" Transfer actor from one map to another and place at specified position.
+		If source_map is not specified, current map is used.
+		"""
+		if not source_map:
+			source_map = self.get_current_map()
+		source_map.remove_actor(actor)
+		dest_map.add_actor(dest_pos, actor)
 	def shift_player(self, shift, trigger_registry=None, on_change_map=None):
 		""" Moves player character on the current map by given shift.
 		See details in Map.shift_player.
@@ -48,10 +56,8 @@ class World:
 		try:
 			self.get_current_map().shift_player(shift, trigger_registry=trigger_registry, quest_registry=self.get_quest)
 		except Portalling as p:
+			dest_map = self.get_map(p.portal.dest_map)
+			self.transfer_actor(p.actor, dest_map, p.portal.entrance_pos)
 			self.set_current_map(p.portal.dest_map)
-			self.get_current_map().add_actor(
-					p.portal.entrance_pos,
-					p.player,
-					)
 			if on_change_map:
 				on_change_map(self.get_current_map())
