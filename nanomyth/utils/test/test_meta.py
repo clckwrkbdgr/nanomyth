@@ -18,6 +18,12 @@ class Delegator:
 		self.member = MockOriginalClass()
 		self.member.value = 'baz'
 		self._name = "John Doe"
+	@meta.typed(str, int, first=list, second=dict)
+	def typed_function(self, arg_str, arg_int, arg_none, first=None, second=None, third=None):
+		pass
+	@meta.typed(str)
+	def typed_function_single_arg(self, arg):
+		pass
 
 class SuperDelegator:
 	super_foo = meta.Delegate('submember', Delegator.delegate_foo)
@@ -44,3 +50,34 @@ class TestProperties(unittest.TestCase):
 	def should_access_property(self):
 		obj = Delegator()
 		self.assertEqual(obj.name, 'John Doe')
+
+class TestTyping(unittest.TestCase):
+	def should_check_argument_types_for_explicitly_typed_functions_with_a_single_argument(self):
+		obj = Delegator()
+		obj.typed_function_single_arg('ok')
+		with self.assertRaises(TypeError) as e:
+			obj.typed_function_single_arg(666, 1, None, first=['list'], second={'dict':None}, third='something')
+		self.assertEqual(str(e.exception), 'Expected str for arg #0, got: int')
+	def should_check_argument_types_for_explicitly_typed_functions(self):
+		obj = Delegator()
+		obj.typed_function('ok', 1, None, first=['list'], second={'dict':None}, third='something')
+
+		with self.assertRaises(TypeError) as e:
+			obj.typed_function(666, 1, None, first=['list'], second={'dict':None}, third='something')
+		self.assertEqual(str(e.exception), 'Expected str for arg #0, got: int')
+
+		with self.assertRaises(TypeError) as e:
+			obj.typed_function('ok', 'not a number', None, first=['list'], second={'dict':None}, third='something')
+		self.assertEqual(str(e.exception), 'Expected int for arg #1, got: str')
+
+		obj.typed_function('ok', 1, 'should not raise because this argument is not checked', first=['list'], second={'dict':None}, third='something')
+
+		with self.assertRaises(TypeError) as e:
+			obj.typed_function('ok', 1, None, first='not a list', second={'dict':None}, third='something')
+		self.assertEqual(str(e.exception), 'Expected list for arg {0}, got: str'.format(repr('first')))
+
+		with self.assertRaises(TypeError) as e:
+			obj.typed_function('ok', 1, None, first=['list'], second='not a dict', third='something')
+		self.assertEqual(str(e.exception), 'Expected dict for arg {0}, got: str'.format(repr('second')))
+
+		obj.typed_function('ok', 1, None, first=['list'], second={'dict':None}, third='should not raise because this argument is not checked')

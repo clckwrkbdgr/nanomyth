@@ -1,4 +1,5 @@
 import inspect
+import functools
 
 def wrap_docstring(f, original_delegate=None):
 	""" Fixes docstring of wrapped object to propagate the original docstring
@@ -52,3 +53,35 @@ class fieldproperty:
 		if obj is None:
 			return self
 		return getattr(obj, self.field_name)
+
+def typed(*arg_types, **kwarg_types):
+	""" Adds simple type checking for arguments (both positional and keyword ones).
+	Raises TypeError if arguments are not instances of the corresponding type.
+	Types are matched in the order of specification (or by keywords for keyword ones).
+	If there are less types specified than there are arguments, remaining arguments are skipped (no type check).
+	The same goes for skipped keyword arguments.
+
+	Example:
+
+	>>> class C:
+	>>>   @typed(str, value=list)
+	>>>   def func(self, str_arg, value=None):
+	>>>      ...
+	"""
+	def _wrapper(f):
+		@functools.wraps(f)
+		def _actual(*args, **kwargs):
+			args_to_check = args
+			if next(iter(inspect.signature(f).parameters), None) == 'self': # Hack: detect obj method, first argument is self.
+				args_to_check = args_to_check[1:]
+			for index, (arg, arg_type) in enumerate(zip(args_to_check, arg_types)):
+				if not isinstance(arg, arg_type):
+					raise TypeError('Expected {0} for arg #{1}, got: {2}'.format(arg_type.__name__, index, type(arg).__name__))
+			for keyword in kwargs.keys():
+				if keyword not in kwarg_types:
+					continue
+				if not isinstance(kwargs[keyword], kwarg_types[keyword]):
+					raise TypeError('Expected {0} for arg {1}, got: {2}'.format(kwarg_types[keyword].__name__, repr(keyword), type(kwargs[keyword]).__name__))
+			return f(*args, **kwargs)
+		return _actual
+	return _wrapper
