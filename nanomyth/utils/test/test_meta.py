@@ -11,11 +11,13 @@ class MockOriginalClass:
 		return 'bar called: {0}'.format(self.value)
 
 class Delegator:
+	name = meta.fieldproperty('_name', "Name doc string")
 	delegate_foo = meta.Delegate('member', MockOriginalClass.foo)
 	bar = meta.Delegate('member', MockOriginalClass.bar)
 	def __init__(self):
 		self.member = MockOriginalClass()
 		self.member.value = 'baz'
+		self._name = "John Doe"
 
 class SuperDelegator:
 	super_foo = meta.Delegate('submember', Delegator.delegate_foo)
@@ -34,3 +36,11 @@ class TestDelegatedMethods(unittest.TestCase):
 	def should_delegate_method_through(self):
 		delegator = SuperDelegator()
 		self.assertEqual(delegator.super_foo(), 'foo called')
+
+class TestProperties(unittest.TestCase):
+	def should_adjust_docstsring_for_property(self):
+		self.assertEqual(inspect.getdoc(Delegator.name), 'Name doc string')
+		self.assertEqual(repr(Delegator.name), 'Name doc string')
+	def should_access_property(self):
+		obj = Delegator()
+		self.assertEqual(obj.name, 'John Doe')

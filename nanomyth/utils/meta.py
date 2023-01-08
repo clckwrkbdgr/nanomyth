@@ -36,3 +36,19 @@ class Delegate:
 					self.method = method
 					return getattr(getattr(obj, self.member), method)
 		return getattr(getattr(obj, self.member), self.method)
+
+class fieldproperty:
+	""" Read-only property that is directly tied to an internal field.
+	"""
+	def __init__(self, field_name, docstring=None):
+		""" Creates property for given field.
+		Optional docstring can be set.
+		"""
+		self.field_name = field_name
+		self.__doc__ = docstring
+	def __repr__(self):
+		return self.__doc__
+	def __get__(self, obj, objtype):
+		if obj is None:
+			return self
+		return getattr(obj, self.field_name)
