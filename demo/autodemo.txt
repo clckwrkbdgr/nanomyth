@@ -2,136 +2,72 @@
 # Keypress sequence for auto-demo mode.
 # Format: <key>[ <key> ...] [# comment]
 
+down up # Move through the menu.
+
 return # Play.
 
 ###########################################################################
-### SAVEFILES
+### ITEMS
 
-escape # To main menu.
-down return return # Save game on existing slot.
-. . . # Just a pause.
-escape # Do not overwrite.
-. . . # Just a pause.
-return # Again confirmation...
-. . . # Just a pause.
-return # Now overwrite save.
-. . . # Just a pause.
-return escape up return # Back to playing.
-
-right right right right # Right into the wall.
-up up up . . . return # Autosave.
-down down down
-down # Exit home and into the yard.
-
-escape # To main menu.
-down down return # Load game screen.
-down down down return # No such savefile.
-. . . # Just a pause.
-escape up up return # Load previous save.
-. . . # Just a pause.
-right up right # Exit the basement again.
-right down down down down left # Exit the building and walk some.
-escape return up return # Load autosave.
-. . . # Just a pause.
-down down left # Back to the original spawn point.
+up left # To the knife.
+g # Grab it.
+i . . i # Check it.
+down right # Back to the start.
+d . up . down . return # Drop knife.
+i . . . escape # Check inventory.
 
 ###########################################################################
-### QUEST FOODCART (START)
+### AUTOSAVE
 
-right down down # Exit to yard.
-down down left left left down right # Trying to push the cart.
-up right right down . . . return # Talking to Trader.
-
-q . . . q # Check quest list.
+up right up # To the bed and save.
+. return # Saved.
+down left down # Back to the start.
 
 ###########################################################################
-### GRABBING ITEM (KNIFE)
+### FARMER QUEST
 
-up right up # Back home.
-up up up left # Knife is close.
-g . . . . # Nothing to grab here.
-left # Here's the knife.
-g . . . . # Grab it
-i . . . . i # Check inventory.
-right
-d . . return . . # Drop it.
-i . . . . i # Check empty inventory.
-right . .
-d . . . . escape # Nothing to drop.
-left
-g . . . . # Grab it again.
-i . . . . i # Check inventory. Again.
-right down down down # Exiting back.
-down left down # As we were.
-
-###########################################################################
-### QUEST FARMER SMOKE (START)
-
-left left left # To the cave.
-left left left up up up # Into the cave.
-up up up right right up up right right down down down down left # Pass the maze.
-left . . . return # Talk to the unknown dog.
-right up up up up left left down down left left down down down # Back to the light.
-down down down right right right # To the yard.
-right right right right right right # To the farm.
-
+right down down # Exit to the desert.
+down down right right # To the farm.
 right right # Talk to the farmer.
-down down down down down # Scrolling text...
-up up up up up # Scrolling text back...
-. . .
-return # Close the message.
-left # Leave the farm.
-left left left # Back to the center of the yard.
+down down down down . up up up up # Scroll text.
+return # Take the quest.
 
 ###########################################################################
-### BROWSE QUESTS
+### TRADER QUEST
 
-q . . . up down # Check quest list.
-return . . . escape # Check first item.
-down
-return . . . escape # Check second item.
-down up up up # Scroll around.
-return . . . escape # Check first item again.
-escape # Close quest list
-
-###########################################################################
-### QUEST FOODCART (FINISH)
-
-left left down . . . return # Pushing cart
-up right right down . . . return # Receive thanks.
-
-q . . . escape # Check quest list.
-
-###########################################################################
-### QUEST FARMER SMOKE (FINISH)
-
-left left left # To the cave again.
-left left left up up up # Into the cave again.
-up up . . . return up right right up up right right down down down down left # Pass the maze.
-left . . . return # Talk to now familiar dog Smoke.
-left left right # Make sure that dog is disappeared from the tile.
-right up up up up left left down down left left down down down # Back to the light.
-down down down right right right # To the yard.
-right right right right right right # To the farm.
-
-right right . . . return # Talk to the farmer, receive thanks.
-up right . . . return # Talk to the dog, receive thanks.
-down
-
-q . . . escape # Check quest list.
+left # Back to the yard.
+left left left # To the trader.
+down . . return # Take the quest.
+left left down . . return # Cut the grass.
+down right right up . . return # Finish the quest.
 
 ###########################################################################
 ### BACK HOME
 
-left # Back to the yard.
-down down left left left left down down right right # Shiny!
-right . . . return # Keeper talking.
-up # Portal to the house.
+left down down right right # Shiny!
+right . . return # Keeper talking.
+up . . . # Portal to the house.
+
+###########################################################################
+### LOAD GAME
+
+escape down down return # "Load game"
+down down down return # Savefile #3
+escape # No savefile #3
+up up up return # Load autosave.
+
+###########################################################################
+### SAVE GAME
+
+escape up return # "Save game"
+down down return . return # Savefile #3
+return escape # Do not overwrite...
+return return return # Do overwrite.
+escape up up return # Back to the game.
 
 ###########################################################################
 ### END
 
-up down . . . . . . . . # Just a pause.
+. . . . # Wait...
 escape # To main menu.
 escape # Exit game.
-
