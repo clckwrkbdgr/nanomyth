@@ -30,14 +30,14 @@ class TestManualContent(unittest.TestCase):
 			Terrain(['doorway', 'door']),
 			Terrain(['wall'], passable=False),
 			]]
-		for pos in lab.tiles.keys():
+		for pos, _ in lab.iter_tiles():
 			lab.set_tile(pos, lab_map[pos.y][pos.x])
 
 		lab.add_portal((2, 3), Portal('warehouse', (5, 0)))
 		return lab
 	def create_warehouse_map(self):
 		warehouse = Map((10, 10))
-		warehouse.tiles.clear(Terrain(['floor']))
+		warehouse._tiles.clear(Terrain(['floor']))
 		for y in range(0, 10):
 			warehouse.set_tile((0, y), Terrain(['wall'], passable=False))
 			warehouse.set_tile((9, y), Terrain(['wall'], passable=False))
@@ -46,6 +46,8 @@ class TestManualContent(unittest.TestCase):
 			warehouse.set_tile((x, 9), Terrain(['wall'], passable=False))
 		warehouse.set_tile((5, 0), Terrain(['doorway', 'door']))
 		warehouse.add_portal((5, 0), Portal('lab', (2, 3)))
+
+		warehouse.add_actor((4, 1), NPC('dummy', 'dummy'))
 
 		warehouse.add_trigger((5, 1), Trigger('first glance'))
 
@@ -152,12 +154,15 @@ class TestManualContent(unittest.TestCase):
 		self.game.shift_player(Direction.LEFT) # Bump.
 		self.game.shift_player(Direction.RIGHT)
 		self.game.shift_player(Direction.DOWN)
-		self.assertEqual(self.game.get_world().current_map, 'warehouse')
+		self.assertEqual(self.game.get_world()._current_map, 'warehouse')
 		self.assertEqual(self._player_pos(), (5, 0))
 
 		self.game.shift_player(Direction.DOWN)
 		self.assertEqual(self._player_pos(), (5, 1))
 		self.assertEqual(self.log[-1], "You enter the warehouse.")
+
+		self.game.shift_player(Direction.LEFT)
+		self.assertEqual(self._player_pos(), (5, 1))
 
 		self.game.shift_player(Direction.DOWN)
 		self.assertEqual(self._player_pos(), (5, 2))
@@ -211,7 +216,7 @@ class TestManualContent(unittest.TestCase):
 		self.game.shift_player(Direction.DOWN)
 		self.assertEqual(self._player_pos(), (6, 5))
 		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'wrench')
-		self.assertEqual(self.game.get_world().get_current_map().drop_item(self._player(), self._player().inventory[0]).name, 'wrench')
+		self.assertEqual(self.game.get_world().get_current_map().drop_item(self._player(), next(self._player().iter_inventory())).name, 'wrench')
 		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'wrench')
 		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 4)))
 		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 5)))

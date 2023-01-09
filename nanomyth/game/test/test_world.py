@@ -29,9 +29,9 @@ class TestWorld(unittest.TestCase):
 	def should_get_list_of_active_quests(self):
 		world = self._create_world()
 		self.assertEqual([quest.id for quest in world.get_active_quests()], [])
-		world.get_quest('my_quest').current_state = 'foo'
+		world.get_quest('my_quest')._current_state = 'foo'
 		self.assertEqual([quest.id for quest in world.get_active_quests()], ['my_quest'])
-		world.get_quest('my_quest').current_state = 'end'
+		world.get_quest('my_quest')._current_state = 'end'
 		self.assertEqual([quest.id for quest in world.get_active_quests()], [])
 	def should_portal_to_another_map(self):
 		class Callback:
@@ -41,7 +41,7 @@ class TestWorld(unittest.TestCase):
 
 		world = self._create_world()
 		world.shift_player((0, -1), on_change_map=on_change_map)
-		self.assertEqual(world.current_map, 'desert')
+		self.assertEqual(world._current_map, 'desert')
 		pos, player = next(world.get_current_map().iter_actors())
 		self.assertEqual(pos, Point(1, 2))
 		self.assertEqual(player.direction, Direction.UP)

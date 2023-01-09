@@ -4,7 +4,7 @@ from ..quest import Quest, ExternalQuestAction, HistoryMessage
 class TestQuest(unittest.TestCase):
 	def should_create_quest_not_started_by_default(self):
 		quest = Quest('quest_id', 'title', ['foo', 'bar'], ['a', 'b'])
-		self.assertIsNone(quest.current_state)
+		self.assertIsNone(quest._current_state)
 		self.assertFalse(quest.is_active())
 	def should_perform_custom_calls_on_action(self):
 		class MyCallback:
@@ -50,7 +50,7 @@ class TestQuest(unittest.TestCase):
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(finish_callback.data, [])
-		self.assertEqual(quest.current_state, 'foo')
+		self.assertEqual(quest._current_state, 'foo')
 		self.assertEqual(quest.get_history(), [])
 		self.assertEqual(quest.get_last_history_entry(), None)
 
@@ -60,7 +60,7 @@ class TestQuest(unittest.TestCase):
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [])
 		self.assertEqual(finish_callback.data, [])
-		self.assertEqual(quest.current_state, 'bar')
+		self.assertEqual(quest._current_state, 'bar')
 		self.assertEqual(quest.get_history(), ['Hello world!'])
 		self.assertEqual(quest.get_last_history_entry(), 'Hello world!')
 
@@ -70,12 +70,12 @@ class TestQuest(unittest.TestCase):
 		self.assertEqual(foo_callback.data, [])
 		self.assertEqual(bar_callback.data, [{'value':12345}])
 		self.assertEqual(finish_callback.data, [])
-		self.assertEqual(quest.current_state, 'bar')
+		self.assertEqual(quest._current_state, 'bar')
 		self.assertEqual(quest.get_history(), ['Hello world!', 'Lorem ipsum...'])
 		self.assertEqual(quest.get_last_history_entry(), 'Lorem ipsum...')
 
 		action_a()
-		self.assertEqual(quest.current_state, 'end')
+		self.assertEqual(quest._current_state, 'end')
 		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])
@@ -85,7 +85,7 @@ class TestQuest(unittest.TestCase):
 		self.assertEqual(quest.get_last_history_entry(), 'Lorem ipsum...')
 
 		action_b()
-		self.assertEqual(quest.current_state, 'end')
+		self.assertEqual(quest._current_state, 'end')
 		self.assertEqual(start_callback.data, [{'quest':'quest_id'}])
 		self.assertFalse(quest.is_active())
 		self.assertEqual(foo_callback.data, [])

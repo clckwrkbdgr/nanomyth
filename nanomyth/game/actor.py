@@ -1,5 +1,8 @@
 from enum import Enum
 from ..math import Point
+from .events import Trigger
+from .items import Item
+from ..utils.meta import fieldproperty, typed
 
 class Direction(Enum):
 	UP, DOWN, LEFT, RIGHT = range(4)
@@ -30,23 +33,35 @@ class Direction(Enum):
 
 class NPC:
 	""" Non-player character. """
+	name = fieldproperty('_name', "Character's name.")
+
 	def __init__(self, name, sprite, trigger=None):
 		""" Creates NPC with given name and sprite.
 		Optional trigger can be set. It will be activated when interacted with NPC.
 		Actor's Trigger should have callback with single parameter (actor itself).
 		"""
-		self.name = name
-		self.sprite = sprite
-		self.message = None
-		self.trigger = trigger
+		self._name = name
+		self._sprite = sprite
+		self._trigger = trigger
+	@typed(Trigger)
 	def set_trigger(self, new_trigger):
 		""" Changes trigger which will be actived upon interaction. """
-		self.trigger = new_trigger
+		self._trigger = new_trigger
 	def get_sprite(self):
-		return self.sprite
+		return self._sprite
+	def on_interaction(self, trigger_registry, quest_registry=None): # TODO needs to be typed.
+		if not self._trigger:
+			return
+		from .quest import QuestStateChange # TODO move all kinds of triggers to events module
+		if isinstance(self._trigger, QuestStateChange):
+			self._trigger.activate(quest_registry, trigger_registry)
+		else:
+			self._trigger.activate(trigger_registry, self)
 
 class Player:
 	""" Player character. """
+	name = fieldproperty('_name', "Character's name.")
+
 	def __init__(self, name, default_sprite, directional_sprites=None):
 		""" Creates character with given name and sprite.
 		Default sprite is used for static sprite (no direction).
@@ -54,12 +69,26 @@ class Player:
 		Sprites for missing directions are substituted with default sprite.
 		By default characters faces DOWN (in isometric game this should is direction towards camera).
 		"""
-		self.name = name
-		self.default_sprite = default_sprite
-		self.directional_sprites = directional_sprites or {}
-		self.direction = Direction.DOWN
-		self.inventory = []
+		self._name = name
+		self._default_sprite = default_sprite
+		self._directional_sprites = directional_sprites or {}
+		self._direction = Direction.DOWN
+		self._inventory = []
 	def get_sprite(self):
-		return self.directional_sprites.get(self.direction, self.default_sprite)
+		return self._directional_sprites.get(self._direction, self._default_sprite)
+	@typed(Direction)
 	def face_direction(self, new_direction):
-		self.direction = new_direction
+		""" Turn character into specified direction. """
+		self._direction = new_direction
+	@typed(Item)
+	def add_item(self, item):
+		""" Add item to the inventory. """
+		self._inventory.append(item)
+	@typed(Item)
+	def remove_item(self, item):
+		""" Remove item from the inventory. """
+		del self._inventory[self._inventory.index(item)]
+	def iter_inventory(self):
+		""" Yields all items in the inventory. """
+		for item in self._inventory:
+			yield item

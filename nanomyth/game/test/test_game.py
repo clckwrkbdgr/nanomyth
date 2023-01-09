@@ -33,10 +33,10 @@ class TestGame(unittest.TestCase):
 
 		game = _create_game()
 		game.on_change_map(on_change_map)
-		game.get_world().get_current_map().tiles.set_cell((0, 0), None)
+		game.get_world().get_current_map()._tiles.set_cell((0, 0), None)
 		game.load_world(_create_game().get_world())
 		self.assertEqual(
-				game.get_world().get_current_map().tiles.cell((0, 0)).images,
+				game.get_world().get_current_map().get_tile((0, 0)).get_images(),
 				['floor'],
 				)
 		self.assertEqual(on_change_map.data, [(game.get_world().get_current_map(),)])
@@ -55,32 +55,32 @@ class TestSaveGame(fake_filesystem_unittest.TestCase):
 	def setUp(self):
 		self.setUpPyfakefs(modules_to_reload=[savegame])
 	def assertWorldsEqual(self, actual, expected):
-		self.assertEqual(actual.current_map, expected.current_map)
-		self.assertEqual(set(actual.maps.keys()), set(expected.maps.keys()))
+		self.assertEqual(actual._current_map, expected._current_map)
+		self.assertEqual(set(actual._maps.keys()), set(expected._maps.keys()))
 		self.assertEqual(
-				actual.maps['home'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
-				expected.maps['home'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
+				actual._maps['home']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
+				expected._maps['home']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
 				)
 	def should_save_and_load_game(self):
 		game = _create_game()
 		savefile = savegame.JsonpickleSavefile('/game.sav')
 		self.assertFalse(savefile.exists())
-		self.assertFalse(game.load_from_file(savefile))
+		self.assertFalse(game.load_from_file.__wrapped__(game, savefile))
 
-		expected_world = game.world
+		expected_world = game._world
 
-		self.assertTrue(game.save_to_file(savefile))
+		self.assertTrue(game.save_to_file.__wrapped__(game, savefile))
 		self.assertTrue(savefile.exists())
-		self.assertTrue(game.load_from_file(savefile))
+		self.assertTrue(game.load_from_file.__wrapped__(game, savefile))
 		self.assertWorldsEqual(game.get_world(), expected_world)
 
-		game.get_world().get_map('home').tiles.set_cell((0, 0), Terrain(['desert']))
-		self.assertFalse(game.save_to_file(savefile))
-		self.assertTrue(game.load_from_file(savefile))
+		game.get_world().get_map('home').set_tile((0, 0), Terrain(['desert']))
+		self.assertFalse(game.save_to_file.__wrapped__(game, savefile))
+		self.assertTrue(game.load_from_file.__wrapped__(game, savefile))
 		self.assertWorldsEqual(game.get_world(), expected_world)
 
-		game.get_world().get_map('home').tiles.set_cell((0, 0), Terrain(['desert']))
-		expected_world.get_map('home').tiles.set_cell((0, 0), Terrain(['desert']))
-		self.assertTrue(game.save_to_file(savefile, force=True))
-		self.assertTrue(game.load_from_file(savefile))
+		game.get_world().get_map('home').set_tile((0, 0), Terrain(['desert']))
+		expected_world.get_map('home').set_tile((0, 0), Terrain(['desert']))
+		self.assertTrue(game.save_to_file.__wrapped__(game, savefile, force=True))
+		self.assertTrue(game.load_from_file.__wrapped__(game, savefile))
 		self.assertWorldsEqual(game.get_world(), expected_world)

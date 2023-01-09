@@ -30,32 +30,32 @@ class TestSavefile(fake_filesystem_unittest.TestCase):
 
 		return world
 	def assertWorldsEqual(self, actual, expected):
-		self.assertEqual(actual.current_map, expected.current_map)
-		self.assertEqual(set(actual.maps.keys()), set(expected.maps.keys()))
+		self.assertEqual(actual._current_map, expected._current_map)
+		self.assertEqual(set(actual._maps.keys()), set(expected._maps.keys()))
 		self.assertEqual(
-				actual.maps['foo'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
-				expected.maps['foo'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
+				actual._maps['foo']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
+				expected._maps['foo']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
 				)
 		self.assertEqual(
-				[(_.pos, _.obj.entrance_pos, _.obj.dest_map) for _ in actual.maps['foo'].portals],
-				[(_.pos, _.obj.entrance_pos, _.obj.dest_map) for _ in expected.maps['foo'].portals],
+				[(_.pos, _.obj._entrance_pos, _.obj._dest_map) for _ in actual._maps['foo']._portals],
+				[(_.pos, _.obj._entrance_pos, _.obj._dest_map) for _ in expected._maps['foo']._portals],
 				)
 		self.assertEqual(
-				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in actual.maps['foo'].actors],
-				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in expected.maps['foo'].actors],
+				[(_.pos, _.actor._default_sprite, _.actor._direction, _.actor._directional_sprites) for _ in actual._maps['foo']._actors],
+				[(_.pos, _.actor._default_sprite, _.actor._direction, _.actor._directional_sprites) for _ in expected._maps['foo']._actors],
 				)
 
 		self.assertEqual(
-				actual.maps['bar'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
-				expected.maps['bar'].tiles.tostring(transformer=lambda _:str([_.images, _.passable])),
+				actual._maps['bar']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
+				expected._maps['bar']._tiles.tostring(transformer=lambda _:str([_.get_images(), _.passable])),
 				)
 		self.assertEqual(
-				[(_.pos, _.entrance_pos, _.dest_map) for _ in actual.maps['bar'].portals],
-				[(_.pos, _.entrance_pos, _.dest_map) for _ in expected.maps['bar'].portals],
+				[(_.pos, _._entrance_pos, _._dest_map) for _ in actual._maps['bar']._portals],
+				[(_.pos, _._entrance_pos, _._dest_map) for _ in expected._maps['bar']._portals],
 				)
 		self.assertEqual(
-				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in actual.maps['bar'].actors],
-				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in expected.maps['bar'].actors],
+				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in actual._maps['bar']._actors],
+				[(_.pos, _.actor.default_sprite, _.actor.direction, _.actor.directional_sprites) for _ in expected._maps['bar']._actors],
 				)
 
 	def should_save_and_load_using_jsonpickle(self):

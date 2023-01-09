@@ -8,9 +8,9 @@ class Savefile:
 	def __init__(self, filename):
 		""" Savefile always operates on a real file.
 		"""
-		self.filename = Path(filename)
+		self._filename = Path(filename)
 	def exists(self):
-		return self.filename.exists()
+		return self._filename.exists()
 	def save(self, world): # pragma: no cover
 		""" Override this to store world in the file. """
 		raise NotImplementedError
@@ -25,12 +25,12 @@ class PickleSavefile(Savefile):
 	def save(self, world):
 		import pickle
 		savedata = pickle.dumps(world)
-		self.filename.write_bytes(savedata)
+		self._filename.write_bytes(savedata)
 	def load(self):
-		if not self.filename.exists():
+		if not self._filename.exists():
 			return None
 		import pickle
-		savedata = self.filename.read_bytes()
+		savedata = self._filename.read_bytes()
 		return pickle.loads(savedata)
 
 class JsonpickleSavefile(Savefile):
@@ -40,10 +40,10 @@ class JsonpickleSavefile(Savefile):
 	def save(self, world):
 		import json, jsonpickle
 		savedata = jsonpickle.encode(world, keys=True, make_refs=False)
-		self.filename.write_text(json.dumps(json.loads(savedata), indent=1, sort_keys=True))
+		self._filename.write_text(json.dumps(json.loads(savedata), indent=1, sort_keys=True))
 	def load(self):
-		if not self.filename.exists():
+		if not self._filename.exists():
 			return None
 		import json, jsonpickle
-		savedata = self.filename.read_text()
+		savedata = self._filename.read_text()
 		return jsonpickle.decode(savedata, keys=True)

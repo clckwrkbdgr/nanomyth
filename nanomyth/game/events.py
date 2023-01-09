@@ -6,11 +6,11 @@ class Trigger:
 		""" Creates trigger with given name,
 		which will be executed when trigger is activated.
 		"""
-		self.trigger_name = trigger_name
-	def activate(self, trigger_registry, *params):
+		self._trigger_name = trigger_name
+	def activate(self, trigger_registry, *params): # TODO not typed.
 		""" Activates trigger by name using given trigger registry.
 		Registry should be a callable that accepts trigger name and returns actual callback.
 		"""
-		if self.trigger_name:
-			trigger_registry(self.trigger_name)(*params)
+		if self._trigger_name:
+			trigger_registry(self._trigger_name)(*params)
 
