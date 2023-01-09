@@ -54,9 +54,27 @@ class fieldproperty:
 			return self
 		return getattr(obj, self.field_name)
 
+def _is_instance(value, type_s):
+	""" Slightly adjuest to accept None in tuple of types
+	as indication that argument is optional and can have None as value.
+	"""
+	can_none = False
+	if isinstance(type_s, tuple) and None in type_s:
+		type_s = tuple(t for t in type_s if t is not None)
+		can_none = True
+	if can_none and value is None:
+		return True
+	return isinstance(value, type_s)
+
+def _type_name(type_s):
+	if isinstance(type_s, tuple):
+		return ', '.join((t.__name__ if t is not None else repr(None)) for t in type_s)
+	return type_s.__name__
+
 def typed(*arg_types, **kwarg_types):
 	""" Adds simple type checking for arguments (both positional and keyword ones).
-	Raises TypeError if arguments are not instances of the corresponding type.
+	Raises TypeError if arguments are not instances of the corresponding type (or tuple of types).
+	If None is present in a tuple of types, an argument is considered optional (accepts None as value).
 	Types are matched in the order of specification (or by keywords for keyword ones).
 	If there are less types specified than there are arguments, remaining arguments are skipped (no type check).
 	The same goes for skipped keyword arguments.
@@ -64,7 +82,7 @@ def typed(*arg_types, **kwarg_types):
 	Example:
 
 	>>> class C:
-	>>>   @typed(str, value=list)
+	>>>   @typed((str, None), value=list)
 	>>>   def func(self, str_arg, value=None):
 	>>>      ...
 	"""
@@ -75,13 +93,13 @@ def typed(*arg_types, **kwarg_types):
 			if next(iter(inspect.signature(f).parameters), None) == 'self': # Hack: detect obj method, first argument is self.
 				args_to_check = args_to_check[1:]
 			for index, (arg, arg_type) in enumerate(zip(args_to_check, arg_types)):
-				if not isinstance(arg, arg_type):
-					raise TypeError('Expected {0} for arg #{1}, got: {2}'.format(arg_type.__name__, index, type(arg).__name__))
+				if not _is_instance(arg, arg_type):
+					raise TypeError('Expected {0} for arg #{1}, got: {2}'.format(_type_name(arg_type), index, type(arg).__name__))
 			for keyword in kwargs.keys():
 				if keyword not in kwarg_types:
 					continue
-				if not isinstance(kwargs[keyword], kwarg_types[keyword]):
-					raise TypeError('Expected {0} for arg {1}, got: {2}'.format(kwarg_types[keyword].__name__, repr(keyword), type(kwargs[keyword]).__name__))
+				if not _is_instance(kwargs[keyword], kwarg_types[keyword]):
+					raise TypeError('Expected {0} for arg {1}, got: {2}'.format(_type_name(kwarg_types[keyword]), repr(keyword), type(kwargs[keyword]).__name__))
 			return f(*args, **kwargs)
 		return _actual
 	return _wrapper
