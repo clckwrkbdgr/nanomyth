@@ -58,12 +58,10 @@ def _is_instance(value, type_s):
 	""" Slightly adjuest to accept None in tuple of types
 	as indication that argument is optional and can have None as value.
 	"""
-	can_none = False
-	if isinstance(type_s, tuple) and None in type_s:
-		type_s = tuple(t for t in type_s if t is not None)
-		can_none = True
-	if can_none and value is None:
-		return True
+	if isinstance(type_s, tuple):
+		return any(_is_instance(value, t) for t in type_s)
+	if type_s is None:
+		return value is None
 	return isinstance(value, type_s)
 
 def _type_name(type_s):

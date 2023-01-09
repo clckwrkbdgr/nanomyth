@@ -30,6 +30,13 @@ class SuperDelegator:
 	def __init__(self):
 		self.submember = Delegator()
 
+class MockInheritedClass(MockOriginalClass):
+	pass
+
+@meta.typed(MockOriginalClass)
+def typed_free_function(heir):
+	pass
+
 class TestDelegatedMethods(unittest.TestCase):
 	def should_adjust_docstsring_for_delegated_methods(self):
 		self.assertEqual(inspect.getdoc(Delegator.delegate_foo), 'Description of foo. \n\nNote: See MockOriginalClass.foo for details.')
@@ -86,3 +93,6 @@ class TestTyping(unittest.TestCase):
 		self.assertEqual(str(e.exception), 'Expected dict, None for arg {0}, got: str'.format(repr('second')))
 
 		obj.typed_function('ok', 1, None, first=['list'], second={'dict':None}, third='should not raise because this argument is not checked')
+	def should_consider_class_inherintance_when_doing_type_check(self):
+		typed_free_function(MockOriginalClass())
+		typed_free_function(MockInheritedClass())
