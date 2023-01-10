@@ -4,12 +4,13 @@ from ..map import Map, Terrain, Trigger
 from ..items import Item
 from ..actor import Player, Direction, NPC
 from ..quest import QuestStateChange
-from ...math import Point
+from ...math import Point, Size
 
 class TestMap(unittest.TestCase):
 	def should_create_map_of_empty_tiles(self):
 		level_map = Map((5, 5))
 		self.assertEqual(level_map.get_tile((0, 0)).get_images(), [])
+		self.assertEqual(level_map.get_size(), Size(5, 5))
 	def should_access_tiles(self):
 		level_map = Map((5, 5))
 		level_map.set_tile((1, 0), Terrain(['grass']))
@@ -59,7 +60,13 @@ class TestMap(unittest.TestCase):
 		self.assertIsNone(level_map.find_actor('Wanderer'))
 	def should_shift_player(self):
 		level_map = Map((5, 5))
-		level_map.add_actor((2, 2), Player('Wanderer', 'rogue'))
+		player = Player('Wanderer', 'rogue', directional_sprites={
+			Direction.UP: 'rogue_up',
+			Direction.DOWN: 'rogue_down',
+			Direction.LEFT: 'rogue_left',
+			Direction.RIGHT: 'rogue_right',
+			})
+		level_map.add_actor((2, 2), player)
 
 		level_map.shift_player((0, -1))
 		self.assertEqual(next(pos for pos, _ in level_map.iter_actors()), Point(2, 1))

@@ -151,9 +151,13 @@ class TestManualContent(unittest.TestCase):
 
 		# Exit lab.
 		self.game.shift_player(Direction.UP) # Bump.
+		self.assertEqual(self._player().get_sprite(), 'player_up')
 		self.game.shift_player(Direction.LEFT) # Bump.
+		self.assertEqual(self._player().get_sprite(), 'player_left')
 		self.game.shift_player(Direction.RIGHT)
+		self.assertEqual(self._player().get_sprite(), 'player_right')
 		self.game.shift_player(Direction.DOWN)
+		self.assertEqual(self._player().get_sprite(), 'player_down')
 		self.assertEqual(self.game.get_world()._current_map, 'warehouse')
 		self.assertEqual(self._player_pos(), (5, 0))
 

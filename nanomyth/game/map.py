@@ -72,6 +72,8 @@ class Map:
 		self._items = []
 		self._portals = []
 		self._triggers = []
+	def get_size(self):
+		return self._tiles.size
 	@typed((Point, tuple, list), Terrain)
 	def set_tile(self, pos, tile):
 		self._tiles.set_cell(pos, tile)
@@ -176,7 +178,7 @@ class Map:
 		else:
 			direction = actor.Direction.from_shift(shift)
 		new_pos = player.pos + shift
-		player.actor.direction = direction
+		player.actor.face_direction(direction)
 		if not self._tiles.valid(new_pos):
 			return
 		if not self._tiles.cell(new_pos).passable:

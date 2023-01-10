@@ -61,6 +61,7 @@ class NPC:
 class Player:
 	""" Player character. """
 	name = fieldproperty('_name', "Character's name.")
+	direction = fieldproperty('_direction', "Current direction character is facing.")
 
 	def __init__(self, name, default_sprite, directional_sprites=None):
 		""" Creates character with given name and sprite.
