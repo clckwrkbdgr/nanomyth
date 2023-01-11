@@ -37,6 +37,10 @@ class MockInheritedClass(MockOriginalClass):
 def typed_free_function(heir):
 	pass
 
+@meta.typed(any, str)
+def any_typed_function(first, second):
+	pass
+
 class TestDelegatedMethods(unittest.TestCase):
 	def should_adjust_docstsring_for_delegated_methods(self):
 		self.assertEqual(inspect.getdoc(Delegator.delegate_foo), 'Description of foo. \n\nNote: See MockOriginalClass.foo for details.')
@@ -96,3 +100,9 @@ class TestTyping(unittest.TestCase):
 	def should_consider_class_inherintance_when_doing_type_check(self):
 		typed_free_function(MockOriginalClass())
 		typed_free_function(MockInheritedClass())
+	def should_pass_any_type(self):
+		any_typed_function(1, 'str')
+		any_typed_function('str', 'str')
+		any_typed_function(MockOriginalClass(), 'str')
+		with self.assertRaises(TypeError) as e:
+			any_typed_function(MockOriginalClass(), 1)

@@ -55,13 +55,16 @@ class fieldproperty:
 		return getattr(obj, self.field_name)
 
 def _is_instance(value, type_s):
-	""" Slightly adjuest to accept None in tuple of types
+	""" Slightly adjusted to accept None in tuple of types
 	as indication that argument is optional and can have None as value.
+	Also `any` is any type.
 	"""
 	if isinstance(type_s, tuple):
 		return any(_is_instance(value, t) for t in type_s)
 	if type_s is None:
 		return value is None
+	if type_s is any:
+		return True
 	return isinstance(value, type_s)
 
 def _type_name(type_s):
@@ -72,7 +75,8 @@ def _type_name(type_s):
 def typed(*arg_types, **kwarg_types):
 	""" Adds simple type checking for arguments (both positional and keyword ones).
 	Raises TypeError if arguments are not instances of the corresponding type (or tuple of types).
-	If None is present in a tuple of types, an argument is considered optional (accepts None as value).
+	If `None` is present in a tuple of types, an argument is considered optional (accepts `None` as value).
+	If `any` is specified as a type, any type is accepted.
 	Types are matched in the order of specification (or by keywords for keyword ones).
 	If there are less types specified than there are arguments, remaining arguments are skipped (no type check).
 	The same goes for skipped keyword arguments.
@@ -80,8 +84,8 @@ def typed(*arg_types, **kwarg_types):
 	Example:
 
 	>>> class C:
-	>>>   @typed((str, None), value=list)
-	>>>   def func(self, str_arg, value=None):
+	>>>   @typed((str, None), any, value=list)
+	>>>   def func(self, str_arg, any_arg, value=None):
 	>>>      ...
 	"""
 	def _wrapper(f):
