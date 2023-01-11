@@ -3,7 +3,9 @@
 from pathlib import Path
 from ...utils.graphml import Graph
 from ...game.quest import Quest, ExternalQuestAction, HistoryMessage
+from ...utils.meta import typed
 
+@typed((str, Path))
 def load_graphml_quest(filename):
 	""" Loads Quest object from GraphML file and returns prepared quest.
 

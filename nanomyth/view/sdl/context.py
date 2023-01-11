@@ -9,6 +9,9 @@ from ...utils.meta import Delegate
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
 from ...math import Point, Size, Rect
+from ...utils.meta import typed, fieldproperty
+from ._base import Engine
+from .widget import Widget, Button
 
 class Context:
 	""" Basic game context.
@@ -20,6 +23,8 @@ class Context:
 		""" Raise this when context is finished. """
 		pass
 
+	transparent = fieldproperty('_transparent', 'True if context if transparent and underlying contexts may be visible.')
+
 	def __init__(self, transparent=False):
 		""" Creates empty context.
 		Widgets can be added later via add_widget.
@@ -27,25 +32,27 @@ class Context:
 		Setting transparent = True makes it draw underlying context (if any).
 		Useful for context that does not cover the whole screen, like message boxes.
 		"""
-		self.transparent = transparent
-		self.widgets = []
-		self.key_bindings = {}
-		self.pending_context = None
-	def set_pending_context(self, new_context):
+		self._transparent = transparent
+		self._widgets = []
+		self._key_bindings = {}
+		self._pending_context = None
+	def set_pending_context(self, new_context): # TODO cannot be typed because it's its own class, maybe shouldn't do this here?
 		""" Sets pending context.
 		It will be swtiched immediately after controls are back to this context.
 		See SDLEngine.run() for details.
 		"""
-		self.pending_context = new_context
+		self._pending_context = new_context
+	@typed((Point, tuple, list), Widget)
 	def add_widget(self, topleft, widget):
 		""" Adds new widget. """
-		self.widgets.append(WidgetAtPos(topleft, widget))
-	def bind_key(self, key_name, action):
+		self._widgets.append(WidgetAtPos(topleft, widget))
+	def bind_key(self, key_name, action): # TODO callable typing
 		""" Registers custom handler for key name.
 		Actions should be a function with no arguments
 		that returns new context or None, or raises an Exception.
 		"""
-		self.key_bindings[key_name] = action
+		self._key_bindings[key_name] = action
+	@typed(str)
 	def update(self, control_name): # pragma: no cover
 		""" Processes control events.
 		`control_name` is the name of a pressed key.
@@ -53,9 +60,9 @@ class Context:
 		Default implementation does nothing except processing custom key bindings.
 		Custom implementations should call this basic implementation if they allow custom key bindings.
 		"""
-		if control_name in self.key_bindings:
-			return self.key_bindings[control_name]()
-	def perform_action(self, action):
+		if control_name in self._key_bindings:
+			return self._key_bindings[control_name]()
+	def perform_action(self, action): # TODO callable typing.
 		""" Programmatically perform action.
 		Action should be an action-like object (see Menu docstring).
 		"""
@@ -69,7 +76,8 @@ class Context:
 		""" Override this function to change widgets to draw.
 		Widgets are drawn in the given order, from bottom to top.
 		"""
-		return self.widgets
+		return self._widgets
+	@typed(Engine)
 	def draw(self, engine):
 		""" Draws all widgets. """
 		for _ in self._get_widgets_to_draw(engine):
@@ -85,16 +93,17 @@ class Game(Context):
 		""" Creates visual context for the game object.
 		"""
 		super().__init__()
-		self.map_widget = LevelMap(None)
-		self.add_widget((0, 0), self.map_widget)
-		self.game = game
-		self.game.on_change_map(self._update_map_widget)
-		self._update_map_widget(self.game.get_world().get_current_map())
+		self._map_widget = LevelMap(None)
+		self.add_widget((0, 0), self._map_widget)
+		self._game = game
+		self._game.on_change_map(self._update_map_widget)
+		self._update_map_widget(self._game.get_world().get_current_map())
 	def _update_map_widget(self, current_map):
-		self.map_widget.set_map(current_map)
+		self._map_widget.set_map(current_map)
 	def get_game(self):
 		""" Returns game object. """
-		return self.game
+		return self._game
+	@typed(str)
 	def update(self, control_name):
 		""" Controls player character: <Up>, <Down>, <Left>, <Right>
 		<ESC>: Exit to the previous context.
@@ -102,13 +111,13 @@ class Game(Context):
 		if control_name == 'escape':
 			raise self.Finished()
 		elif control_name == 'up':
-			self.game.shift_player(Direction.UP)
+			self._game.shift_player(Direction.UP)
 		elif control_name == 'down':
-			self.game.shift_player(Direction.DOWN)
+			self._game.shift_player(Direction.DOWN)
 		elif control_name == 'left':
-			self.game.shift_player(Direction.LEFT)
+			self._game.shift_player(Direction.LEFT)
 		elif control_name == 'right':
-			self.game.shift_player(Direction.RIGHT)
+			self._game.shift_player(Direction.RIGHT)
 		return super().update(control_name)
 
 class Menu(Context):
@@ -123,9 +132,9 @@ class Menu(Context):
 
 	As this class is a Context, any other widgets (e.g. background image or title text) can be added via usual .add_widget()
 	"""
-	set_button_spacing = Delegate('items', ButtonGroup.set_spacing)
-	add_menu_item = Delegate('items', ButtonGroup.add_button)
-	select_item = Delegate('items', ButtonGroup.select)
+	set_button_spacing = Delegate('_items', ButtonGroup.set_spacing)
+	add_menu_item = Delegate('_items', ButtonGroup.add_button)
+	select_item = Delegate('_items', ButtonGroup.select)
 
 	def __init__(self, on_escape=None):
 		""" Creates menu context.
@@ -136,23 +145,25 @@ class Menu(Context):
 		Default value is raise Context.Finished
 		"""
 		super().__init__()
-		self.items = ButtonGroup()
-		self.background = None
-		self.caption = None
-		self.on_escape = on_escape or self.Finished
+		self._items = ButtonGroup()
+		self._background = None
+		self._caption = None
+		self._on_escape = on_escape or self.Finished
 		self._button_group_topleft = Point(0, 0)
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
-		if self.background:
-			widgets.append(WidgetAtPos((0, 0), self.background))
-		widgets.append(WidgetAtPos(self._button_group_topleft, self.items))
-		if self.caption:
-			widgets.append(self.caption)
-		widgets.extend(self.widgets)
+		if self._background:
+			widgets.append(WidgetAtPos((0, 0), self._background))
+		widgets.append(WidgetAtPos(self._button_group_topleft, self._items))
+		if self._caption:
+			widgets.append(self._caption)
+		widgets.extend(self._widgets)
 		return widgets
+	@typed((Point, tuple, list), Widget)
 	def set_caption(self, pos, caption_widget):
 		""" Adds caption widget. """
-		self.caption = WidgetAtPos(Point(pos), caption_widget)
+		self._caption = WidgetAtPos(Point(pos), caption_widget)
+	@typed((Image, str))
 	def set_background(self, image):
 		""" Set background image.
 		Can be either some Image widget, or name of the image in global image list -
@@ -160,12 +171,14 @@ class Menu(Context):
 		"""
 		if isinstance(image, str):
 			image = Image(image)
-		self.background = image
+		self._background = image
+	@typed((Point, tuple, list))
 	def set_button_group_topleft(self, pos):
 		""" Sets topleft position of menu buttons group.
 		Default is (0, 0)
 		"""
 		self._button_group_topleft = Point(pos)
+	@typed(str)
 	def update(self, control_name):
 		""" Controls:
 		- <Up>: select previous item.
@@ -174,14 +187,14 @@ class Menu(Context):
 		- <ESC>: optional "escape" action, if specified (see on_escape).
 		"""
 		if control_name == 'escape':
-			if self.on_escape:
-				return self.perform_action(self.on_escape)
+			if self._on_escape:
+				return self.perform_action(self._on_escape)
 		elif control_name == 'up':
-			self.items.select_prev()
+			self._items.select_prev()
 		elif control_name == 'down':
-			self.items.select_next()
+			self._items.select_next()
 		elif control_name == 'return':
-			selected_action = self.items.get_selected_action()
+			selected_action = self._items.get_selected_action()
 			if selected_action:
 				return self.perform_action(selected_action)
 		return super().update(control_name)
@@ -189,7 +202,7 @@ class Menu(Context):
 class MessageBox(Context):
 	""" Displays message and requires answer or confirmation.
 	"""
-	add_button = Delegate('panel', Compound.add_widget)
+	add_button = Delegate('_panel', Compound.add_widget)
 	def __init__(self, text, font, panel_widget, engine, text_shift=None, on_ok=None, on_cancel=None):
 		""" Creates message box with given text and font (required).
 		Panel widget will be draw under the text
@@ -202,11 +215,11 @@ class MessageBox(Context):
 		They will be called upon corresponding user reaction.
 		"""
 		super().__init__(transparent=True)
-		self.on_ok = on_ok
-		self.on_cancel = on_cancel
+		self._on_ok = on_ok
+		self._on_cancel = on_cancel
 
-		self.panel = Compound()
-		self.panel.add_widget(panel_widget)
+		self._panel = Compound()
+		self._panel.add_widget(panel_widget)
 
 		_panel_size = panel_widget.get_size(engine)
 		window_size = engine.get_window_size()
@@ -214,22 +227,23 @@ class MessageBox(Context):
 				(window_size.width - _panel_size.width) // 2,
 				(window_size.height - _panel_size.height) // 2,
 				)
-		self.add_widget(_panel_topleft, self.panel)
+		self.add_widget(_panel_topleft, self._panel)
 
-		self.panel.add_widget(panel_widget)
-		self.panel.add_widget(TextLine(font, text), (text_shift or Point(0, 0)))
+		self._panel.add_widget(panel_widget)
+		self._panel.add_widget(TextLine(font, text), (text_shift or Point(0, 0)))
+	@typed(str)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>: OK
 		- <Escape>: Cancel
 		"""
 		if control_name == 'escape':
-			if self.on_cancel:
-				self.on_cancel()
+			if self._on_cancel:
+				self._on_cancel()
 			raise self.Finished()
 		elif control_name in ['space', 'return']:
-			if self.on_ok:
-				self.on_ok()
+			if self._on_ok:
+				self._on_ok()
 			raise self.Finished()
 		return super().update(control_name)
 
@@ -248,6 +262,7 @@ class ScrollableContext(Context):
 		where scroll buttons will be added.
 		"""
 		raise NotImplementedError()
+	@typed((Point, tuple, list), Button)
 	def set_scroll_up_button(self, pos, button_widget):
 		""" Adds button for scrolling up.
 		It should be of Button class so it can be highlighted when scrolling up is available
@@ -258,6 +273,7 @@ class ScrollableContext(Context):
 		self._button_up = button_widget
 		self._button_up.make_highlighted(self.can_scroll_up())
 		self._get_panel_widget().add_widget(button_widget, pos)
+	@typed((Point, tuple, list), Button)
 	def set_scroll_down_button(self, pos, button_widget):
 		""" Adds button for scrolling down.
 		It should be of Button class so it can be highlighted when scrolling down is available
@@ -267,12 +283,13 @@ class ScrollableContext(Context):
 		"""
 		self._button_down = button_widget
 		self._button_down.make_highlighted(self.can_scroll_down())
-		self.panel.add_widget(button_widget, pos)
+		self._get_panel_widget().add_widget(button_widget, pos)
 	def _update_scroll_buttons(self):
 		if self._button_up:
 			self._button_up.make_highlighted(self.can_scroll_up())
 		if self._button_down:
 			self._button_down.make_highlighted(self.can_scroll_down())
+	@typed(str)
 	def update(self, control_name):
 		""" Updates highlighted status for scroll buttons. """
 		self._update_scroll_buttons()
@@ -283,23 +300,24 @@ class TextScreen(ScrollableContext):
 	"""
 	can_scroll_up = Delegate('_text_widget', MultilineScrollableText.can_scroll_up)
 	can_scroll_down = Delegate('_text_widget', MultilineScrollableText.can_scroll_down)
-	add_button = Delegate('panel', Compound.add_widget)
+	add_button = Delegate('_panel', Compound.add_widget)
 	def __init__(self, text, font, panel_widget, engine, text_rect=None):
 		""" Creates text screen with given text and font (required).
 		Panel widget will be draw under the text and should fit the whole screen.
 		Text will fit into given text_rect with automatic wrapping and automatic scrolling.
 		"""
 		super().__init__(transparent=False)
-		self.panel = Compound()
-		self.panel.add_widget(panel_widget)
-		self.add_widget((0, 0), self.panel)
+		self._panel = Compound()
+		self._panel.add_widget(panel_widget)
+		self.add_widget((0, 0), self._panel)
 
 		window_size = engine.get_window_size()
-		self.text_rect = Rect(text_rect or (0, 0, window_size.width, window_size.height))
-		self._text_widget = MultilineScrollableText(font, self.text_rect.size, text)
-		self.panel.add_widget(self._text_widget, self.text_rect.topleft)
+		self._text_rect = Rect(text_rect or (0, 0, window_size.width, window_size.height))
+		self._text_widget = MultilineScrollableText(font, self._text_rect.size, text)
+		self._panel.add_widget(self._text_widget, self._text_rect.topleft)
 	def _get_panel_widget(self):
-		return self.panel
+		return self._panel
+	@typed(str)
 	def update(self, control_name):
 		""" Controls:
 		- <Enter>, <Space>, <Escape>: close dialog.
@@ -318,9 +336,9 @@ class ItemList(ScrollableContext):
 	""" Displays list of items with option to scroll up/down.
 	Each item is a standalone widget of any type.
 	"""
-	can_scroll_up = Delegate('scroller', Scroller.can_scroll_up)
-	can_scroll_down = Delegate('scroller', Scroller.can_scroll_down)
-	add_button = Delegate('panel', Compound.add_widget)
+	can_scroll_up = Delegate('_scroller', Scroller.can_scroll_up)
+	can_scroll_down = Delegate('_scroller', Scroller.can_scroll_down)
+	add_button = Delegate('_panel', Compound.add_widget)
 	def __init__(self, engine, background_widget, items, caption_widget=None, view_rect=None):
 		""" Creates item list screen.
 		Requires background widget (of any type) and list of items.
@@ -333,51 +351,53 @@ class ItemList(ScrollableContext):
 		Optional caption widget will be placed at the top of the list (always shown).
 		"""
 		super().__init__(transparent=False)
-		self.panel = Compound()
-		self.panel.add_widget(background_widget)
+		self._panel = Compound()
+		self._panel.add_widget(background_widget)
 
 		window_size = engine.get_window_size()
-		self.view_rect = Rect(view_rect or (0, 0, window_size.width, window_size.height))
+		self._view_rect = Rect(view_rect or (0, 0, window_size.width, window_size.height))
 		self._caption_widget = caption_widget
 		self._caption_height = self._caption_widget.get_size(engine).height if self._caption_widget else 0
 
-		self.items = SelectionList(items, on_selection=lambda item, value: item.make_highlighted(value))
-		self.items.select(self.items.get_next_selected_index())
-		self.item_heights = [item.get_size(engine).height for item in self.items]
+		self._items = SelectionList(items, on_selection=lambda item, value: item.make_highlighted(value))
+		self._items.select(self._items.get_next_selected_index())
+		self._item_heights = [item.get_size(engine).height for item in self._items]
 
-		self.scroller = Scroller(
-				total_items=len(self.items),
-				viewport_height=self.view_rect.height,
-				item_height=lambda i: self.item_heights[i],
+		self._scroller = Scroller(
+				total_items=len(self._items),
+				viewport_height=self._view_rect.height,
+				item_height=lambda i: self._item_heights[i],
 				)
 
-		self.add_widget((0, 0), self.panel)
+		self.add_widget((0, 0), self._panel)
 	def _get_panel_widget(self):
-		return self.panel
+		return self._panel
+	@typed(int)
 	def select_item(self, selected_index):
 		""" Selects item by index.
 		Highlights corresponding widget.
 		"""
-		self.items.select(selected_index)
-		self.scroller.ensure_item_visible(selected_index)
+		self._items.select(selected_index)
+		self._scroller.ensure_item_visible(selected_index)
 	def _get_widgets_to_draw(self, engine):
 		widgets = []
-		widgets.extend(self.widgets)
+		widgets.extend(self._widgets)
 
-		top_pos = self.view_rect.top
+		top_pos = self._view_rect.top
 		if self._caption_widget:
 			widgets.append(WidgetAtPos((
-				self.view_rect.left,
+				self._view_rect.left,
 				top_pos,
 				), self._caption_widget))
 			top_pos += self._caption_height
-		for item_index in self.scroller.get_visible_range():
+		for item_index in self._scroller.get_visible_range():
 			widgets.append(WidgetAtPos((
-				self.view_rect.left,
+				self._view_rect.left,
 				top_pos,
-				), self.items[item_index]))
-			top_pos += self.item_heights[item_index]
+				), self._items[item_index]))
+			top_pos += self._item_heights[item_index]
 		return widgets
+	@typed(str)
 	def update(self, control_name):
 		""" Controls:
 		- <Escape>: close dialog.
@@ -388,11 +408,11 @@ class ItemList(ScrollableContext):
 		if control_name in ['escape']:
 			raise self.Finished()
 		elif control_name == 'up':
-			self.select_item(self.items.get_prev_selected_index())
+			self.select_item(self._items.get_prev_selected_index())
 		elif control_name == 'down':
-			self.select_item(self.items.get_next_selected_index())
+			self.select_item(self._items.get_next_selected_index())
 		elif control_name == 'return':
-			if self.items.has_selection():
-				action = self.items.get_selected_item().action
+			if self._items.has_selection():
+				action = self._items.get_selected_item().get_action()
 				return self.perform_action(action)
 		return super().update(control_name)

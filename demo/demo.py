@@ -98,7 +98,7 @@ quest.on_finish('update_active_quest_count')
 game.get_world().add_quest(quest)
 
 main_game = nanomyth.view.sdl.context.Game(game)
-main_game.map_widget.get_size(engine) # TODO not needed actually, just for coverage.
+main_game._map_widget.get_size(engine) # TODO not needed actually, just for coverage.
 
 
 game.get_world().get_current_map().add_actor((1+2, 1+2), Player('Wanderer', 'rogue', directional_sprites={
@@ -157,8 +157,9 @@ main_ui_panel_pos = Point(
 def update_ui_text():
 	lines = ['[Q]uests']
 	player = game.get_world().get_current_map().find_actor('Wanderer')
-	if player.inventory:
-		lines.append('[I]nv:{0}'.format(len(player.inventory)))
+	items = len(list(player.iter_inventory()))
+	if items:
+		lines.append('[I]nv:{0}'.format(items))
 	else:
 		lines.append('[I]nv')
 	main_ui_text.set_text('\n'.join(lines))
@@ -192,8 +193,8 @@ def show_inventory(item_action=None):
 	items = [ui.ItemListRow(
 		'{0}'.format(item.name),
 		item_action and (lambda _item=item: item_action(_item)),
-		item.sprite,
-		) for item in player.inventory]
+		item.get_sprite(),
+		) for item in player.iter_inventory()]
 	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')
 main_game.bind_key('i', show_inventory)
 

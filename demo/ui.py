@@ -245,7 +245,7 @@ def fill_main_menu(engine, resources, main_menu, main_game_context, save_functio
 	main_menu.add_menu_item(button.make('Save', '> Save', save_function))
 	main_menu.add_menu_item(button.make('Load', '> Load', load_function))
 	main_menu.add_menu_item(button.make('Exit', '> Exit', nanomyth.view.sdl.context.Context.Finished))
-	main_menu.items.get_size(engine) # TODO not needed actually, just for coverage.
+	main_menu._items.get_size(engine) # TODO not needed actually, just for coverage.
 
 	main_menu.select_item(0)
 	return main_menu_info

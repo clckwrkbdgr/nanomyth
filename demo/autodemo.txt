@@ -29,7 +29,7 @@ down left down # Back to the start.
 right down down # Exit to the desert.
 down down right right # To the farm.
 right right # Talk to the farmer.
-down down down down . up up up up # Scroll text.
+. . down down down down . up up up up # Scroll text.
 return # Take the quest.
 
 ###########################################################################

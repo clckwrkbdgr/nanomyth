@@ -6,9 +6,11 @@ import pygame
 from ...math import Point, Rect
 from .image import ImageRegion
 from .. import utils
+from ...utils.meta import typed
 
 class AbstractFont:
 	""" Abstract base for every Font class. """
+	@typed(str)
 	def get_letter_image(self, letter): # pragma: no cover
 		""" Should return sub-image for given letter. """
 		raise NotImplementedError()
@@ -21,19 +23,20 @@ class TilesetFont(AbstractFont):
 		Letter mapping is a string of letters that should match unwrapped grid (row by row) starting from the topleft corner.
 		Letter mapping could be shorter than overall size of the font tileset grid - unused tiles will be ignored.
 		"""
-		self.tileset = tileset
+		self._tileset = tileset
 		tile_grid = itertools.chain.from_iterable((Point(x, y) for x in range(tileset.size.width)) for y in range(tileset.size.height))
-		self.letter_mapping = dict(zip(letter_mapping, tile_grid))
+		self._letter_mapping = dict(zip(letter_mapping, tile_grid))
 
 class FixedWidthFont(TilesetFont):
 	""" Pixel font with fixed width (monospace) glyphs.
 
 	Should be loaded from font grid tileset where every letter has the same size.
 	"""
+	@typed(str)
 	def get_letter_image(self, letter):
 		""" Returns sub-image for given letter. """
 		assert len(letter) == 1
-		return self.tileset.get_tile(self.letter_mapping[letter])
+		return self._tileset.get_tile(self._letter_mapping[letter])
 
 class ProportionalFont(TilesetFont):
 	""" Pixel font with proportional glyphs.
@@ -51,13 +54,14 @@ class ProportionalFont(TilesetFont):
 		By default is 0 (fully transparent pixel).
 		"""
 		super().__init__(tileset, letter_mapping)
-		self.bound_rects = {}
-		with pygame.PixelArray(self.tileset.get_texture()) as pixels:
-			for letter in self.letter_mapping.keys():
-				letter_image = self.tileset.get_tile(self.letter_mapping[letter])
+		self._bound_rects = {}
+		with pygame.PixelArray(self._tileset.get_texture()) as pixels:
+			for letter in self._letter_mapping.keys():
+				letter_image = self._tileset.get_tile(self._letter_mapping[letter])
 				letter_rect = letter_image.get_rect()
-				self.bound_rects[letter] = utils.graphics.get_bounding_rect(letter_rect, lambda p: (pixels[p.x, p.y] == transparent_color), space_width=space_width)
+				self._bound_rects[letter] = utils.graphics.get_bounding_rect(letter_rect, lambda p: (pixels[p.x, p.y] == transparent_color), space_width=space_width)
+	@typed(str)
 	def get_letter_image(self, letter):
 		""" Returns sub-image for given letter. """
 		assert len(letter) == 1
-		return ImageRegion(self.tileset, self.bound_rects[letter])
+		return ImageRegion(self._tileset, self._bound_rects[letter])

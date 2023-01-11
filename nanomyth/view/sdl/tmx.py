@@ -10,6 +10,8 @@ from ...game.items import Item
 from ...game.map import Map, Terrain, Portal, Trigger
 from ...game.quest import QuestStateChange
 from .image import TileSetImage
+from ...utils.meta import typed
+from ._base import Engine
 
 def _load_tmx_image_tile(image, engine, tileset_sizes):
 	""" Parses TMX image [tile] definition
@@ -33,6 +35,7 @@ def _load_tmx_image_tile(image, engine, tileset_sizes):
 	engine.add_image(tile_name, engine.get_image(tileset_name).get_tile(tile_pos))
 	return tile_name
 
+@typed((str, Path), Engine)
 def load_tmx_map(filename, engine):
 	""" Loads Map from given file.
 	Will load any image tileset required (if it is not loaded yet).
@@ -88,7 +91,7 @@ def load_tmx_map(filename, engine):
 				tiles.cell(pos).append(tile_name)
 
 	real_map = Map(tiles.size)
-	for pos in real_map.tiles.keys():
+	for pos, _ in real_map.iter_tiles():
 		passable = True
 		for obj in (objects[pos] if pos in objects else []):
 			if obj.type == 'item':
