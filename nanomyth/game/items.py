@@ -9,5 +9,7 @@ class Item:
 		""" Creates item with name and sprite. """
 		self._name = name
 		self._sprite = sprite
+	def __hash__(self):
+		return hash((self._name, self._sprite))
 	def get_sprite(self):
 		return self._sprite

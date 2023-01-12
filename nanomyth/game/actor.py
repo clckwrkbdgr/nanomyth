@@ -3,6 +3,7 @@ from ..math import Point
 from .events import Trigger
 from .items import Item
 from ..utils.meta import fieldproperty, typed
+from ..math.itertools import stack_similar
 
 class Direction(Enum):
 	UP, DOWN, LEFT, RIGHT = range(4)
@@ -92,6 +93,13 @@ class Player:
 		""" Remove item from the inventory. """
 		del self._inventory[self._inventory.index(item)]
 	def iter_inventory(self):
-		""" Yields all items in the inventory. """
+		""" Iterates over items in the inventory.  """
 		for item in self._inventory:
 			yield item
+	def iter_stacked_inventory(self):
+		""" Iterates over items in the inventory
+		while stacking similar items.
+		Yields pairs (item, count)
+		"""
+		for item, count in stack_similar(self._inventory):
+			yield item, count
