@@ -9,11 +9,8 @@ from ..utils.ui import TextWrapper, Scroller, SelectionList
 from ...utils.meta import typed
 from ._base import Engine
 from ...game.map import Map
-
-class WidgetAtPos:
-	def __init__(self, topleft, widget):
-		self.topleft = Point(topleft)
-		self.widget = widget
+from . import image
+from .font import Font
 
 class Widget:
 	""" Base interface for widgets.
@@ -31,9 +28,16 @@ class Widget:
 		"""
 		raise NotImplementedError(str(type(self)))
 
+class WidgetAtPos:
+	@typed((Point, tuple, list), Widget)
+	def __init__(self, topleft, widget):
+		self.topleft = Point(topleft)
+		self.widget = widget
+
 class Image(Widget):
 	""" Displays full image.
 	"""
+	@typed((str, image.BaseImage))
 	def __init__(self, image):
 		""" Creates widget to display image.
 		"""
@@ -84,6 +88,7 @@ class AbstractGrid(Widget):
 class TileMap(AbstractGrid):
 	""" Displays a Map of arbitrary tiles
 	"""
+	@typed(Matrix)
 	def __init__(self, tilemap):
 		""" Creates widget to display given Matrix of tiles.
 		Tiles are either Images or image names in engine's image list.
@@ -100,6 +105,7 @@ class TileMap(AbstractGrid):
 class Panel(TileMap):
 	""" Draws panel made from tiles.
 	"""
+	@typed(Matrix, (Size, tuple, list))
 	def __init__(self, tilemap, size):
 		""" Creates widget using tiles from given mapping.
 		Tilemap should be a Matrix of 3x3 that covers every possible part:
@@ -150,6 +156,7 @@ class ImageRowSet(Widget):
 
 class TextLine(ImageRowSet):
 	""" Displays single-line text using pixel font. """
+	@typed(Font, text=str)
 	def __init__(self, font, text=""):
 		""" Creates widget to display single text line with Font object.
 		Optional initial text can be provided; it can be changed at any moment using set_text().
@@ -170,6 +177,7 @@ class LevelMap(AbstractGrid):
 	WARNING: As camera is static, map should fit within the screen,
 	outside tiles are accessible but will not be displayed!
 	"""
+	@typed(Map)
 	def __init__(self, level_map):
 		""" Creates widget to display given Map (of Tile objects).
 		"""
@@ -267,7 +275,8 @@ class Button(Switch):
 	Also supports optional custom action callback (usually to be performed on "selection" event).
 	It's up to the parent context to detect selection and perform action.
 	"""
-	def __init__(self, normal, highlighted, action=None):
+	@typed(Widget, Widget)
+	def __init__(self, normal, highlighted, action=None): # TODO action callable type.
 		""" Creates button widget with two states (widgets).
 		"""
 		super().__init__()
@@ -331,6 +340,7 @@ class SDLTextWrapper(TextWrapper):
 class BaseMultilineText(ImageRowSet):
 	""" Base abstract class for multiline text widgets.
 	"""
+	@typed(Font, (Size, tuple, list), text=str)
 	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
 		Text will auto-wrap to fit into width and may adjust height.
@@ -356,6 +366,7 @@ class MultilineText(BaseMultilineText):
 	""" Displays multiline text using pixel font.
 	Widget will auto-adjust height to the whole text.
 	"""
+	@typed(Font, (Size, tuple, list), text=str)
 	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
 		Text will auto-wrap to fit into width and may adjust height.
@@ -383,6 +394,7 @@ class MultilineScrollableText(BaseMultilineText):
 	can_scroll_up = Delegate('_scroller', Scroller.can_scroll_up)
 	can_scroll_down = Delegate('_scroller', Scroller.can_scroll_down)
 
+	@typed(Font, (Size, tuple, list), text=str)
 	def __init__(self, font, size, text=""):
 		""" Creates widget to display text with Font object.
 		Text will fit into given size, auto-wrapped with option to scroll.

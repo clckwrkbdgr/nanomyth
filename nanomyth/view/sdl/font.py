@@ -4,20 +4,21 @@ Text-related functionality.
 import itertools
 import pygame
 from ...math import Point, Rect
-from .image import ImageRegion
+from .image import ImageRegion, TileSetImage
 from .. import utils
 from ...utils.meta import typed
 
-class AbstractFont:
+class Font:
 	""" Abstract base for every Font class. """
 	@typed(str)
 	def get_letter_image(self, letter): # pragma: no cover
 		""" Should return sub-image for given letter. """
 		raise NotImplementedError()
 
-class TilesetFont(AbstractFont):
+class TilesetFont(Font):
 	""" Abstract base for pixel fonts built on a tileset of pixel glyphs.
 	"""
+	@typed(TileSetImage, str)
 	def __init__(self, tileset, letter_mapping):
 		""" Creates font from tileset using given letter mapping.
 		Letter mapping is a string of letters that should match unwrapped grid (row by row) starting from the topleft corner.
@@ -44,6 +45,7 @@ class ProportionalFont(TilesetFont):
 
 	Should be loaded from font grid tileset where every letter has the same size.
 	"""
+	@typed(TileSetImage, str, space_width=(None, int), transparent_color=int)
 	def __init__(self, tileset, letter_mapping, space_width=None, transparent_color=0):
 		""" Creates font from tileset using given letter mapping (see TilesetFont for details).
 

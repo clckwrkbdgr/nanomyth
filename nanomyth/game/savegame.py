@@ -1,10 +1,12 @@
 """ Saving/loading game state.
 """
 from pathlib import Path
+from ..utils.meta import typed
 
 class Savefile:
 	""" Abstract savefile class.
 	"""
+	@typed((str, Path))
 	def __init__(self, filename):
 		""" Savefile always operates on a real file.
 		"""

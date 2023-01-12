@@ -8,10 +8,13 @@ from .widget import WidgetAtPos, LevelMap, TextLine, Image, Button, MultilineTex
 from ...utils.meta import Delegate
 from ..utils.ui import Scroller, SelectionList
 from ...game.actor import Direction
+from ...game import game
 from ...math import Point, Size, Rect
 from ...utils.meta import typed, fieldproperty
 from ._base import Engine
 from .widget import Widget, Button
+from .font import Font
+from .image import BaseImage
 
 class Context:
 	""" Basic game context.
@@ -89,15 +92,15 @@ class Game(Context):
 
 	Any other widgets (e.g. UI) can be added via usual .add_widget()
 	"""
+	@typed(game.Game)
 	def __init__(self, game):
 		""" Creates visual context for the game object.
 		"""
 		super().__init__()
-		self._map_widget = LevelMap(None)
-		self.add_widget((0, 0), self._map_widget)
 		self._game = game
 		self._game.on_change_map(self._update_map_widget)
-		self._update_map_widget(self._game.get_world().get_current_map())
+		self._map_widget = LevelMap(self._game.get_world().get_current_map())
+		self.add_widget((0, 0), self._map_widget)
 	def _update_map_widget(self, current_map):
 		self._map_widget.set_map(current_map)
 	def get_game(self):
@@ -136,7 +139,7 @@ class Menu(Context):
 	add_menu_item = Delegate('_items', ButtonGroup.add_button)
 	select_item = Delegate('_items', ButtonGroup.select)
 
-	def __init__(self, on_escape=None):
+	def __init__(self, on_escape=None): # TODO typed action callable.
 		""" Creates menu context.
 		Items can be added later via .add_menu_item().
 
@@ -163,7 +166,7 @@ class Menu(Context):
 	def set_caption(self, pos, caption_widget):
 		""" Adds caption widget. """
 		self._caption = WidgetAtPos(Point(pos), caption_widget)
-	@typed((Image, str))
+	@typed((BaseImage, str))
 	def set_background(self, image):
 		""" Set background image.
 		Can be either some Image widget, or name of the image in global image list -
@@ -203,7 +206,9 @@ class MessageBox(Context):
 	""" Displays message and requires answer or confirmation.
 	"""
 	add_button = Delegate('_panel', Compound.add_widget)
-	def __init__(self, text, font, panel_widget, engine, text_shift=None, on_ok=None, on_cancel=None):
+
+	@typed(str, Font, Widget, Engine, text_shift=(Point, tuple, list, None))
+	def __init__(self, text, font, panel_widget, engine, text_shift=None, on_ok=None, on_cancel=None): # TODO typed actions callables
 		""" Creates message box with given text and font (required).
 		Panel widget will be draw under the text
 		and will be aligned to the center of the screen.
@@ -301,6 +306,8 @@ class TextScreen(ScrollableContext):
 	can_scroll_up = Delegate('_text_widget', MultilineScrollableText.can_scroll_up)
 	can_scroll_down = Delegate('_text_widget', MultilineScrollableText.can_scroll_down)
 	add_button = Delegate('_panel', Compound.add_widget)
+
+	@typed(str, Font, Widget, Engine, text_rect=(Rect, tuple, list, None))
 	def __init__(self, text, font, panel_widget, engine, text_rect=None):
 		""" Creates text screen with given text and font (required).
 		Panel widget will be draw under the text and should fit the whole screen.
@@ -339,6 +346,8 @@ class ItemList(ScrollableContext):
 	can_scroll_up = Delegate('_scroller', Scroller.can_scroll_up)
 	can_scroll_down = Delegate('_scroller', Scroller.can_scroll_down)
 	add_button = Delegate('_panel', Compound.add_widget)
+
+	@typed(Engine, Widget, list, caption_widget=(Widget, None), view_rect=(Rect, tuple, list, None))
 	def __init__(self, engine, background_widget, items, caption_widget=None, view_rect=None):
 		""" Creates item list screen.
 		Requires background widget (of any type) and list of items.

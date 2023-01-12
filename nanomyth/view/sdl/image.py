@@ -7,7 +7,7 @@ import pygame
 from ...math import Point, Size, Rect
 from ...utils.meta import typed, fieldproperty
 
-class AbstractImage:
+class BaseImage:
 	def get_size(self): # pragma: no cover
 		""" Should return full size of the image. """
 		raise NotImplementedError()
@@ -15,11 +15,12 @@ class AbstractImage:
 		""" Should return SDL Surface object. """
 		raise NotImplementedError()
 
-class Image(AbstractImage):
+class Image(BaseImage):
 	""" Basic image to be displayed in full size.
 	"""
 	filename = fieldproperty('_filename', 'Path to the image file.')
 
+	@typed((str, Path))
 	def __init__(self, filename):
 		""" Creates image from given file. """
 		self._filename = Path(filename).resolve()
@@ -37,9 +38,10 @@ class Image(AbstractImage):
 	def get_texture(self):
 		return self._texture
 
-class ImageRegion(AbstractImage):
+class ImageRegion(BaseImage):
 	""" Part of the bigger image.
 	"""
+	@typed(BaseImage, (Rect, tuple, list))
 	def __init__(self, image, rect):
 		""" Creates image region.
 		"""
@@ -62,6 +64,7 @@ class TileSetImage(Image):
 	size = fieldproperty('_size', 'Dimensions of the tile table.')
 	tile_size = fieldproperty('_tile_size', 'Size of a single tile.')
 
+	@typed((str, Path), (Size, tuple, list))
 	def __init__(self, filename, size):
 		""" Creates image tile set from given file.
 		Treats it as a table of given size.
@@ -80,8 +83,9 @@ class TileSetImage(Image):
 	def get_texture(self):
 		return self._texture
 
-class TileImage(AbstractImage):
+class TileImage(BaseImage):
 	""" Single tile from a tile set. """
+	@typed(TileSetImage, Point)
 	def __init__(self, tileset, pos):
 		""" Creates a tile from given tile set and a position in table. """
 		self._tileset = tileset

@@ -7,7 +7,7 @@ from ..utils.meta import fieldproperty, typed
 class ExternalQuestAction: # TODO move all kinds of triggers to events module
 	""" Reference to an external callback.
 	"""
-	def __init__(self, callback_name, **params):
+	def __init__(self, callback_name, **params): # TODO needs to be typed.
 		""" Creates reference object with the name of a trigger callback
 		(which should be registered in the Game object)
 		and optional set of keyword params, which will be passed to the call as such.
@@ -24,6 +24,7 @@ class ExternalQuestAction: # TODO move all kinds of triggers to events module
 class HistoryMessage:
 	""" Element of a Quest's history.
 	"""
+	@typed(str)
 	def __init__(self, message):
 		self._message = message
 	def __str__(self):
@@ -33,6 +34,7 @@ class QuestStateChange(Trigger): # TODO move all kinds of triggers to events mod
 	""" Provides means to trigger quest-related event.
 	Once player steps on it, quest state is changed.
 	"""
+	@typed(str, str)
 	def __init__(self, quest_name, action_name):
 		self._quest_name = quest_name
 		self._action_name = action_name
@@ -57,6 +59,7 @@ class Quest:
 	id = fieldproperty('_id', "Quest's internal ID.")
 	title = fieldproperty('_title', "Quest's title.")
 
+	@typed(str, str, list, list, finish_states=list)
 	def __init__(self, quest_id, title, states, actions, finish_states=None):
 		""" Creates quest with an ID, a title and lists of states/actions for the state machine.
 		Default state is None, which is considered "not started yet".

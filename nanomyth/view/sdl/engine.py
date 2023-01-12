@@ -4,7 +4,7 @@ from pathlib import Path
 import pygame
 from ...math import Size, Point
 from . import context
-from .image import AbstractImage
+from .image import BaseImage
 from ..utils import fs
 from ...utils.meta import typed
 from ._base import Engine
@@ -16,6 +16,7 @@ class SDLEngine(Engine):
 	Operates on set of Context objects.
 	Uses the topmost (the latest) Context object to process events and draw.
 	"""
+	@typed((Size, tuple, list), scale=int, window_title=(str, None))
 	def __init__(self, size, scale=1, window_title=None):
 		""" Creates SDL engine with a viewport of given size (required) and pixel scale factor (defaults to 1).
 		Optional window title may be set.
@@ -40,7 +41,7 @@ class SDLEngine(Engine):
 			self._window.get_width() // self._scale,
 			self._window.get_height() // self._scale,
 			)
-	@typed(str, AbstractImage)
+	@typed(str, BaseImage)
 	def add_image(self, name, image):
 		""" Puts image under specified name in the global image list. """
 		self._images[name] = image

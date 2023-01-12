@@ -35,6 +35,7 @@ class NPC:
 	""" Non-player character. """
 	name = fieldproperty('_name', "Character's name.")
 
+	@typed(str, str, trigger=(Trigger, None))
 	def __init__(self, name, sprite, trigger=None):
 		""" Creates NPC with given name and sprite.
 		Optional trigger can be set. It will be activated when interacted with NPC.
@@ -63,6 +64,7 @@ class Player:
 	name = fieldproperty('_name', "Character's name.")
 	direction = fieldproperty('_direction', "Current direction character is facing.")
 
+	@typed(str, str, dict)
 	def __init__(self, name, default_sprite, directional_sprites=None):
 		""" Creates character with given name and sprite.
 		Default sprite is used for static sprite (no direction).

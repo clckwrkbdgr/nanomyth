@@ -1,4 +1,4 @@
-from ..math import Matrix, Point
+from ..math import Matrix, Point, Size
 from . import actor
 from .events import Trigger
 from .quest import QuestStateChange
@@ -11,6 +11,7 @@ class Terrain:
 	"""
 	passable = fieldproperty('_passable', "Is tile passable on terrain level?")
 
+	@typed(list)
 	def __init__(self, images, passable=True):
 		""" Creates tile with specified images.
 		If there are more than one images, they are drawn in the given order.
@@ -29,6 +30,7 @@ class Portal:
 	Once player steps on it, they are transferred to the new map
 	placed at specified entrance position.
 	"""
+	@typed(str, (Point, tuple, list))
 	def __init__(self, dest_map, entrance_pos):
 		""" Creates portal to the entrance_pos on the dest_map.
 		"""
@@ -56,6 +58,7 @@ class ActorOnMap: # TODO common ancestor with access to obj. properties and pos 
 class Portalling(Exception):
 	""" Represents portalling event.
 	"""
+	@typed(Portal, (NPC, Player))
 	def __init__(self, portal, actor):
 		self.portal = portal
 		self.actor = actor
@@ -64,6 +67,7 @@ class Map:
 	""" Rectangle level map.
 	Supports terrain, actors (e.g. player) and other objects/events/triggers (e.g. portal tiles).
 	"""
+	@typed((Size, tuple, list))
 	def __init__(self, size):
 		""" Creates empty map of given size with default (empty) terrain.
 		"""
