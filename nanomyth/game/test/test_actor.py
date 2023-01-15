@@ -41,27 +41,3 @@ class TestPlayer(unittest.TestCase):
 		self.assertEqual(char.get_sprite(), 'rogue_left')
 		char.face_direction(Direction.RIGHT)
 		self.assertEqual(char.get_sprite(), 'rogue')
-	def should_list_inventory(self):
-		apple = Item('apple', 'apple')
-		knife = Item('knife', 'knife')
-		used_knife = Item('used knife', 'knife')
-
-		char = Player('Wanderer', 'rogue')
-		char.add_item(apple)
-		char.add_item(knife)
-		char.add_item(used_knife)
-
-		self.assertEqual(list(char.iter_inventory()), [apple, knife, used_knife])
-	def should_stack_similar_items(self):
-		apple = Item('apple', 'apple')
-		knife = Item('knife', 'knife')
-		used_knife = Item('used knife', 'knife')
-		another_knife = Item('knife', 'knife')
-
-		char = Player('Wanderer', 'rogue')
-		char.add_item(apple)
-		char.add_item(knife)
-		char.add_item(used_knife)
-		char.add_item(another_knife)
-
-		self.assertEqual(list(char.iter_stacked_inventory()), [(apple, 1), (knife, 2), (used_knife, 1)])

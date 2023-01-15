@@ -1,9 +1,8 @@
 from enum import Enum
 from ..math import Point
 from .events import Trigger
-from .items import Item
-from ..utils.meta import fieldproperty, typed
-from ..math.itertools import stack_similar
+from .items import Item, Inventory
+from ..utils.meta import Delegate, fieldproperty, typed
 
 class Direction(Enum):
 	UP, DOWN, LEFT, RIGHT = range(4)
@@ -64,6 +63,11 @@ class Player:
 	""" Player character. """
 	name = fieldproperty('_name', "Character's name.")
 	direction = fieldproperty('_direction', "Current direction character is facing.")
+	inventory = fieldproperty('_inventory', "Character's inventory.")
+	add_item = Delegate('_inventory', Inventory.add_item)
+	remove_item = Delegate('_inventory', Inventory.remove_item)
+	iter_inventory = Delegate('_inventory', Inventory.iter_plain)
+	iter_stacked_inventory = Delegate('_inventory', Inventory.iter_stacked)
 
 	@typed(str, str, dict)
 	def __init__(self, name, default_sprite, directional_sprites=None):
@@ -77,29 +81,10 @@ class Player:
 		self._default_sprite = default_sprite
 		self._directional_sprites = directional_sprites or {}
 		self._direction = Direction.DOWN
-		self._inventory = []
+		self._inventory = Inventory()
 	def get_sprite(self):
 		return self._directional_sprites.get(self._direction, self._default_sprite)
 	@typed(Direction)
 	def face_direction(self, new_direction):
 		""" Turn character into specified direction. """
 		self._direction = new_direction
-	@typed(Item)
-	def add_item(self, item):
-		""" Add item to the inventory. """
-		self._inventory.append(item)
-	@typed(Item)
-	def remove_item(self, item):
-		""" Remove item from the inventory. """
-		del self._inventory[self._inventory.index(item)]
-	def iter_inventory(self):
-		""" Iterates over items in the inventory.  """
-		for item in self._inventory:
-			yield item
-	def iter_stacked_inventory(self):
-		""" Iterates over items in the inventory
-		while stacking similar items.
-		Yields pairs (item, count)
-		"""
-		for item, count in stack_similar(self._inventory):
-			yield item, count

@@ -10,6 +10,8 @@ test:
 	@python -m coverage run --source=. -m unittest $${TESTCASE:-discover}
 	@python -m coverage report -m 
 
+fulltest: test autodemo
+
 demo:
 	@python demo/demo.py
 
