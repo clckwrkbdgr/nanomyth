@@ -3,7 +3,7 @@ from ..game import Game
 from ..world import World
 from ..map import Map, Terrain, Portal, Trigger
 from ..actor import Player, Direction, NPC
-from ..items import Item
+from ..items import Item, CollectibleItem
 from ..quest import Quest, ExternalQuestAction, HistoryMessage
 
 class TestManualContent(unittest.TestCase):
@@ -56,6 +56,8 @@ class TestManualContent(unittest.TestCase):
 		warehouse.add_trigger((7, 1), Trigger('using_gear_storage'))
 
 		warehouse.add_item((6, 5), Item('wrench', 'wrench'))
+		warehouse.add_item((6, 6), CollectibleItem('credits', 'money', 100))
+		warehouse.add_item((6, 7), CollectibleItem('credits', 'money', 200))
 		return warehouse
 	def create_robot_quest(self):
 		quest = Quest('robot', "Fix robot", [
@@ -224,3 +226,14 @@ class TestManualContent(unittest.TestCase):
 		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'wrench')
 		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 4)))
 		self.assertFalse(self.game.get_world().get_current_map().items_at_pos((6, 5)))
+
+		self.game.shift_player(Direction.DOWN)
+		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'credits')
+		self.game.shift_player(Direction.DOWN)
+		self.assertEqual(self.game.get_world().get_current_map().pick_item(self._player()).name, 'credits')
+
+		money = list(self._player().iter_inventory())[-1]
+		to_drop = money.with_amount(50)
+		self.assertEqual(self.game.get_world().get_current_map().drop_item(self._player(), to_drop).amount, 50)
+		money = list(self._player().iter_inventory())[-1]
+		self.assertEqual(money.amount, 250)
