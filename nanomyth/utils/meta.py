@@ -59,6 +59,11 @@ def _is_instance(value, type_s):
 	as indication that argument is optional and can have None as value.
 	Also `any` is any type.
 	"""
+	if isinstance(type_s, str):
+		for frame in inspect.stack():
+			if type_s in frame.frame.f_globals:
+				type_s = frame.frame.f_globals[type_s]
+				break
 	if isinstance(type_s, tuple):
 		return any(_is_instance(value, t) for t in type_s)
 	if type_s is None:
@@ -68,6 +73,8 @@ def _is_instance(value, type_s):
 	return isinstance(value, type_s)
 
 def _type_name(type_s):
+	if isinstance(type_s, str):
+		return type_s
 	if isinstance(type_s, tuple):
 		return ', '.join((t.__name__ if t is not None else repr(None)) for t in type_s)
 	return type_s.__name__
@@ -77,6 +84,7 @@ def typed(*arg_types, **kwarg_types):
 	Raises TypeError if arguments are not instances of the corresponding type (or tuple of types).
 	If `None` is present in a tuple of types, an argument is considered optional (accepts `None` as value).
 	If `any` is specified as a type, any type is accepted.
+	If type value is a string, it is treated as type name and resolved.
 	Types are matched in the order of specification (or by keywords for keyword ones).
 	If there are less types specified than there are arguments, remaining arguments are skipped (no type check).
 	The same goes for skipped keyword arguments.

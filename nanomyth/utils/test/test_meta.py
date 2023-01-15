@@ -24,6 +24,9 @@ class Delegator:
 	@meta.typed(str)
 	def typed_function_single_arg(self, arg):
 		pass
+	@meta.typed('Delegator')
+	def self_user(self, self_again):
+		pass
 
 class SuperDelegator:
 	super_foo = meta.Delegate('submember', Delegator.delegate_foo)
@@ -106,3 +109,9 @@ class TestTyping(unittest.TestCase):
 		any_typed_function(MockOriginalClass(), 'str')
 		with self.assertRaises(TypeError) as e:
 			any_typed_function(MockOriginalClass(), 1)
+	def should_accept_types_by_name(self):
+		obj = Delegator()
+		obj.self_user(obj)
+		with self.assertRaises(TypeError) as e:
+			obj.self_user('not self')
+		self.assertEqual(str(e.exception), 'Expected Delegator for arg #0, got: str')
