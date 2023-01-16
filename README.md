@@ -75,7 +75,7 @@ TODO
 	- [X] Slot for item, picking/dropping items.
 	- [X] Character's inventory, inventory screen dialog.
 	- [X] Displaying inventory status on HUD.
-	- [ ] Stackable items, non-stackable unique items.
+	- [X] Stackable items, non-stackable unique items.
 	- [ ] Usable items, using items on target (NPC, object).
 	- [ ] Triggers for items (for NPC/quests, opening terrain etc).
 	- [ ] One-time pickable item stashes (like piles, loot-drops or chests).
