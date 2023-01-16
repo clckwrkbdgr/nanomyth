@@ -194,7 +194,8 @@ def show_inventory(item_action=None):
 		'{0}'.format(item.name),
 		item_action and (lambda _item=item: item_action(_item)),
 		item.get_sprite(),
-		) for item in player.iter_inventory()]
+		icon_text=(str(amount) if amount > 1 else None),
+		) for item, amount in player.iter_stacked_inventory()]
 	return ui.item_list(engine, resources, grey_font, font, 'Inventory:', items, exit_key='i')
 main_game.bind_key('i', show_inventory)
 

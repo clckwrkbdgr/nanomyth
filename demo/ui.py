@@ -97,10 +97,11 @@ def message_box(engine, resources, text, font, size=None, on_ok=None, on_cancel=
 	return dialog
 
 class ItemListRow:
-	def __init__(self, text, action, icon=None):
+	def __init__(self, text, action, icon=None, icon_text=None):
 		self.text = text
 		self.action = action
 		self.icon = icon
+		self.icon_text = icon_text
 	def make_button(self, engine, normal_font, highlighted_font, window_size):
 		return nanomyth.view.sdl.widget.Button(
 				self.make_widget(engine, normal_font, window_size.width),
@@ -118,6 +119,9 @@ class ItemListRow:
 			pos.x += icon_size.width
 			letter_height = font.get_letter_image('W').get_size().height
 			pos.y += (icon_size.height - letter_height) // 2
+			if self.icon_text:
+				icon_text = nanomyth.view.sdl.widget.TextLine(font, self.icon_text)
+				result.add_widget(icon_text, (0, 0))
 		result.add_widget(nanomyth.view.sdl.widget.MultilineText(
 			font, (width, 0), self.text,
 			), pos)
