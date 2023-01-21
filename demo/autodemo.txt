@@ -12,8 +12,9 @@ return # Play.
 up left # To the knife.
 g # Grab it.
 i . . i # Check it.
+g # Grab the money.
 down right # Back to the start.
-d . up . down . return # Drop knife.
+d . down . up . return # Drop knife.
 i . . . escape # Check inventory.
 
 ###########################################################################
