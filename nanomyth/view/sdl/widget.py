@@ -4,6 +4,7 @@ SDL-based engine organize display output as a set of separate widgets.
 import pygame
 from ...utils.meta import Delegate
 from ...math import Point, Size, Rect, Matrix
+from ...math.mapping import ObjectAtPos
 from ..utils import math
 from ..utils.ui import TextWrapper, Scroller, SelectionList
 from ...utils.meta import typed
@@ -28,11 +29,10 @@ class Widget:
 		"""
 		raise NotImplementedError(str(type(self)))
 
-class WidgetAtPos:
+class WidgetAtPos(ObjectAtPos):
 	@typed((Point, tuple, list), Widget)
 	def __init__(self, topleft, widget):
-		self.topleft = Point(topleft)
-		self.widget = widget
+		super().__init__(topleft, widget)
 
 class Image(Widget):
 	""" Displays full image.
@@ -221,9 +221,9 @@ class Compound(Widget):
 		""" Size of the bounding area for all widgets. """
 		result = Size(0, 0)
 		for item in self._widgets:
-			if item.topleft.x < 0 or item.topleft.y < 0: # pragma: no cover -- TODO cannot correctly auto-adjust size with negative placements yet.
+			if item.pos.x < 0 or item.pos.y < 0: # pragma: no cover -- TODO cannot correctly auto-adjust size with negative placements yet.
 				continue
-			widget_size = item.widget.get_size(engine) + item.topleft
+			widget_size = item.obj.get_size(engine) + item.pos
 			result.width = max(result.width, widget_size.width)
 			result.height = max(result.height, widget_size.height)
 		return result
@@ -231,13 +231,13 @@ class Compound(Widget):
 	def draw(self, engine, topleft):
 		full_size = self.get_size(engine)
 		for item in self._widgets:
-			pos = item.topleft
+			pos = item.pos
 			if pos.x < 0 or pos.y < 0:
 				if pos.x < 0:
 					pos.x = full_size.width + pos.x
 				if pos.y < 0:
 					pos.y = full_size.height + pos.y
-			item.widget.draw(engine, topleft + pos)
+			item.obj.draw(engine, topleft + pos)
 
 class Switch(Widget):
 	""" Compound widget that display different sub-widgets depending on controllable inner state.

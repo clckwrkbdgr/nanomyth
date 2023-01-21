@@ -84,7 +84,7 @@ class Context:
 	def draw(self, engine):
 		""" Draws all widgets. """
 		for _ in self._get_widgets_to_draw(engine):
-			_.widget.draw(engine, _.topleft)
+			_.obj.draw(engine, _.pos)
 
 class Game(Context):
 	""" Context for the main game screen: level map, player character etc.

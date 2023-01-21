@@ -41,8 +41,8 @@ class TestSavefile(fake_filesystem_unittest.TestCase):
 				[(_.pos, _.obj._entrance_pos, _.obj._dest_map) for _ in expected._maps['foo']._portals],
 				)
 		self.assertEqual(
-				[(_.pos, _.actor._default_sprite, _.actor._direction, _.actor._directional_sprites) for _ in actual._maps['foo']._actors],
-				[(_.pos, _.actor._default_sprite, _.actor._direction, _.actor._directional_sprites) for _ in expected._maps['foo']._actors],
+				[(_.pos, _.obj._default_sprite, _.obj._direction, _.obj._directional_sprites) for _ in actual._maps['foo']._actors],
+				[(_.pos, _.obj._default_sprite, _.obj._direction, _.obj._directional_sprites) for _ in expected._maps['foo']._actors],
 				)
 
 		self.assertEqual(

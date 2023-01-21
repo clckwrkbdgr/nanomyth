@@ -5,6 +5,7 @@ from .quest import QuestStateChange
 from .actor import NPC, Player, Direction
 from .items import Item
 from ..utils.meta import fieldproperty, typed
+from ..math.mapping import ObjectAtPos
 
 class Terrain:
 	""" Represents single map tile of terrain.
@@ -40,21 +41,6 @@ class Portal:
 		""" Returns destination coordinates as tuple: (map name, pos). """
 		return self._dest_map, self._entrance_pos
 
-class ObjectOnMap: # TODO common ancestor with access to obj. properties and pos at the same level.
-	def __init__(self, pos, obj):
-		self.pos = Point(pos)
-		self.obj = obj
-
-class ItemOnMap: # TODO common ancestor with access to obj. properties and pos at the same level.
-	def __init__(self, pos, item):
-		self.pos = Point(pos)
-		self.item = item
-
-class ActorOnMap: # TODO common ancestor with access to obj. properties and pos at the same level.
-	def __init__(self, pos, actor):
-		self.pos = Point(pos)
-		self.actor = actor
-
 class Portalling(Exception):
 	""" Represents portalling event.
 	"""
@@ -87,14 +73,14 @@ class Map:
 	@typed((Point, tuple, list), (NPC, Player))
 	def add_actor(self, pos, actor):
 		""" Places actor on specified position. """
-		self._actors.append(ActorOnMap(pos, actor))
+		self._actors.append(ObjectAtPos(pos, actor))
 	@typed((NPC, Player))
 	def remove_actor(self, actor):
 		""" Removes specified actor from the map.
 		Returns actor object.
 		Returns None if no such actor is found.
 		"""
-		actor_index = next((i for i, other in enumerate(self._actors) if other.actor == actor), None)
+		actor_index = next((i for i, other in enumerate(self._actors) if other.obj == actor), None)
 		if actor_index is not None:
 			del self._actors[actor_index]
 		return actor
@@ -103,36 +89,36 @@ class Map:
 		""" Returns actor with given name.
 		Returns None if no such actor is found.
 		"""
-		return next((other.actor for other in self._actors if other.actor.name == name), None)
+		return next((other.obj for other in self._actors if other.obj.name == name), None)
 	@typed(str)
 	def find_actor_pos(self, name):
 		""" Returns location of actor with given name.
 		Returns None if no such actor is found.
 		"""
-		return next((other.pos for other in self._actors if other.actor.name == name), None)
+		return next((other.pos for other in self._actors if other.obj.name == name), None)
 	@typed((Point, tuple, list), Portal)
 	def add_portal(self, pos, portal):
 		""" Places a portal at the specified position. """
-		self._portals.append(ObjectOnMap(pos, portal))
+		self._portals.append(ObjectAtPos(pos, portal))
 	@typed((Point, tuple, list), Trigger)
 	def add_trigger(self, pos, trigger):
 		""" Places a trigger at the specified position. """
-		self._triggers.append(ObjectOnMap(pos, trigger))
+		self._triggers.append(ObjectAtPos(pos, trigger))
 	@typed((Point, tuple, list), Item)
 	def add_item(self, pos, item):
 		""" Places item on specified position. """
-		self._items.append(ItemOnMap(pos, item))
+		self._items.append(ObjectAtPos(pos, item))
 	@typed((Point, tuple, list))
 	def items_at_pos(self, pos):
 		""" Returns list of items at specified location. """
-		return [_.item for _ in self._items if _.pos == pos]
+		return [_.obj for _ in self._items if _.pos == pos]
 	@typed(Item)
 	def remove_item(self, item):
 		""" Removes specified item from the map.
 		Returns item object.
 		Returns None if no such item is found.
 		"""
-		item_index = next((i for i, other in enumerate(self._items) if other.item == item), None)
+		item_index = next((i for i, other in enumerate(self._items) if other.obj == item), None)
 		if item_index is not None:
 			del self._items[item_index]
 		return item
@@ -175,25 +161,25 @@ class Map:
 		Performs all available triggers if any are set on destination tile (like portals).
 		Requires reference to the trigger registry for that (see details in Trigger).
 		"""
-		player = next(_ for _ in self._actors if isinstance(_.actor, actor.Player))
+		player = next(_ for _ in self._actors if isinstance(_.obj, actor.Player))
 		if isinstance(shift, actor.Direction):
 			direction = shift
 			shift = direction.get_shift()
 		else:
 			direction = actor.Direction.from_shift(shift)
 		new_pos = player.pos + shift
-		player.actor.face_direction(direction)
+		player.obj.face_direction(direction)
 		if not self._tiles.valid(new_pos):
 			return
 		if not self._tiles.cell(new_pos).passable:
 			return
-		other_actor = next((other.actor for other in self._actors if other.pos == new_pos), None)
+		other_actor = next((other.obj for other in self._actors if other.pos == new_pos), None)
 		if other_actor:
 			other_actor.on_interaction(trigger_registry, quest_registry)
 			return
 		portal = next((portal.obj for portal in self._portals if portal.pos == new_pos), None)
 		if portal:
-			raise Portalling(portal, player.actor)
+			raise Portalling(portal, player.obj)
 		player.pos = new_pos
 
 		trigger = next((trigger.obj for trigger in self._triggers if trigger.pos == new_pos), None)
@@ -211,9 +197,9 @@ class Map:
 		""" Iterate over placed actors (characters, monsters).
 		Yields pairs (pos, actor).
 		"""
-		return ((_.pos, _.actor) for _ in self._actors)
+		return ((_.pos, _.obj) for _ in self._actors)
 	def iter_items(self):
 		""" Iterate over placed items.
 		Yields pairs (pos, item).
 		"""
-		return ((_.pos, _.item) for _ in self._items)
+		return ((_.pos, _.obj) for _ in self._items)
